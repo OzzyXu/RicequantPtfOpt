@@ -18,7 +18,7 @@ def get_market_value(stock_list, start_date = '2017-05-25', end_date = '2017-05-
 
 
 
-# ex
+# ex:
 # stock_list =[ '601998.XSHG','603323.XSHG']
 # get_market_value(stock_list)
 
