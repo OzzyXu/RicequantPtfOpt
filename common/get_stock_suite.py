@@ -80,6 +80,8 @@ with open('./common/stock_test_suite.txt', 'w') as file:
 
 
 
-
+## 如需重新读入使用：
+with open('./common/stock_test_suite.txt', 'r') as f:
+    d1 = json.load(f)
 
 
