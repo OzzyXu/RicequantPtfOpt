@@ -1,19 +1,67 @@
-# 05/22/2017 By Chuan Xu @ Ricequant V 1.0
+# 05/31/2017 By Chuan Xu @ Ricequant V 2.0
+# Try to add the data clean function
 
 import numpy as np
 import rqdatac
 import scipy.optimize as sc_opt
 from math import *
+import pandas as pd
 # import matplotlib.pyplot as plt
-# import pandas as pd
+
+
+def data_clean(equity_list, equity_type, start_date, end_date):
+    if equity_type is 'funds':
+        period_prices = rqdatac.fund.get_nav(equity_list, start_date, end_date, fields='acc_net_value')
+    elif equity_type is 'stocks':
+        period_prices = rqdatac.get_price(equity_list, start_date, end_date, frequency='1d', fields='close')
+    # Set up the threshhold of elimination
+    out_threshold = ceil(period_prices.shape[0]/2)
+    end_date_T = pd.to_datetime(end_date)
+    start_date_T = pd.to_datetime(start_date)
+    kickout_list = list()
+    st_list = list()
+    suspended_list = list()
+    # Locate the first valid value of each column, if available sequence length is less than threshhold, add
+    # the column name into out_list; if sequence length is longer than threshold but less than chosen period length,
+    # reset the start_date to the later date. The latest start_date whose sequence length is greater than threshold
+    # will be chose.
+    for i in range(period_prices.shape[1]):
+        if ((end_date_T - period_prices.iloc[:, i].first_valid_index())/np.timedelta64(1, 'D')) < out_threshold:
+            kickout_list.append(period_prices.columns.values[i])
+        elif period_prices.iloc[:, i].first_valid_index() < start_date_T:
+            start_date_T = period_prices.iloc[:, i].first_valid_index()
+    # Check whether any ST stocks are included and generate a list for ST stocks
+    st_list = period_prices.columns.values[rqdatac.is_st_stock(equity_list,start_date_T,end_date_T).sum(axis=0)>0]
+    # Check whether any stocks has long suspended trading periods or has been delisted and generate list for such stocks
+    for i in equity_list:
+        # Check whether stock has been delisted
+        if rqdatac.is_suspended(i, start_date_T, end_date_T).tail(1).index < end_date_T:
+            suspended_list.append(i)
+        # Check whether stock has long suspended period
+        elif int(rqdatac.is_suspended(i, start_date_T, end_date_T).sum(axis=0)) >= out_threshold:
+            suspended_list.append(i)
+    # Generate final kickout list which includes all the above
+    kickout_list_s = set(kickout_list)
+    st_list_s = set(st_list)
+    suspended_list_s = set(suspended_list)
+    two_list_union = st_list_s.union(suspended_list_s)
+    final_dif = two_list_union - kickout_list_s
+    final_kickout_list = kickout_list + list(final_dif)
+    # Generate clean data
+    equity_list_s = set(equity_list)
+    final_kickout_list_s = set(final_kickout_list)
+    clean_equity_list = list(equity_list_s-final_kickout_list_s)
+    if equity_type is 'funds':
+        clean_period_prices = rqdatac.fund.get_nav(clean_equity_list, start_date_T, end_date_T, fields='acc_net_value')
+    elif equity_type is 'stocks':
+        clean_period_prices = rqdatac.get_price(clean_equity_list, start_date_T, end_date_T, frequency='1d',
+                                                fields='close')
+    return clean_period_prices
 
 
 def log_barrier_risk_parity_optimizer(equity_list, equity_type, start_date, end_date):
-    if equity_type is 'funds':
-        period_navs = rqdatac.fund.get_nav(equity_list, start_date, end_date, fields='acc_net_value')
-    elif equity_type is 'stocks':
-        period_navs = rqdatac.get_price(equity_list, start_date, end_date, frequency='1d', fields='close')
-    period_daily_return_pct_change = period_navs.pct_change()*100
+    period_prices = data_clean(equity_list, equity_type, start_date, end_date)
+    period_daily_return_pct_change = period_prices.pct_change()*100
     c_m = period_daily_return_pct_change.cov()
     x0 = [1 / c_m.shape[0]] * c_m.shape[0]
     log_barrier_risk_parity_obj_fun = lambda x: np.dot(np.dot(x, c_m), x) - 15 * sum(np.log(x))
@@ -28,11 +76,8 @@ def log_barrier_risk_parity_optimizer(equity_list, equity_type, start_date, end_
 
 
 def min_variance_optimizer(equity_list, equity_type, start_date, end_date):
-    if equity_type is 'funds':
-        period_navs = rqdatac.fund.get_nav(equity_list, start_date, end_date, fields='acc_net_value')
-    elif equity_type is 'stocks':
-        period_navs = rqdatac.get_price(equity_list, start_date, end_date, frequency='1d', fields='close')
-    period_daily_return_pct_change = period_navs.pct_change()*100
+    period_prices = data_clean(equity_list, equity_type, start_date, end_date)
+    period_daily_return_pct_change = period_prices.pct_change()*100
     c_m = period_daily_return_pct_change.cov()
     x0 = [1 / c_m.shape[0]] * c_m.shape[0]
     min_variance_obj_fun = lambda x: np.dot(np.dot(x, c_m), x)
@@ -49,11 +94,8 @@ def min_variance_optimizer(equity_list, equity_type, start_date, end_date):
 
 
 def min_variance_risk_parity_optimizer(equity_list, equity_type, start_date, end_date, tol=None):
-    if equity_type is 'funds':
-        period_navs = rqdatac.fund.get_nav(equity_list, start_date, end_date, fields='acc_net_value')
-    elif equity_type is 'stocks':
-        period_navs = rqdatac.get_price(equity_list, start_date, end_date, frequency='1d', fields='close')
-    period_daily_return_pct_change = period_navs.pct_change()*100
+    period_prices = data_clean(equity_list, equity_type, start_date, end_date)
+    period_daily_return_pct_change = period_prices.pct_change()*100
     c_m = period_daily_return_pct_change.cov()
     x0 = [1 / c_m.shape[0]] * c_m.shape[0]
     beta = 0.5
@@ -83,6 +125,7 @@ def min_variance_risk_parity_optimizer(equity_list, equity_type, start_date, end
     min_variance_risk_parity_weights = min_variance_risk_parity_res.x
     return (min_variance_risk_parity_weights,min_variance_risk_parity_res,c_m)
 
+
 class TestPortfolio:
 
     def __init__(self, equity_list, equity_type):
@@ -95,10 +138,10 @@ class TestPortfolio:
 
     def perf_update(self, weights, start_date, end_date):
         if self.et is 'funds':
-            period_navs = rqdatac.fund.get_nav(self.el, start_date, end_date, fields='acc_net_value')
+            period_prices = rqdatac.fund.get_nav(self.el, start_date, end_date, fields='acc_net_value')
         elif self.et is 'stocks':
-            period_navs = rqdatac.get_price(self.el, start_date, end_date, frequency='1d', fields='close')
-        period_daily_return_pct_change = period_navs.pct_change()[1:]
+            period_prices = rqdatac.get_price(self.el, start_date, end_date, frequency='1d', fields='close')
+        period_daily_return_pct_change = period_prices.pct_change()[1:]
         new_daily_arithmetic_return = period_daily_return_pct_change.multiply(weights).sum(axis=1)
         if self.daily_arithmetic_return is None:
             self.daily_arithmetic_return = new_daily_arithmetic_return
