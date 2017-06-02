@@ -1,5 +1,5 @@
 # 05/31/2017 By Chuan Xu @ Ricequant V 2.0
-# Try to add the data clean function
+
 
 import numpy as np
 import rqdatac
