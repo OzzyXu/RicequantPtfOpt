@@ -151,7 +151,9 @@ class TestPortfolio:
         while rho > tol:
             min_variance_risk_parity_res = sc_opt.minimize(min_variance_risk_parity_obj_fun, x0, method='SLSQP',
                                                            bounds=min_vairance_risk_parity_bnds,
-                                                           constraints=min_variance_risk_parity_cons)
+                                                           constraints=min_variance_risk_parity_cons,
+                                                           options={'maxiter': 10000}
+                                                           )
             if not min_variance_risk_parity_res.success:
                 temp = ' @ %s' % self.clean_period_prices.index[0]
                 error_message = min_variance_risk_parity_res.message + temp
@@ -162,7 +164,9 @@ class TestPortfolio:
         rho = 0
         min_variance_risk_parity_res = sc_opt.minimize(min_variance_risk_parity_obj_fun, x0, method='SLSQP',
                                                        bounds=min_vairance_risk_parity_bnds,
-                                                       constraints=min_variance_risk_parity_cons)
+                                                       constraints=min_variance_risk_parity_cons,
+                                                       options={'maxiter': 10000}
+                                                       )
         if not min_variance_risk_parity_res.success:
             temp = ' @ %s' % self.clean_period_prices.index[0]
             error_message = min_variance_risk_parity_res.message + temp
