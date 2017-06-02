@@ -9,138 +9,174 @@ import pandas as pd
 # import matplotlib.pyplot as plt
 
 
-def data_clean(equity_list, equity_type, start_date, end_date):
-    if equity_type is 'funds':
-        period_prices = rqdatac.fund.get_nav(equity_list, start_date, end_date, fields='acc_net_value')
-    elif equity_type is 'stocks':
-        period_prices = rqdatac.get_price(equity_list, start_date, end_date, frequency='1d', fields='close')
-    # Set up the threshhold of elimination
-    out_threshold = ceil(period_prices.shape[0]/2)
-    end_date_T = pd.to_datetime(end_date)
-    start_date_T = pd.to_datetime(start_date)
-    kickout_list = list()
-    st_list = list()
-    suspended_list = list()
-    # Locate the first valid value of each column, if available sequence length is less than threshhold, add
-    # the column name into out_list; if sequence length is longer than threshold but less than chosen period length,
-    # reset the start_date to the later date. The latest start_date whose sequence length is greater than threshold
-    # will be chose.
-    for i in range(period_prices.shape[1]):
-        if ((end_date_T - period_prices.iloc[:, i].first_valid_index())/np.timedelta64(1, 'D')) < out_threshold:
-            kickout_list.append(period_prices.columns.values[i])
-        elif period_prices.iloc[:, i].first_valid_index() < start_date_T:
-            start_date_T = period_prices.iloc[:, i].first_valid_index()
-    # Check whether any ST stocks are included and generate a list for ST stocks
-    st_list = period_prices.columns.values[rqdatac.is_st_stock(equity_list,start_date_T,end_date_T).sum(axis=0)>0]
-    # Check whether any stocks has long suspended trading periods or has been delisted and generate list for such stocks
-    for i in equity_list:
-        # Check whether stock has been delisted
-        if rqdatac.is_suspended(i, start_date_T, end_date_T).tail(1).index < end_date_T:
-            suspended_list.append(i)
-        # Check whether stock has long suspended period
-        elif int(rqdatac.is_suspended(i, start_date_T, end_date_T).sum(axis=0)) >= out_threshold:
-            suspended_list.append(i)
-    # Generate final kickout list which includes all the above
-    kickout_list_s = set(kickout_list)
-    st_list_s = set(st_list)
-    suspended_list_s = set(suspended_list)
-    two_list_union = st_list_s.union(suspended_list_s)
-    final_dif = two_list_union - kickout_list_s
-    final_kickout_list = kickout_list + list(final_dif)
-    # Generate clean data
-    equity_list_s = set(equity_list)
-    final_kickout_list_s = set(final_kickout_list)
-    clean_equity_list = list(equity_list_s-final_kickout_list_s)
-    if equity_type is 'funds':
-        clean_period_prices = rqdatac.fund.get_nav(clean_equity_list, start_date_T, end_date_T, fields='acc_net_value')
-    elif equity_type is 'stocks':
-        clean_period_prices = rqdatac.get_price(clean_equity_list, start_date_T, end_date_T, frequency='1d',
-                                                fields='close')
-    return clean_period_prices
-
-
-def log_barrier_risk_parity_optimizer(equity_list, equity_type, start_date, end_date):
-    period_prices = data_clean(equity_list, equity_type, start_date, end_date)
-    period_daily_return_pct_change = period_prices.pct_change()*100
-    c_m = period_daily_return_pct_change.cov()
-    x0 = [1 / c_m.shape[0]] * c_m.shape[0]
-    log_barrier_risk_parity_obj_fun = lambda x: np.dot(np.dot(x, c_m), x) - 15 * sum(np.log(x))
-    log_barrier_bnds = []
-    for i in range(len(x0)):
-        log_barrier_bnds = log_barrier_bnds + [(0, 1)]
-    log_barrier_bnds = tuple(log_barrier_bnds)
-    BFGS_log_barrier_risk_parity_res = sc_opt.minimize(log_barrier_risk_parity_obj_fun, x0, method='L-BFGS-B',
-                                                       bounds=log_barrier_bnds)
-    BFGS_log_barrier_weights = (BFGS_log_barrier_risk_parity_res.x / sum(BFGS_log_barrier_risk_parity_res.x))
-    return (BFGS_log_barrier_weights,BFGS_log_barrier_risk_parity_res,c_m)
-
-
-def min_variance_optimizer(equity_list, equity_type, start_date, end_date):
-    period_prices = data_clean(equity_list, equity_type, start_date, end_date)
-    period_daily_return_pct_change = period_prices.pct_change()*100
-    c_m = period_daily_return_pct_change.cov()
-    x0 = [1 / c_m.shape[0]] * c_m.shape[0]
-    min_variance_obj_fun = lambda x: np.dot(np.dot(x, c_m), x)
-    min_variance_cons_fun = lambda x: sum(x) - 1
-    min_variance_cons = ({'type': 'eq', 'fun': min_variance_cons_fun})
-    min_variance_bnds = []
-    for i in range(len(x0)):
-        min_variance_bnds = min_variance_bnds + [(0, 1)]
-    min_variance_bnds = tuple(min_variance_bnds)
-    SLSQP_min_variance_res = sc_opt.minimize(min_variance_obj_fun, x0, method='SLSQP', bounds=min_variance_bnds,
-                                             constraints=min_variance_cons)
-    SLSQP_min_variance_weights = SLSQP_min_variance_res.x
-    return (SLSQP_min_variance_weights,SLSQP_min_variance_res,c_m)
-
-
-def min_variance_risk_parity_optimizer(equity_list, equity_type, start_date, end_date, tol=None):
-    period_prices = data_clean(equity_list, equity_type, start_date, end_date)
-    period_daily_return_pct_change = period_prices.pct_change()*100
-    c_m = period_daily_return_pct_change.cov()
-    x0 = [1 / c_m.shape[0]] * c_m.shape[0]
-    beta = 0.5
-    rho = 1000
-    if tol is None:
-        tol = 10 ** (-4)
-    min_variance_risk_parity_obj_fun = lambda x: sum(
-        (x * np.dot(x, c_m) - sum(x * np.dot(c_m, x)) / c_m.shape[0]) ** 2) + \
-                                                 rho * np.dot(np.dot(x, c_m), x)
-    min_variance_risk_parity_cons_fun = lambda x: sum(x) - 1
-    min_variance_risk_parity_cons = ({'type': 'eq', 'fun': min_variance_risk_parity_cons_fun})
-    min_vairance_risk_parity_bnds = []
-    for i in range(len(x0)):
-        min_vairance_risk_parity_bnds = min_vairance_risk_parity_bnds + [(-1, 2)]
-    min_vairance_risk_parity_bnds = tuple(min_vairance_risk_parity_bnds)
-    while rho > tol:
-        min_variance_risk_parity_res = sc_opt.minimize(min_variance_risk_parity_obj_fun, x0, method='SLSQP',
-                                                       bounds=min_vairance_risk_parity_bnds,
-                                                       constraints=min_variance_risk_parity_cons)
-        x0 = min_variance_risk_parity_res.x
-        rho = rho * beta
-    x0 = min_variance_risk_parity_res.x
-    rho = 0
-    min_variance_risk_parity_res = sc_opt.minimize(min_variance_risk_parity_obj_fun, x0, method='SLSQP',
-                                                   bounds=min_vairance_risk_parity_bnds,
-                                                   constraints=min_variance_risk_parity_cons)
-    min_variance_risk_parity_weights = min_variance_risk_parity_res.x
-    return (min_variance_risk_parity_weights,min_variance_risk_parity_res,c_m)
+class OptimizationError(Exception):
+    def __init__(self, warning_message):
+        print(warning_message)
 
 
 class TestPortfolio:
 
     def __init__(self, equity_list, equity_type):
+
         self.el = equity_list
         self.et = equity_type
+        self.reset_start_d = None
+        self.reset_end_d = None
         self.daily_cum_log_return = None
         self.daily_arithmetic_return = None
         self.annualized_return = None
         self.annualized_vol = None
+        self.clean_equity_list = None
+        self.kickout_list = None
+        self.st_list = None
+        self.suspended_list = None
+        self.clean_period_prices = None
+        self.period_prices = None
+
+    def data_clean(self, equity_list, start_date, end_date):
+
+        if self.et is 'funds':
+            period_prices = rqdatac.fund.get_nav(equity_list, start_date, end_date, fields='acc_net_value')
+        elif self.et is 'stocks':
+            period_prices = rqdatac.get_price(equity_list, start_date, end_date, frequency='1d', fields='close')
+        self.period_prices = period_prices
+        # Set up the threshhold of elimination
+        out_threshold = ceil(period_prices.shape[0] / 2)
+        end_date_T = pd.to_datetime(end_date)
+        start_date_T = pd.to_datetime(start_date)
+        kickout_list = list()
+        suspended_list = list()
+        # Locate the first valid value of each column, if available sequence length is less than threshhold, add
+        # the column name into out_list; if sequence length is longer than threshold but less than chosen period length,
+        # reset the start_date to the later date. The latest start_date whose sequence length is greater than threshold
+        # will be chose.
+        # Check whether any stocks has long suspended trading periods or has been delisted and generate list
+        # for such stocks
+        for i in equity_list:
+            if rqdatac.is_suspended(i, start_date_T, end_date_T) is not None:
+                if ((end_date_T - period_prices.loc[:, i].first_valid_index()) / np.timedelta64(1, 'D')) < out_threshold:
+                    kickout_list.append(i)
+                elif period_prices.loc[:, i].first_valid_index() < start_date_T:
+                    start_date_T = period_prices.loc[:, i].first_valid_index()
+                elif rqdatac.is_suspended(i, start_date_T, end_date_T).tail(1).index < end_date_T or \
+                                int(rqdatac.is_suspended(i, start_date_T, end_date_T).sum(axis=0)) >= out_threshold:
+                    suspended_list.append(i)
+            else:
+                kickout_list.append(i)
+        # Check whether any ST stocks are included and generate a list for ST stocks
+        st_list = list(period_prices.columns.values[rqdatac.is_st_stock(equity_list, start_date_T, end_date_T).sum(axis=0)>0])
+        # Generate final kickout list which includes all the above
+        kickout_list_s = set(kickout_list)
+        st_list_s = set(st_list)
+        suspended_list_s = set(suspended_list)
+        two_list_union = st_list_s.union(suspended_list_s)
+        final_dif = two_list_union - kickout_list_s
+        final_kickout_list = kickout_list + list(final_dif)
+        # Generate clean data
+        equity_list_s = set(equity_list)
+        final_kickout_list_s = set(final_kickout_list)
+        clean_equity_list = list(equity_list_s - final_kickout_list_s)
+        if self.et is 'funds':
+            clean_period_prices = rqdatac.fund.get_nav(clean_equity_list, start_date_T, end_date_T,
+                                                       fields='acc_net_value')
+        elif self.et is 'stocks':
+            clean_period_prices = rqdatac.get_price(clean_equity_list, start_date_T, end_date_T, frequency='1d',
+                                                    fields='close')
+        self.clean_period_prices = clean_period_prices
+        self.clean_equity_list = list(clean_period_prices.columns.values)
+        self.kickout_list = kickout_list
+        self.st_list = st_list
+        self.suspended_list = suspended_list
+        self.reset_start_d = start_date_T
+        self.reset_end_d = end_date_T
+
+    def log_barrier_risk_parity_optimizer(self):
+
+        period_daily_return_pct_change = self.clean_period_prices.pct_change() * 100
+        c_m = period_daily_return_pct_change.cov()
+        x0 = [1 / c_m.shape[0]] * c_m.shape[0]
+        log_barrier_risk_parity_obj_fun = lambda x: np.dot(np.dot(x, c_m), x) - 15 * sum(np.log(x))
+        log_barrier_bnds = []
+        for i in range(len(x0)):
+            log_barrier_bnds = log_barrier_bnds + [(0.00001, 1)]
+        log_barrier_bnds = tuple(log_barrier_bnds)
+        BFGS_log_barrier_risk_parity_res = sc_opt.minimize(log_barrier_risk_parity_obj_fun, x0, method='L-BFGS-B',
+                                                           bounds=log_barrier_bnds)
+        if not BFGS_log_barrier_risk_parity_res.success:
+            raise OptimizationError(BFGS_log_barrier_risk_parity_res.message)
+        else:
+            BFGS_log_barrier_weights = (BFGS_log_barrier_risk_parity_res.x / sum(BFGS_log_barrier_risk_parity_res.x))
+            return BFGS_log_barrier_weights
+
+    def min_variance_optimizer(self):
+
+        period_daily_return_pct_change = self.clean_period_prices.pct_change() * 100
+        c_m = period_daily_return_pct_change.cov()
+        x0 = [1 / c_m.shape[0]] * c_m.shape[0]
+        min_variance_obj_fun = lambda x: np.dot(np.dot(x, c_m), x)
+        min_variance_cons_fun = lambda x: sum(x) - 1
+        min_variance_cons = ({'type': 'eq', 'fun': min_variance_cons_fun})
+        min_variance_bnds = []
+        for i in range(len(x0)):
+            min_variance_bnds = min_variance_bnds + [(0, 1)]
+        min_variance_bnds = tuple(min_variance_bnds)
+        SLSQP_min_variance_res = sc_opt.minimize(min_variance_obj_fun, x0, method='SLSQP', bounds=min_variance_bnds,
+                                                 constraints=min_variance_cons)
+        if not SLSQP_min_variance_res.success:
+            raise OptimizationError(SLSQP_min_variance_res.message)
+        else:
+            SLSQP_min_variance_weights = SLSQP_min_variance_res.x
+            return SLSQP_min_variance_weights
+
+    def min_variance_risk_parity_optimizer(self, tol=None):
+        period_daily_return_pct_change = self.clean_period_prices.pct_change() * 100
+        c_m = period_daily_return_pct_change.cov()
+        x0 = [1 / c_m.shape[0]] * c_m.shape[0]
+        beta = 0.5
+        rho = 1000
+        if tol is None:
+            tol = 10 ** (-4)
+        min_variance_risk_parity_obj_fun = lambda x: (sum((x * np.dot(x, c_m) - sum(x * np.dot(c_m, x))
+                                                           / c_m.shape[0]) ** 2) + rho * np.dot(np.dot(x, c_m), x))
+        min_variance_risk_parity_cons_fun = lambda x: sum(x) - 1
+        min_variance_risk_parity_cons = ({'type': 'eq', 'fun': min_variance_risk_parity_cons_fun})
+        min_vairance_risk_parity_bnds = []
+        for i in range(len(x0)):
+            min_vairance_risk_parity_bnds = min_vairance_risk_parity_bnds + [(-1, 2)]
+        min_vairance_risk_parity_bnds = tuple(min_vairance_risk_parity_bnds)
+        while rho > tol:
+            min_variance_risk_parity_res = sc_opt.minimize(min_variance_risk_parity_obj_fun, x0, method='SLSQP',
+                                                           bounds=min_vairance_risk_parity_bnds,
+                                                           constraints=min_variance_risk_parity_cons)
+            if not min_variance_risk_parity_res.success:
+                raise OptimizationError(min_variance_risk_parity_res.message)
+            x0 = min_variance_risk_parity_res.x
+            rho = rho * beta
+        x0 = min_variance_risk_parity_res.x
+        rho = 0
+        min_variance_risk_parity_res = sc_opt.minimize(min_variance_risk_parity_obj_fun, x0, method='SLSQP',
+                                                       bounds=min_vairance_risk_parity_bnds,
+                                                       constraints=min_variance_risk_parity_cons)
+        if not min_variance_risk_parity_res.success:
+            raise OptimizationError(min_variance_risk_parity_res.message)
+        else:
+            min_variance_risk_parity_weights = min_variance_risk_parity_res.x
+            return min_variance_risk_parity_weights
 
     def perf_update(self, weights, start_date, end_date):
+
+        if self.kickout_list is not None or self.st_list is not None or self.suspended_list is not None:
+            elimination_list = self.kickout_list+self.st_list+self.suspended_list
+        else:
+            elimination_list = None
+        if self.clean_equity_list is None:
+            sample_list = self.el
+        else:
+            sample_list = self.clean_equity_list+elimination_list
         if self.et is 'funds':
-            period_prices = rqdatac.fund.get_nav(self.el, start_date, end_date, fields='acc_net_value')
+            period_prices = rqdatac.fund.get_nav(sample_list, start_date, end_date, fields='acc_net_value')
         elif self.et is 'stocks':
-            period_prices = rqdatac.get_price(self.el, start_date, end_date, frequency='1d', fields='close')
+            period_prices = rqdatac.get_price(sample_list, start_date, end_date, frequency='1d', fields='close')
         period_daily_return_pct_change = period_prices.pct_change()[1:]
         new_daily_arithmetic_return = period_daily_return_pct_change.multiply(weights).sum(axis=1)
         if self.daily_arithmetic_return is None:
