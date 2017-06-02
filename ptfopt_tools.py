@@ -101,10 +101,10 @@ class TestPortfolio:
             log_barrier_bnds = log_barrier_bnds + [(0.00001, 1)]
         log_barrier_bnds = tuple(log_barrier_bnds)
         log_barrier_risk_parity_res = sc_opt.minimize(log_barrier_risk_parity_obj_fun, x0, method='L-BFGS-B',
-                                                           bounds=log_barrier_bnds)
+                                                           bounds=log_barrier_bnds, options={'maxfun': 30000})
         if not log_barrier_risk_parity_res.success:
             temp = ' @ %s' % self.clean_period_prices.index[0]
-            error_message = log_barrier_risk_parity_res.message + temp
+            error_message = str(log_barrier_risk_parity_res.message) + temp
             raise OptimizationError(error_message)
         else:
             log_barrier_weights = (log_barrier_risk_parity_res.x / sum(log_barrier_risk_parity_res.x))
@@ -126,7 +126,7 @@ class TestPortfolio:
                                                  constraints=min_variance_cons)
         if not SLSQP_min_variance_res.success:
             temp = ' @ %s' % self.clean_period_prices.index[0]
-            error_message = SLSQP_min_variance_res.message + temp
+            error_message = str(SLSQP_min_variance_res.message) + temp
             raise OptimizationError(error_message)
         else:
             SLSQP_min_variance_weights = SLSQP_min_variance_res.x
@@ -152,11 +152,10 @@ class TestPortfolio:
             min_variance_risk_parity_res = sc_opt.minimize(min_variance_risk_parity_obj_fun, x0, method='SLSQP',
                                                            bounds=min_vairance_risk_parity_bnds,
                                                            constraints=min_variance_risk_parity_cons,
-                                                           options={'maxiter': 10000}
-                                                           )
+                                                           options={'maxiter': 10000})
             if not min_variance_risk_parity_res.success:
                 temp = ' @ %s' % self.clean_period_prices.index[0]
-                error_message = min_variance_risk_parity_res.message + temp
+                error_message = str(min_variance_risk_parity_res.message) + temp
                 raise OptimizationError(error_message)
             x0 = min_variance_risk_parity_res.x
             rho = rho * beta
@@ -169,7 +168,7 @@ class TestPortfolio:
                                                        )
         if not min_variance_risk_parity_res.success:
             temp = ' @ %s' % self.clean_period_prices.index[0]
-            error_message = min_variance_risk_parity_res.message + temp
+            error_message = str(min_variance_risk_parity_res.message) + temp
             raise OptimizationError(error_message)
         else:
             min_variance_risk_parity_weights = min_variance_risk_parity_res.x
