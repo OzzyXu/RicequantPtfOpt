@@ -61,8 +61,8 @@
           <file leaf-file-name="ToShow4.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/xuchuan/ToShow4.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1698">
-                  <caret line="296" column="0" lean-forward="true" selection-start-line="296" selection-start-column="0" selection-end-line="296" selection-end-column="0" />
+                <state relative-caret-position="-713">
+                  <caret line="233" column="44" lean-forward="true" selection-start-line="233" selection-start-column="44" selection-end-line="233" selection-end-column="44" />
                   <folding>
                     <element signature="e#0#27#0" expanded="true" />
                     <marker date="1496375678937" expanded="false" signature="1376:6085" ph="..." />
@@ -571,7 +571,14 @@
       <option name="project" value="LOCAL" />
       <updated>1496376011771</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="ToShow4 shows how to use ptfopt_tools for stocks">
+      <created>1496376015868</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1496376015868</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TodoView">
@@ -982,8 +989,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/xuchuan/ToShow4.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1698">
-          <caret line="296" column="0" lean-forward="true" selection-start-line="296" selection-start-column="0" selection-end-line="296" selection-end-column="0" />
+        <state relative-caret-position="-713">
+          <caret line="233" column="44" lean-forward="true" selection-start-line="233" selection-start-column="44" selection-end-line="233" selection-end-column="44" />
           <folding>
             <element signature="e#0#27#0" expanded="true" />
             <marker date="1496375678937" expanded="false" signature="1376:6085" ph="..." />
