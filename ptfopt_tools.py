@@ -100,13 +100,15 @@ class TestPortfolio:
         for i in range(len(x0)):
             log_barrier_bnds = log_barrier_bnds + [(0.00001, 1)]
         log_barrier_bnds = tuple(log_barrier_bnds)
-        BFGS_log_barrier_risk_parity_res = sc_opt.minimize(log_barrier_risk_parity_obj_fun, x0, method='L-BFGS-B',
+        log_barrier_risk_parity_res = sc_opt.minimize(log_barrier_risk_parity_obj_fun, x0, method='L-BFGS-B',
                                                            bounds=log_barrier_bnds)
-        if not BFGS_log_barrier_risk_parity_res.success:
-            raise OptimizationError(BFGS_log_barrier_risk_parity_res.message)
+        if not log_barrier_risk_parity_res.success:
+            temp = ' @ %s' % self.clean_period_prices.index[0]
+            error_message = log_barrier_risk_parity_res.message + temp
+            raise OptimizationError(error_message)
         else:
-            BFGS_log_barrier_weights = (BFGS_log_barrier_risk_parity_res.x / sum(BFGS_log_barrier_risk_parity_res.x))
-            return BFGS_log_barrier_weights
+            log_barrier_weights = (log_barrier_risk_parity_res.x / sum(log_barrier_risk_parity_res.x))
+            return log_barrier_weights
 
     def min_variance_optimizer(self):
 
@@ -123,7 +125,9 @@ class TestPortfolio:
         SLSQP_min_variance_res = sc_opt.minimize(min_variance_obj_fun, x0, method='SLSQP', bounds=min_variance_bnds,
                                                  constraints=min_variance_cons)
         if not SLSQP_min_variance_res.success:
-            raise OptimizationError(SLSQP_min_variance_res.message)
+            temp = ' @ %s' % self.clean_period_prices.index[0]
+            error_message = SLSQP_min_variance_res.message + temp
+            raise OptimizationError(error_message)
         else:
             SLSQP_min_variance_weights = SLSQP_min_variance_res.x
             return SLSQP_min_variance_weights
@@ -149,7 +153,9 @@ class TestPortfolio:
                                                            bounds=min_vairance_risk_parity_bnds,
                                                            constraints=min_variance_risk_parity_cons)
             if not min_variance_risk_parity_res.success:
-                raise OptimizationError(min_variance_risk_parity_res.message)
+                temp = ' @ %s' % self.clean_period_prices.index[0]
+                error_message = min_variance_risk_parity_res.message + temp
+                raise OptimizationError(error_message)
             x0 = min_variance_risk_parity_res.x
             rho = rho * beta
         x0 = min_variance_risk_parity_res.x
@@ -158,7 +164,9 @@ class TestPortfolio:
                                                        bounds=min_vairance_risk_parity_bnds,
                                                        constraints=min_variance_risk_parity_cons)
         if not min_variance_risk_parity_res.success:
-            raise OptimizationError(min_variance_risk_parity_res.message)
+            temp = ' @ %s' % self.clean_period_prices.index[0]
+            error_message = min_variance_risk_parity_res.message + temp
+            raise OptimizationError(error_message)
         else:
             min_variance_risk_parity_weights = min_variance_risk_parity_res.x
             return min_variance_risk_parity_weights
