@@ -198,7 +198,7 @@ class TestPortfolio:
             period_prices = rqdatac.fund.get_nav(sample_list, start_date, end_date, fields='acc_net_value')
         elif self.et is 'stocks':
             period_prices = rqdatac.get_price(sample_list, start_date, end_date, frequency='1d', fields='close')
-        period_daily_return_pct_change = period_prices.pct_change()[1:]
+        period_daily_return_pct_change = pd.DataFrame(period_prices.pct_change())[1:]
         new_daily_arithmetic_return = period_daily_return_pct_change.multiply(weights).sum(axis=1)
         if self.daily_arithmetic_return is None:
             self.daily_arithmetic_return = new_daily_arithmetic_return
