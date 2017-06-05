@@ -6,6 +6,7 @@ import rqdatac
 import scipy.optimize as sc_opt
 from math import *
 import pandas as pd
+from scipy.optimize import check_grad
 # import matplotlib.pyplot as plt
 
 
@@ -36,9 +37,12 @@ class TestPortfolio:
     def data_clean(self, equity_list, start_date, end_date):
 
         if self.et is 'funds':
-            period_prices = rqdatac.fund.get_nav(equity_list, start_date, end_date, fields='acc_net_value')
+            period_data = rqdatac.fund.get_nav(equity_list, start_date, end_date, fields='acc_net_value')
         elif self.et is 'stocks':
-            period_prices = rqdatac.get_price(equity_list, start_date, end_date, frequency='1d', fields='close')
+            period_data = rqdatac.get_price(equity_list, start_date, end_date, frequency='1d',
+                                            fields=['close', 'volume'])
+        period_prices = period_data['close']
+        period_volume = period_data['volume']
         self.period_prices = period_prices
         # Set up the threshhold of elimination
         out_threshold = ceil(period_prices.shape[0] / 2)
@@ -53,13 +57,13 @@ class TestPortfolio:
         # Check whether any stocks has long suspended trading periods or has been delisted and generate list
         # for such stocks
         for i in equity_list:
-            if rqdatac.is_suspended(i, start_date_T, end_date_T) is not None:
+            if not period_volume.loc[:, i].value_counts().empty:
                 if ((end_date_T - period_prices.loc[:, i].first_valid_index()) / np.timedelta64(1, 'D')) < out_threshold:
                     kickout_list.append(i)
                 elif period_prices.loc[:, i].first_valid_index() < start_date_T:
                     start_date_T = period_prices.loc[:, i].first_valid_index()
-                elif rqdatac.is_suspended(i, start_date_T, end_date_T).tail(1).index < end_date_T or \
-                                int(rqdatac.is_suspended(i, start_date_T, end_date_T).sum(axis=0)) >= out_threshold:
+                elif period_volume.loc[:, i].last_valid_index() < end_date_T or \
+                                period_volume.loc[:, i].value_counts().iloc[0] >= out_threshold:
                     suspended_list.append(i)
             else:
                 kickout_list.append(i)
@@ -76,12 +80,7 @@ class TestPortfolio:
         equity_list_s = set(equity_list)
         final_kickout_list_s = set(final_kickout_list)
         clean_equity_list = list(equity_list_s - final_kickout_list_s)
-        if self.et is 'funds':
-            clean_period_prices = rqdatac.fund.get_nav(clean_equity_list, start_date_T, end_date_T,
-                                                       fields='acc_net_value')
-        elif self.et is 'stocks':
-            clean_period_prices = rqdatac.get_price(clean_equity_list, start_date_T, end_date_T, frequency='1d',
-                                                    fields='close')
+        clean_period_prices = period_prices.loc[:, clean_equity_list]
         self.clean_period_prices = clean_period_prices
         self.clean_equity_list = list(clean_period_prices.columns.values)
         self.kickout_list = kickout_list
@@ -92,16 +91,22 @@ class TestPortfolio:
 
     def log_barrier_risk_parity_optimizer(self):
 
+        c = 15
         period_daily_return_pct_change = self.clean_period_prices.pct_change() * 100
         c_m = period_daily_return_pct_change.cov()
-        x0 = [1 / c_m.shape[0]] * c_m.shape[0]
-        log_barrier_risk_parity_obj_fun = lambda x: np.dot(np.dot(x, c_m), x) - 15 * sum(np.log(x))
+
+        def log_barrier_risk_parity_gradient(x):
+            return np.multiply(2, np.dot(c_m, x)) - np.multiply(c, np.reciprocal(x))
+
+        # x0 = [1 / c_m.shape[0]] * c_m.shape[0]
+        x0 = np.zeros(c_m.shape[0])
+        log_barrier_risk_parity_obj_fun = lambda x: np.dot(np.dot(x, c_m), x) - c * sum(np.log(x))
         log_barrier_bnds = []
         for i in range(len(x0)):
             log_barrier_bnds = log_barrier_bnds + [(0.00001, 1)]
         log_barrier_bnds = tuple(log_barrier_bnds)
         log_barrier_risk_parity_res = sc_opt.minimize(log_barrier_risk_parity_obj_fun, x0, method='L-BFGS-B',
-                                                           bounds=log_barrier_bnds, options={'maxfun': 30000})
+                                                      jac=log_barrier_risk_parity_gradient, bounds=log_barrier_bnds)
         if not log_barrier_risk_parity_res.success:
             temp = ' @ %s' % self.clean_period_prices.index[0]
             error_message = str(log_barrier_risk_parity_res.message) + temp
@@ -114,16 +119,21 @@ class TestPortfolio:
 
         period_daily_return_pct_change = self.clean_period_prices.pct_change() * 100
         c_m = period_daily_return_pct_change.cov()
-        x0 = [1 / c_m.shape[0]] * c_m.shape[0]
+        # x0 = [1 / c_m.shape[0]] * c_m.shape[0]
+        x0 = np.zeros(c_m.shape[0])
         min_variance_obj_fun = lambda x: np.dot(np.dot(x, c_m), x)
         min_variance_cons_fun = lambda x: sum(x) - 1
         min_variance_cons = ({'type': 'eq', 'fun': min_variance_cons_fun})
         min_variance_bnds = []
+
+        def min_variance_gradient(x):
+            return np.multiply(2, np.dot(c_m, x))
+
         for i in range(len(x0)):
             min_variance_bnds = min_variance_bnds + [(0, 1)]
         min_variance_bnds = tuple(min_variance_bnds)
-        SLSQP_min_variance_res = sc_opt.minimize(min_variance_obj_fun, x0, method='SLSQP', bounds=min_variance_bnds,
-                                                 constraints=min_variance_cons)
+        SLSQP_min_variance_res = sc_opt.minimize(min_variance_obj_fun, x0, method='SLSQP', jac=min_variance_gradient,
+                                                 bounds=min_variance_bnds, constraints=min_variance_cons)
         if not SLSQP_min_variance_res.success:
             temp = ' @ %s' % self.clean_period_prices.index[0]
             error_message = str(SLSQP_min_variance_res.message) + temp
