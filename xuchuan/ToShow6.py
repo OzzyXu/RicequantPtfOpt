@@ -38,7 +38,7 @@ equity_list6 = list(portfolio6.index)
 # Min variance optimizer
 equity_fund_portfolio_min_variance = pt.TestPortfolio(equity_list1, 'stocks')
 t = time.time()
-equity_fund_portfolio_min_variance.data_clean(equity_list1, first_period_s, first_period_e)
+equity_fund_portfolio_min_variance.data_preprocessing(equity_list1, first_period_s, first_period_e)
 print(time.time()-t)
 elimination_list = equity_fund_portfolio_min_variance.kickout_list+equity_fund_portfolio_min_variance.st_list + \
                    equity_fund_portfolio_min_variance.suspended_list
@@ -51,7 +51,7 @@ weights = optimal_weights+inherited_holdings_weights
 output_res1 = pd.Series(weights, index=(equity_fund_portfolio_min_variance.clean_equity_list+elimination_list))
 output_res1.to_csv(path='C:\\Users\\xuchu\\Dropbox\\RQ\\Result\\MV20140701.csv')
 
-equity_fund_portfolio_min_variance.data_clean(equity_list2, second_period_s, second_period_e)
+equity_fund_portfolio_min_variance.data_preprocessing(equity_list2, second_period_s, second_period_e)
 elimination_list = equity_fund_portfolio_min_variance.kickout_list+equity_fund_portfolio_min_variance.st_list + \
                    equity_fund_portfolio_min_variance.suspended_list
 inherited_holdings_weights = list(portfolio2.loc[elimination_list])
@@ -63,7 +63,7 @@ weights = optimal_weights+inherited_holdings_weights
 output_res2 = pd.Series(weights, index=(equity_fund_portfolio_min_variance.clean_equity_list+elimination_list))
 output_res2.to_csv(path='C:\\Users\\xuchu\\Dropbox\\RQ\\Result\\MV20150101.csv')
 
-equity_fund_portfolio_min_variance.data_clean(equity_list3, third_period_s, third_period_e)
+equity_fund_portfolio_min_variance.data_preprocessing(equity_list3, third_period_s, third_period_e)
 elimination_list = equity_fund_portfolio_min_variance.kickout_list+equity_fund_portfolio_min_variance.st_list + \
                    equity_fund_portfolio_min_variance.suspended_list
 inherited_holdings_weights = list(portfolio3.loc[elimination_list])
@@ -75,7 +75,7 @@ weights = optimal_weights+inherited_holdings_weights
 output_res3 = pd.Series(weights, index=(equity_fund_portfolio_min_variance.clean_equity_list+elimination_list))
 output_res3.to_csv(path='C:\\Users\\xuchu\\Dropbox\\RQ\\Result\\MV20150701.csv')
 
-equity_fund_portfolio_min_variance.data_clean(equity_list4, fourth_period_s, fourth_period_e)
+equity_fund_portfolio_min_variance.data_preprocessing(equity_list4, fourth_period_s, fourth_period_e)
 elimination_list = equity_fund_portfolio_min_variance.kickout_list+equity_fund_portfolio_min_variance.st_list + \
                    equity_fund_portfolio_min_variance.suspended_list
 inherited_holdings_weights = list(portfolio4.loc[elimination_list])
@@ -85,7 +85,7 @@ weights = optimal_weights+inherited_holdings_weights
 output_res4 = pd.Series(weights, index=(equity_fund_portfolio_min_variance.clean_equity_list+elimination_list))
 output_res4.to_csv(path='C:\\Users\\xuchu\\Dropbox\\RQ\\Result\\MV20160101.csv')
 
-equity_fund_portfolio_min_variance.data_clean(equity_list5, fifth_period_s, fifth_period_e)
+equity_fund_portfolio_min_variance.data_preprocessing(equity_list5, fifth_period_s, fifth_period_e)
 elimination_list = equity_fund_portfolio_min_variance.kickout_list+equity_fund_portfolio_min_variance.st_list + \
                    equity_fund_portfolio_min_variance.suspended_list
 inherited_holdings_weights = list(portfolio5.loc[elimination_list])
@@ -95,7 +95,7 @@ weights = optimal_weights+inherited_holdings_weights
 output_res5 = pd.Series(weights, index=(equity_fund_portfolio_min_variance.clean_equity_list+elimination_list))
 output_res5.to_csv(path='C:\\Users\\xuchu\\Dropbox\\RQ\\Result\\MV20160701.csv')
 
-equity_fund_portfolio_min_variance.data_clean(equity_list6, sixth_period_s, sixth_period_e)
+equity_fund_portfolio_min_variance.data_preprocessing(equity_list6, sixth_period_s, sixth_period_e)
 elimination_list = equity_fund_portfolio_min_variance.kickout_list+equity_fund_portfolio_min_variance.st_list + \
                    equity_fund_portfolio_min_variance.suspended_list
 inherited_holdings_weights = list(portfolio6.loc[elimination_list])
@@ -107,7 +107,7 @@ output_res6.to_csv(path='C:\\Users\\xuchu\\Dropbox\\RQ\\Result\\MV20170101.csv')
 
 # Log barrier risk parity optimizer
 equity_fund_portfolio_log_barrier = pt.TestPortfolio(equity_list1, 'stocks')
-equity_fund_portfolio_log_barrier.data_clean(equity_list1, first_period_s, first_period_e)
+equity_fund_portfolio_log_barrier.data_preprocessing(equity_list1, first_period_s, first_period_e)
 elimination_list = equity_fund_portfolio_log_barrier.kickout_list+equity_fund_portfolio_log_barrier.st_list + \
                    equity_fund_portfolio_log_barrier.suspended_list
 inherited_holdings_weights = list(portfolio1.loc[elimination_list])
@@ -119,7 +119,7 @@ weights = optimal_weights+inherited_holdings_weights
 output_res7 = pd.Series(weights, index=(equity_fund_portfolio_log_barrier.clean_equity_list+elimination_list))
 output_res7.to_csv(path='C:\\Users\\xuchu\\Dropbox\\RQ\\Result\\RP20140701.csv')
 
-equity_fund_portfolio_log_barrier.data_clean(equity_list2, second_period_s, second_period_e)
+equity_fund_portfolio_log_barrier.data_preprocessing(equity_list2, second_period_s, second_period_e)
 elimination_list = equity_fund_portfolio_log_barrier.kickout_list+equity_fund_portfolio_log_barrier.st_list + \
                    equity_fund_portfolio_log_barrier.suspended_list
 inherited_holdings_weights = list(portfolio2.loc[elimination_list])
@@ -131,7 +131,7 @@ weights = optimal_weights+inherited_holdings_weights
 output_res8 = pd.Series(weights, index=(equity_fund_portfolio_log_barrier.clean_equity_list+elimination_list))
 output_res8.to_csv(path='C:\\Users\\xuchu\\Dropbox\\RQ\\Result\\RP20150101.csv')
 
-equity_fund_portfolio_log_barrier.data_clean(equity_list3, third_period_s, third_period_e)
+equity_fund_portfolio_log_barrier.data_preprocessing(equity_list3, third_period_s, third_period_e)
 elimination_list = equity_fund_portfolio_log_barrier.kickout_list+equity_fund_portfolio_log_barrier.st_list + \
                    equity_fund_portfolio_log_barrier.suspended_list
 inherited_holdings_weights = list(portfolio3.loc[elimination_list])
@@ -143,7 +143,7 @@ weights = optimal_weights+inherited_holdings_weights
 output_res9 = pd.Series(weights, index=(equity_fund_portfolio_log_barrier.clean_equity_list+elimination_list))
 output_res9.to_csv(path='C:\\Users\\xuchu\\Dropbox\\RQ\\Result\\RP20150701.csv')
 
-equity_fund_portfolio_log_barrier.data_clean(equity_list4, fourth_period_s, fourth_period_e)
+equity_fund_portfolio_log_barrier.data_preprocessing(equity_list4, fourth_period_s, fourth_period_e)
 elimination_list = equity_fund_portfolio_log_barrier.kickout_list+equity_fund_portfolio_log_barrier.st_list + \
                    equity_fund_portfolio_log_barrier.suspended_list
 inherited_holdings_weights = list(portfolio4.loc[elimination_list])
@@ -153,7 +153,7 @@ weights = optimal_weights+inherited_holdings_weights
 output_res10 = pd.Series(weights, index=(equity_fund_portfolio_log_barrier.clean_equity_list+elimination_list))
 output_res10.to_csv(path='C:\\Users\\xuchu\\Dropbox\\RQ\\Result\\RP20160101.csv')
 
-equity_fund_portfolio_log_barrier.data_clean(equity_list5, fifth_period_s, fifth_period_e)
+equity_fund_portfolio_log_barrier.data_preprocessing(equity_list5, fifth_period_s, fifth_period_e)
 elimination_list = equity_fund_portfolio_log_barrier.kickout_list+equity_fund_portfolio_log_barrier.st_list + \
                    equity_fund_portfolio_log_barrier.suspended_list
 inherited_holdings_weights = list(portfolio5.loc[elimination_list])
@@ -163,7 +163,7 @@ weights = optimal_weights+inherited_holdings_weights
 output_res11 = pd.Series(weights, index=(equity_fund_portfolio_log_barrier.clean_equity_list+elimination_list))
 output_res11.to_csv(path='C:\\Users\\xuchu\\Dropbox\\RQ\\Result\\RP20160701.csv')
 
-equity_fund_portfolio_log_barrier.data_clean(equity_list6, sixth_period_s, sixth_period_e)
+equity_fund_portfolio_log_barrier.data_preprocessing(equity_list6, sixth_period_s, sixth_period_e)
 elimination_list = equity_fund_portfolio_log_barrier.kickout_list+equity_fund_portfolio_log_barrier.st_list + \
                    equity_fund_portfolio_log_barrier.suspended_list
 inherited_holdings_weights = list(portfolio6.loc[elimination_list])
