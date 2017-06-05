@@ -9,7 +9,7 @@ import ptfopt_tools as pt
 
 rqdatac.init("ricequant", "8ricequant8")
 
-index_name = "000300.XSHG"
+index_name = "000906.XSHG"
 first_period_s = '2014-01-01'
 first_period_e = '2014-06-30'
 second_period_s = '2014-07-01'
