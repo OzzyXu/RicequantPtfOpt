@@ -243,9 +243,9 @@ str2 = """Minimum variance portfolio cumulative return path: r = %f, $\sigma$ = 
 str3 = """Log barrier risk parity portfolio: r = %f, $\sigma$ = %f. """ % \
        (equity_fund_portfolio_log_barrier.annualized_return,
         equity_fund_portfolio_log_barrier.annualized_vol)
-str4 = """Min variance risk parity portfolio: r = %f, $\sigma$ = %f.""" % \
-       (equity_fund_portfolio_min_variance_risk_parity.annualized_return,
-        equity_fund_portfolio_min_variance_risk_parity.annualized_vol)
+# str4 = """Min variance risk parity portfolio: r = %f, $\sigma$ = %f.""" % \
+#        (equity_fund_portfolio_min_variance_risk_parity.annualized_return,
+#         equity_fund_portfolio_min_variance_risk_parity.annualized_vol)
 str5 = """Index holding cumulative return path: r = %f, $\sigma$ = %f. """ % \
        (equity_fund_portfolio_holdings.annualized_return,
         equity_fund_portfolio_holdings.annualized_vol)
@@ -256,7 +256,7 @@ str5 = """Index holding cumulative return path: r = %f, $\sigma$ = %f. """ % \
 daily_cum_log_return.plot(legend=True, label=str1)
 equity_fund_portfolio_min_variance.daily_cum_log_return.plot(legend=True, label=str2)
 equity_fund_portfolio_log_barrier.daily_cum_log_return.plot(legend=True, label=str3)
-equity_fund_portfolio_min_variance_risk_parity.daily_cum_log_return.plot(legend=True, label=str4)
+# equity_fund_portfolio_min_variance_risk_parity.daily_cum_log_return.plot(legend=True, label=str4)
 # plt.plot(equity_fund_portfolio_min_variance_risk_parity.daily_cum_log_return.index,
 # #          equity_fund_portfolio_min_variance_risk_parity.daily_cum_log_return, label=str4)
 equity_fund_portfolio_holdings.daily_cum_log_return.plot(legend=True, label=str5)

@@ -1,4 +1,3 @@
-import datetime as datetime
 import math
 
 import matplotlib
@@ -10,7 +9,7 @@ import ptfopt_tools as pt
 
 rqdatac.init("ricequant", "8ricequant8")
 
-fund_name = "233009"
+fund_name = "000172"
 first_period_s = '2014-01-01'
 first_period_e = '2014-06-30'
 second_period_s = '2014-07-01'
@@ -39,191 +38,192 @@ equity_list5 = list(portfolio5.order_book_id)
 portfolio6 = rqdatac.fund.get_holdings(fund_name, seventh_period_s).dropna()
 equity_list6 = list(portfolio6.order_book_id)
 
-# # Min variance optimizer
-# equity_fund_portfolio_min_variance = pt.TestPortfolio(equity_list1, 'stocks')
-# equity_fund_portfolio_min_variance.data_clean(equity_list1, first_period_s, first_period_e)
-# elimination_list = equity_fund_portfolio_min_variance.kickout_list+equity_fund_portfolio_min_variance.st_list + \
-#                    equity_fund_portfolio_min_variance.suspended_list
-# inherited_holdings_weights = list(portfolio1.loc[portfolio1['order_book_id'].isin(elimination_list)].weight)
-# inherited_holdings_weights = [x/100 for x in inherited_holdings_weights]
-# optimal_weights = list(equity_fund_portfolio_min_variance.min_variance_optimizer())
-# optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
-# weights = optimal_weights+inherited_holdings_weights
-# equity_fund_portfolio_min_variance.perf_update(weights, second_period_s, second_period_e)
-#
-# equity_fund_portfolio_min_variance.data_clean(equity_list2, second_period_s, second_period_e)
-# elimination_list = equity_fund_portfolio_min_variance.kickout_list+equity_fund_portfolio_min_variance.st_list + \
-#                    equity_fund_portfolio_min_variance.suspended_list
-# inherited_holdings_weights = list(portfolio2.loc[portfolio2['order_book_id'].isin(elimination_list)].weight)
-# inherited_holdings_weights = [x/100 for x in inherited_holdings_weights]
-# optimal_weights = list(equity_fund_portfolio_min_variance.min_variance_optimizer())
-# optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
-# weights = optimal_weights+inherited_holdings_weights
-# equity_fund_portfolio_min_variance.perf_update(weights, third_period_s, third_period_e)
-#
-# equity_fund_portfolio_min_variance.data_clean(equity_list3, third_period_s, third_period_e)
-# elimination_list = equity_fund_portfolio_min_variance.kickout_list+equity_fund_portfolio_min_variance.st_list + \
-#                    equity_fund_portfolio_min_variance.suspended_list
-# inherited_holdings_weights = list(portfolio3.loc[portfolio3['order_book_id'].isin(elimination_list)].weight)
-# inherited_holdings_weights = [x/100 for x in inherited_holdings_weights]
-# optimal_weights = list(equity_fund_portfolio_min_variance.min_variance_optimizer())
-# optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
-# weights = optimal_weights+inherited_holdings_weights
-# equity_fund_portfolio_min_variance.perf_update(weights, fourth_period_s, fourth_period_e)
-#
-# equity_fund_portfolio_min_variance.data_clean(equity_list4, fourth_period_s, fourth_period_e)
-# elimination_list = equity_fund_portfolio_min_variance.kickout_list+equity_fund_portfolio_min_variance.st_list + \
-#                    equity_fund_portfolio_min_variance.suspended_list
-# inherited_holdings_weights = list(portfolio4.loc[portfolio4['order_book_id'].isin(elimination_list)].weight)
-# inherited_holdings_weights = [x/100 for x in inherited_holdings_weights]
-# optimal_weights = list(equity_fund_portfolio_min_variance.min_variance_optimizer())
-# optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
-# weights = optimal_weights+inherited_holdings_weights
-# equity_fund_portfolio_min_variance.perf_update(weights, fifth_period_s, fifth_period_e)
-#
-# equity_fund_portfolio_min_variance.data_clean(equity_list5, fifth_period_s, fifth_period_e)
-# elimination_list = equity_fund_portfolio_min_variance.kickout_list+equity_fund_portfolio_min_variance.st_list + \
-#                    equity_fund_portfolio_min_variance.suspended_list
-# inherited_holdings_weights = list(portfolio5.loc[portfolio5['order_book_id'].isin(elimination_list)].weight)
-# inherited_holdings_weights = [x/100 for x in inherited_holdings_weights]
-# optimal_weights = list(equity_fund_portfolio_min_variance.min_variance_optimizer())
-# optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
-# weights = optimal_weights+inherited_holdings_weights
-# equity_fund_portfolio_min_variance.perf_update(weights, sixth_period_s, sixth_period_e)
-#
-# equity_fund_portfolio_min_variance.data_clean(equity_list6, sixth_period_s, sixth_period_e)
-# elimination_list = equity_fund_portfolio_min_variance.kickout_list+equity_fund_portfolio_min_variance.st_list + \
-#                    equity_fund_portfolio_min_variance.suspended_list
-# inherited_holdings_weights = list(portfolio6.loc[portfolio6['order_book_id'].isin(elimination_list)].weight)
-# inherited_holdings_weights = [x/100 for x in inherited_holdings_weights]
-# optimal_weights = list(equity_fund_portfolio_min_variance.min_variance_optimizer())
-# optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
-# weights = optimal_weights+inherited_holdings_weights
-# equity_fund_portfolio_min_variance.perf_update(weights, seventh_period_s, seventh_period_e)
-
-# # Log barrier risk parity optimizer
-# equity_fund_portfolio_log_barrier = pt.TestPortfolio(equity_list1, 'stocks')
-# equity_fund_portfolio_log_barrier.data_clean(equity_list1, first_period_s, first_period_e)
-# elimination_list = equity_fund_portfolio_log_barrier.kickout_list+equity_fund_portfolio_log_barrier.st_list + \
-#                    equity_fund_portfolio_log_barrier.suspended_list
-# inherited_holdings_weights = list(portfolio1.loc[portfolio1['order_book_id'].isin(elimination_list)].weight)
-# inherited_holdings_weights = [x/100 for x in inherited_holdings_weights]
-# optimal_weights = list(equity_fund_portfolio_log_barrier.log_barrier_risk_parity_optimizer())
-# optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
-# weights = optimal_weights+inherited_holdings_weights
-# equity_fund_portfolio_log_barrier.perf_update(weights, second_period_s, second_period_e)
-#
-# equity_fund_portfolio_log_barrier.data_clean(equity_list2, second_period_s, second_period_e)
-# elimination_list = equity_fund_portfolio_log_barrier.kickout_list+equity_fund_portfolio_log_barrier.st_list + \
-#                    equity_fund_portfolio_log_barrier.suspended_list
-# inherited_holdings_weights = list(portfolio2.loc[portfolio2['order_book_id'].isin(elimination_list)].weight)
-# inherited_holdings_weights = [x/100 for x in inherited_holdings_weights]
-# optimal_weights = list(equity_fund_portfolio_log_barrier.log_barrier_risk_parity_optimizer())
-# optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
-# weights = optimal_weights+inherited_holdings_weights
-# equity_fund_portfolio_log_barrier.perf_update(weights, third_period_s, third_period_e)
-#
-# equity_fund_portfolio_log_barrier.data_clean(equity_list3, third_period_s, third_period_e)
-# elimination_list = equity_fund_portfolio_log_barrier.kickout_list+equity_fund_portfolio_log_barrier.st_list + \
-#                    equity_fund_portfolio_log_barrier.suspended_list
-# inherited_holdings_weights = list(portfolio3.loc[portfolio3['order_book_id'].isin(elimination_list)].weight)
-# inherited_holdings_weights = [x/100 for x in inherited_holdings_weights]
-# optimal_weights = list(equity_fund_portfolio_log_barrier.log_barrier_risk_parity_optimizer())
-# optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
-# weights = optimal_weights+inherited_holdings_weights
-# equity_fund_portfolio_log_barrier.perf_update(weights, fourth_period_s, fourth_period_e)
-#
-# equity_fund_portfolio_log_barrier.data_clean(equity_list4, fourth_period_s, fourth_period_e)
-# elimination_list = equity_fund_portfolio_log_barrier.kickout_list+equity_fund_portfolio_log_barrier.st_list + \
-#                    equity_fund_portfolio_log_barrier.suspended_list
-# inherited_holdings_weights = list(portfolio4.loc[portfolio4['order_book_id'].isin(elimination_list)].weight)
-# inherited_holdings_weights = [x/100 for x in inherited_holdings_weights]
-# optimal_weights = list(equity_fund_portfolio_log_barrier.log_barrier_risk_parity_optimizer())
-# optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
-# weights = optimal_weights+inherited_holdings_weights
-# equity_fund_portfolio_log_barrier.perf_update(weights, fifth_period_s, fifth_period_e)
-#
-# equity_fund_portfolio_log_barrier.data_clean(equity_list5, fifth_period_s, fifth_period_e)
-# elimination_list = equity_fund_portfolio_log_barrier.kickout_list+equity_fund_portfolio_log_barrier.st_list + \
-#                    equity_fund_portfolio_log_barrier.suspended_list
-# inherited_holdings_weights = list(portfolio5.loc[portfolio5['order_book_id'].isin(elimination_list)].weight)
-# inherited_holdings_weights = [x/100 for x in inherited_holdings_weights]
-# optimal_weights = list(equity_fund_portfolio_log_barrier.log_barrier_risk_parity_optimizer())
-# optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
-# weights = optimal_weights+inherited_holdings_weights
-# equity_fund_portfolio_log_barrier.perf_update(weights, sixth_period_s, sixth_period_e)
-#
-# equity_fund_portfolio_log_barrier.data_clean(equity_list6, sixth_period_s, sixth_period_e)
-# elimination_list = equity_fund_portfolio_log_barrier.kickout_list+equity_fund_portfolio_log_barrier.st_list + \
-#                    equity_fund_portfolio_log_barrier.suspended_list
-# inherited_holdings_weights = list(portfolio6.loc[portfolio6['order_book_id'].isin(elimination_list)].weight)
-# inherited_holdings_weights = [x/100 for x in inherited_holdings_weights]
-# optimal_weights = list(equity_fund_portfolio_log_barrier.log_barrier_risk_parity_optimizer())
-# optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
-# weights = optimal_weights+inherited_holdings_weights
-# equity_fund_portfolio_log_barrier.perf_update(weights, seventh_period_s, seventh_period_e)
-
-# Min variance risk parity optimizer
-equity_fund_portfolio_min_variance_risk_parity = pt.TestPortfolio(equity_list1, 'stocks')
-equity_fund_portfolio_min_variance_risk_parity.data_clean(equity_list1, first_period_s, first_period_e)
-elimination_list = equity_fund_portfolio_min_variance_risk_parity.kickout_list+equity_fund_portfolio_min_variance_risk_parity.st_list + \
-                   equity_fund_portfolio_min_variance_risk_parity.suspended_list
+# Min variance optimizer
+equity_fund_portfolio_min_variance = pt.TestPortfolio(equity_list1, 'stocks')
+equity_fund_portfolio_min_variance.data_clean(equity_list1, first_period_s, first_period_e)
+elimination_list = equity_fund_portfolio_min_variance.kickout_list+equity_fund_portfolio_min_variance.st_list + \
+                   equity_fund_portfolio_min_variance.suspended_list
 inherited_holdings_weights = list(portfolio1.loc[portfolio1['order_book_id'].isin(elimination_list)].weight)
 inherited_holdings_weights = [x/100 for x in inherited_holdings_weights]
-optimal_weights = list(equity_fund_portfolio_min_variance_risk_parity.min_variance_risk_parity_optimizer())
+optimal_weights = list(equity_fund_portfolio_min_variance.min_variance_optimizer())
 optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
 weights = optimal_weights+inherited_holdings_weights
-equity_fund_portfolio_min_variance_risk_parity.perf_update(weights, second_period_s, second_period_e)
+equity_fund_portfolio_min_variance.perf_update(weights, second_period_s, second_period_e)
 
-equity_fund_portfolio_min_variance_risk_parity.data_clean(equity_list2, second_period_s, second_period_e)
-elimination_list = equity_fund_portfolio_min_variance_risk_parity.kickout_list+equity_fund_portfolio_min_variance_risk_parity.st_list + \
-                   equity_fund_portfolio_min_variance_risk_parity.suspended_list
+equity_fund_portfolio_min_variance.data_clean(equity_list2, second_period_s, second_period_e)
+elimination_list = equity_fund_portfolio_min_variance.kickout_list+equity_fund_portfolio_min_variance.st_list + \
+                   equity_fund_portfolio_min_variance.suspended_list
 inherited_holdings_weights = list(portfolio2.loc[portfolio2['order_book_id'].isin(elimination_list)].weight)
 inherited_holdings_weights = [x/100 for x in inherited_holdings_weights]
-optimal_weights = list(equity_fund_portfolio_min_variance_risk_parity.min_variance_risk_parity_optimizer())
+optimal_weights = list(equity_fund_portfolio_min_variance.min_variance_optimizer())
 optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
 weights = optimal_weights+inherited_holdings_weights
-equity_fund_portfolio_min_variance_risk_parity.perf_update(weights, third_period_s, third_period_e)
+equity_fund_portfolio_min_variance.perf_update(weights, third_period_s, third_period_e)
 
-equity_fund_portfolio_min_variance_risk_parity.data_clean(equity_list3, third_period_s, third_period_e)
-elimination_list = equity_fund_portfolio_min_variance_risk_parity.kickout_list+equity_fund_portfolio_min_variance_risk_parity.st_list + \
-                   equity_fund_portfolio_min_variance_risk_parity.suspended_list
+equity_fund_portfolio_min_variance.data_clean(equity_list3, third_period_s, third_period_e)
+elimination_list = equity_fund_portfolio_min_variance.kickout_list+equity_fund_portfolio_min_variance.st_list + \
+                   equity_fund_portfolio_min_variance.suspended_list
 inherited_holdings_weights = list(portfolio3.loc[portfolio3['order_book_id'].isin(elimination_list)].weight)
 inherited_holdings_weights = [x/100 for x in inherited_holdings_weights]
-optimal_weights = list(equity_fund_portfolio_min_variance_risk_parity.min_variance_risk_parity_optimizer())
+optimal_weights = list(equity_fund_portfolio_min_variance.min_variance_optimizer())
 optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
 weights = optimal_weights+inherited_holdings_weights
-equity_fund_portfolio_min_variance_risk_parity.perf_update(weights, fourth_period_s, fourth_period_e)
+equity_fund_portfolio_min_variance.perf_update(weights, fourth_period_s, fourth_period_e)
 
-equity_fund_portfolio_min_variance_risk_parity.data_clean(equity_list4, fourth_period_s, fourth_period_e)
-elimination_list = equity_fund_portfolio_min_variance_risk_parity.kickout_list+equity_fund_portfolio_min_variance_risk_parity.st_list + \
-                   equity_fund_portfolio_min_variance_risk_parity.suspended_list
+equity_fund_portfolio_min_variance.data_clean(equity_list4, fourth_period_s, fourth_period_e)
+elimination_list = equity_fund_portfolio_min_variance.kickout_list+equity_fund_portfolio_min_variance.st_list + \
+                   equity_fund_portfolio_min_variance.suspended_list
 inherited_holdings_weights = list(portfolio4.loc[portfolio4['order_book_id'].isin(elimination_list)].weight)
 inherited_holdings_weights = [x/100 for x in inherited_holdings_weights]
-optimal_weights = list(equity_fund_portfolio_min_variance_risk_parity.min_variance_risk_parity_optimizer())
+optimal_weights = list(equity_fund_portfolio_min_variance.min_variance_optimizer())
 optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
 weights = optimal_weights+inherited_holdings_weights
-equity_fund_portfolio_min_variance_risk_parity.perf_update(weights, fifth_period_s, fifth_period_e)
+equity_fund_portfolio_min_variance.perf_update(weights, fifth_period_s, fifth_period_e)
 
-equity_fund_portfolio_min_variance_risk_parity.data_clean(equity_list5, fifth_period_s, fifth_period_e)
-elimination_list = equity_fund_portfolio_min_variance_risk_parity.kickout_list+equity_fund_portfolio_min_variance_risk_parity.st_list + \
-                   equity_fund_portfolio_min_variance_risk_parity.suspended_list
+equity_fund_portfolio_min_variance.data_clean(equity_list5, fifth_period_s, fifth_period_e)
+elimination_list = equity_fund_portfolio_min_variance.kickout_list+equity_fund_portfolio_min_variance.st_list + \
+                   equity_fund_portfolio_min_variance.suspended_list
 inherited_holdings_weights = list(portfolio5.loc[portfolio5['order_book_id'].isin(elimination_list)].weight)
 inherited_holdings_weights = [x/100 for x in inherited_holdings_weights]
-optimal_weights = list(equity_fund_portfolio_min_variance_risk_parity.min_variance_risk_parity_optimizer())
+optimal_weights = list(equity_fund_portfolio_min_variance.min_variance_optimizer())
 optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
 weights = optimal_weights+inherited_holdings_weights
-equity_fund_portfolio_min_variance_risk_parity.perf_update(weights, sixth_period_s, sixth_period_e)
+equity_fund_portfolio_min_variance.perf_update(weights, sixth_period_s, sixth_period_e)
 
-equity_fund_portfolio_min_variance_risk_parity.data_clean(equity_list6, sixth_period_s, sixth_period_e)
-elimination_list = equity_fund_portfolio_min_variance_risk_parity.kickout_list+equity_fund_portfolio_min_variance_risk_parity.st_list + \
-                   equity_fund_portfolio_min_variance_risk_parity.suspended_list
+equity_fund_portfolio_min_variance.data_clean(equity_list6, sixth_period_s, sixth_period_e)
+elimination_list = equity_fund_portfolio_min_variance.kickout_list+equity_fund_portfolio_min_variance.st_list + \
+                   equity_fund_portfolio_min_variance.suspended_list
 inherited_holdings_weights = list(portfolio6.loc[portfolio6['order_book_id'].isin(elimination_list)].weight)
 inherited_holdings_weights = [x/100 for x in inherited_holdings_weights]
-optimal_weights = list(equity_fund_portfolio_min_variance_risk_parity.min_variance_risk_parity_optimizer())
+optimal_weights = list(equity_fund_portfolio_min_variance.min_variance_optimizer())
 optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
 weights = optimal_weights+inherited_holdings_weights
-equity_fund_portfolio_min_variance_risk_parity.perf_update(weights, seventh_period_s, seventh_period_e)
+equity_fund_portfolio_min_variance.perf_update(weights, seventh_period_s, seventh_period_e)
+
+# Log barrier risk parity optimizer
+equity_fund_portfolio_log_barrier = pt.TestPortfolio(equity_list1, 'stocks')
+equity_fund_portfolio_log_barrier.data_clean(equity_list1, first_period_s, first_period_e)
+elimination_list = equity_fund_portfolio_log_barrier.kickout_list+equity_fund_portfolio_log_barrier.st_list + \
+                   equity_fund_portfolio_log_barrier.suspended_list
+inherited_holdings_weights = list(portfolio1.loc[portfolio1['order_book_id'].isin(elimination_list)].weight)
+inherited_holdings_weights = [x/100 for x in inherited_holdings_weights]
+optimal_weights = list(equity_fund_portfolio_log_barrier.log_barrier_risk_parity_optimizer())
+optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
+weights = optimal_weights+inherited_holdings_weights
+equity_fund_portfolio_log_barrier.perf_update(weights, second_period_s, second_period_e)
+
+equity_fund_portfolio_log_barrier.data_clean(equity_list2, second_period_s, second_period_e)
+elimination_list = equity_fund_portfolio_log_barrier.kickout_list+equity_fund_portfolio_log_barrier.st_list + \
+                   equity_fund_portfolio_log_barrier.suspended_list
+inherited_holdings_weights = list(portfolio2.loc[portfolio2['order_book_id'].isin(elimination_list)].weight)
+inherited_holdings_weights = [x/100 for x in inherited_holdings_weights]
+optimal_weights = list(equity_fund_portfolio_log_barrier.log_barrier_risk_parity_optimizer())
+optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
+weights = optimal_weights+inherited_holdings_weights
+equity_fund_portfolio_log_barrier.perf_update(weights, third_period_s, third_period_e)
+
+equity_fund_portfolio_log_barrier.data_clean(equity_list3, third_period_s, third_period_e)
+elimination_list = equity_fund_portfolio_log_barrier.kickout_list+equity_fund_portfolio_log_barrier.st_list + \
+                   equity_fund_portfolio_log_barrier.suspended_list
+inherited_holdings_weights = list(portfolio3.loc[portfolio3['order_book_id'].isin(elimination_list)].weight)
+inherited_holdings_weights = [x/100 for x in inherited_holdings_weights]
+optimal_weights = list(equity_fund_portfolio_log_barrier.log_barrier_risk_parity_optimizer())
+optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
+weights = optimal_weights+inherited_holdings_weights
+equity_fund_portfolio_log_barrier.perf_update(weights, fourth_period_s, fourth_period_e)
+
+equity_fund_portfolio_log_barrier.data_clean(equity_list4, fourth_period_s, fourth_period_e)
+elimination_list = equity_fund_portfolio_log_barrier.kickout_list+equity_fund_portfolio_log_barrier.st_list + \
+                   equity_fund_portfolio_log_barrier.suspended_list
+inherited_holdings_weights = list(portfolio4.loc[portfolio4['order_book_id'].isin(elimination_list)].weight)
+inherited_holdings_weights = [x/100 for x in inherited_holdings_weights]
+optimal_weights = list(equity_fund_portfolio_log_barrier.log_barrier_risk_parity_optimizer())
+optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
+weights = optimal_weights+inherited_holdings_weights
+equity_fund_portfolio_log_barrier.perf_update(weights, fifth_period_s, fifth_period_e)
+
+equity_fund_portfolio_log_barrier.data_clean(equity_list5, fifth_period_s, fifth_period_e)
+elimination_list = equity_fund_portfolio_log_barrier.kickout_list+equity_fund_portfolio_log_barrier.st_list + \
+                   equity_fund_portfolio_log_barrier.suspended_list
+inherited_holdings_weights = list(portfolio5.loc[portfolio5['order_book_id'].isin(elimination_list)].weight)
+inherited_holdings_weights = [x/100 for x in inherited_holdings_weights]
+optimal_weights = list(equity_fund_portfolio_log_barrier.log_barrier_risk_parity_optimizer())
+optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
+weights = optimal_weights+inherited_holdings_weights
+equity_fund_portfolio_log_barrier.perf_update(weights, sixth_period_s, sixth_period_e)
+
+equity_fund_portfolio_log_barrier.data_clean(equity_list6, sixth_period_s, sixth_period_e)
+elimination_list = equity_fund_portfolio_log_barrier.kickout_list+equity_fund_portfolio_log_barrier.st_list + \
+                   equity_fund_portfolio_log_barrier.suspended_list
+inherited_holdings_weights = list(portfolio6.loc[portfolio6['order_book_id'].isin(elimination_list)].weight)
+inherited_holdings_weights = [x/100 for x in inherited_holdings_weights]
+optimal_weights = list(equity_fund_portfolio_log_barrier.log_barrier_risk_parity_optimizer())
+optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
+weights = optimal_weights+inherited_holdings_weights
+equity_fund_portfolio_log_barrier.perf_update(weights, seventh_period_s, seventh_period_e)
+
+
+# # Min variance risk parity optimizer
+# equity_fund_portfolio_min_variance_risk_parity = pt.TestPortfolio(equity_list1, 'stocks')
+# equity_fund_portfolio_min_variance_risk_parity.data_clean(equity_list1, first_period_s, first_period_e)
+# elimination_list = equity_fund_portfolio_min_variance_risk_parity.kickout_list+equity_fund_portfolio_min_variance_risk_parity.st_list + \
+#                    equity_fund_portfolio_min_variance_risk_parity.suspended_list
+# inherited_holdings_weights = list(portfolio1.loc[portfolio1['order_book_id'].isin(elimination_list)].weight)
+# inherited_holdings_weights = [x/100 for x in inherited_holdings_weights]
+# optimal_weights = list(equity_fund_portfolio_min_variance_risk_parity.min_variance_risk_parity_optimizer())
+# optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
+# weights = optimal_weights+inherited_holdings_weights
+# equity_fund_portfolio_min_variance_risk_parity.perf_update(weights, second_period_s, second_period_e)
+#
+# equity_fund_portfolio_min_variance_risk_parity.data_clean(equity_list2, second_period_s, second_period_e)
+# elimination_list = equity_fund_portfolio_min_variance_risk_parity.kickout_list+equity_fund_portfolio_min_variance_risk_parity.st_list + \
+#                    equity_fund_portfolio_min_variance_risk_parity.suspended_list
+# inherited_holdings_weights = list(portfolio2.loc[portfolio2['order_book_id'].isin(elimination_list)].weight)
+# inherited_holdings_weights = [x/100 for x in inherited_holdings_weights]
+# optimal_weights = list(equity_fund_portfolio_min_variance_risk_parity.min_variance_risk_parity_optimizer())
+# optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
+# weights = optimal_weights+inherited_holdings_weights
+# equity_fund_portfolio_min_variance_risk_parity.perf_update(weights, third_period_s, third_period_e)
+#
+# equity_fund_portfolio_min_variance_risk_parity.data_clean(equity_list3, third_period_s, third_period_e)
+# elimination_list = equity_fund_portfolio_min_variance_risk_parity.kickout_list+equity_fund_portfolio_min_variance_risk_parity.st_list + \
+#                    equity_fund_portfolio_min_variance_risk_parity.suspended_list
+# inherited_holdings_weights = list(portfolio3.loc[portfolio3['order_book_id'].isin(elimination_list)].weight)
+# inherited_holdings_weights = [x/100 for x in inherited_holdings_weights]
+# optimal_weights = list(equity_fund_portfolio_min_variance_risk_parity.min_variance_risk_parity_optimizer())
+# optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
+# weights = optimal_weights+inherited_holdings_weights
+# equity_fund_portfolio_min_variance_risk_parity.perf_update(weights, fourth_period_s, fourth_period_e)
+#
+# equity_fund_portfolio_min_variance_risk_parity.data_clean(equity_list4, fourth_period_s, fourth_period_e)
+# elimination_list = equity_fund_portfolio_min_variance_risk_parity.kickout_list+equity_fund_portfolio_min_variance_risk_parity.st_list + \
+#                    equity_fund_portfolio_min_variance_risk_parity.suspended_list
+# inherited_holdings_weights = list(portfolio4.loc[portfolio4['order_book_id'].isin(elimination_list)].weight)
+# inherited_holdings_weights = [x/100 for x in inherited_holdings_weights]
+# optimal_weights = list(equity_fund_portfolio_min_variance_risk_parity.min_variance_risk_parity_optimizer())
+# optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
+# weights = optimal_weights+inherited_holdings_weights
+# equity_fund_portfolio_min_variance_risk_parity.perf_update(weights, fifth_period_s, fifth_period_e)
+#
+# equity_fund_portfolio_min_variance_risk_parity.data_clean(equity_list5, fifth_period_s, fifth_period_e)
+# elimination_list = equity_fund_portfolio_min_variance_risk_parity.kickout_list+equity_fund_portfolio_min_variance_risk_parity.st_list + \
+#                    equity_fund_portfolio_min_variance_risk_parity.suspended_list
+# inherited_holdings_weights = list(portfolio5.loc[portfolio5['order_book_id'].isin(elimination_list)].weight)
+# inherited_holdings_weights = [x/100 for x in inherited_holdings_weights]
+# optimal_weights = list(equity_fund_portfolio_min_variance_risk_parity.min_variance_risk_parity_optimizer())
+# optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
+# weights = optimal_weights+inherited_holdings_weights
+# equity_fund_portfolio_min_variance_risk_parity.perf_update(weights, sixth_period_s, sixth_period_e)
+#
+# equity_fund_portfolio_min_variance_risk_parity.data_clean(equity_list6, sixth_period_s, sixth_period_e)
+# elimination_list = equity_fund_portfolio_min_variance_risk_parity.kickout_list+equity_fund_portfolio_min_variance_risk_parity.st_list + \
+#                    equity_fund_portfolio_min_variance_risk_parity.suspended_list
+# inherited_holdings_weights = list(portfolio6.loc[portfolio6['order_book_id'].isin(elimination_list)].weight)
+# inherited_holdings_weights = [x/100 for x in inherited_holdings_weights]
+# optimal_weights = list(equity_fund_portfolio_min_variance_risk_parity.min_variance_risk_parity_optimizer())
+# optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
+# weights = optimal_weights+inherited_holdings_weights
+# equity_fund_portfolio_min_variance_risk_parity.perf_update(weights, seventh_period_s, seventh_period_e)
 
 # 　Fund net value path
 period_navs = rqdatac.fund.get_nav(fund_name, start_date=second_period_s, end_date=seventh_period_e,
@@ -281,10 +281,8 @@ str5 = """Fund holding cumulative return path: r = %f, $\sigma$ = %f. """ % \
 
 daily_cum_log_return.plot(legend=True, label=str1)
 equity_fund_portfolio_min_variance.daily_cum_log_return.plot(legend=True, label=str2)
-# plt.plot(equity_fund_portfolio_log_barrier.daily_cum_log_return.index,
-#          equity_fund_portfolio_log_barrier.daily_cum_log_return, label=str3)
-# plt.plot(equity_fund_portfolio_min_variance_risk_parity.daily_cum_log_return.index,
-# #          equity_fund_portfolio_min_variance_risk_parity.daily_cum_log_return, label=str4)
+# equity_fund_portfolio_log_barrier.daily_cum_log_return.plot(legend=True, label=str3)
+# equity_fund_portfolio_min_variance_risk_parity.daily_cum_log_return.plot(legend=True, label=str4)
 equity_fund_portfolio_holdings.daily_cum_log_return.plot(legend=True, label=str5)
 plt.ylabel('Cumulative Return', fontsize=18)
 plt.xlabel('Time', fontsize=18)
