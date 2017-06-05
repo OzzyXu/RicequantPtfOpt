@@ -80,7 +80,7 @@ class TestPortfolio:
         equity_list_s = set(equity_list)
         final_kickout_list_s = set(final_kickout_list)
         clean_equity_list = list(equity_list_s - final_kickout_list_s)
-        clean_period_prices = period_prices.loc[:, clean_equity_list]
+        clean_period_prices = period_prices.loc[start_date_T:end_date_T, clean_equity_list]
         self.clean_period_prices = clean_period_prices
         self.clean_equity_list = list(clean_period_prices.columns.values)
         self.kickout_list = kickout_list
