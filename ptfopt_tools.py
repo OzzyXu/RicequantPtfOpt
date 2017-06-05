@@ -39,8 +39,7 @@ class TestPortfolio:
         if self.et is 'funds':
             period_data = rqdatac.fund.get_nav(equity_list, start_date, end_date, fields='acc_net_value')
         elif self.et is 'stocks':
-            period_data = rqdatac.get_price(equity_list, start_date, end_date, frequency='1d',
-                                            fields=['close', 'volume'])
+            period_data = rqdatac.get_price(equity_list, start_date, end_date, frequency='1d', fields=['close', 'volume'])
         period_prices = period_data['close']
         period_volume = period_data['volume']
         self.period_prices = period_prices
@@ -70,12 +69,15 @@ class TestPortfolio:
         # Check whether any ST stocks are included and generate a list for ST stocks
         st_list = list(period_prices.columns.values[rqdatac.is_st_stock(equity_list, start_date_T, end_date_T).sum(axis=0)>0])
         # Generate final kickout list which includes all the above
-        kickout_list_s = set(kickout_list)
-        st_list_s = set(st_list)
-        suspended_list_s = set(suspended_list)
-        two_list_union = st_list_s.union(suspended_list_s)
-        final_dif = two_list_union - kickout_list_s
-        final_kickout_list = kickout_list + list(final_dif)
+
+        # kickout_list_s = set(kickout_list)
+        # st_list_s = set(st_list)
+        # suspended_list_s = set(suspended_list)
+        # two_list_union = st_list_s.union(suspended_list_s)
+        # final_dif = two_list_union - kickout_list_s
+        # final_kickout_list = kickout_list + list(final_dif)
+        final_kickout_list = list(set().union(kickout_list, st_list, suspended_list))
+
         # Generate clean data
         equity_list_s = set(equity_list)
         final_kickout_list_s = set(final_kickout_list)
