@@ -5,7 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="79fae9e2-968f-46f6-80fb-809190191850" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/xuchuan/ptfopt.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -32,8 +31,8 @@
           <file leaf-file-name="scratch.py" pinned="false" current-in-tab="false">
             <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="342">
-                  <caret line="18" column="10" lean-forward="true" selection-start-line="18" selection-start-column="10" selection-end-line="18" selection-end-column="10" />
+                <state relative-caret-position="323">
+                  <caret line="18" column="10" lean-forward="false" selection-start-line="18" selection-start-column="10" selection-end-line="18" selection-end-column="10" />
                   <folding>
                     <element signature="e#0#18#0" expanded="true" />
                   </folding>
@@ -68,7 +67,7 @@
           <file leaf-file-name="ToShow4.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/xuchuan/ToShow4.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1007">
+                <state relative-caret-position="874">
                   <caret line="53" column="2" lean-forward="false" selection-start-line="53" selection-start-column="2" selection-end-line="53" selection-end-column="2" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
@@ -80,7 +79,7 @@
           <file leaf-file-name="ToShow5.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/xuchuan/ToShow5.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="3781">
+                <state relative-caret-position="3648">
                   <caret line="199" column="75" lean-forward="false" selection-start-line="199" selection-start-column="75" selection-end-line="199" selection-end-column="75" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
@@ -105,8 +104,8 @@
           <file leaf-file-name="ptfopt.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/xuchuan/ptfopt.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="133">
-                  <caret line="64" column="0" lean-forward="false" selection-start-line="64" selection-start-column="0" selection-end-line="78" selection-end-column="15" />
+                <state relative-caret-position="1501">
+                  <caret line="79" column="0" lean-forward="true" selection-start-line="79" selection-start-column="0" selection-end-line="79" selection-end-column="0" />
                   <folding>
                     <element signature="e#45#63#0" expanded="true" />
                   </folding>
@@ -133,8 +132,8 @@
           <file leaf-file-name="ptfopt_tools.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/ptfopt_tools.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="456">
-                  <caret line="132" column="60" lean-forward="true" selection-start-line="132" selection-start-column="52" selection-end-line="132" selection-end-column="60" />
+                <state relative-caret-position="475">
+                  <caret line="133" column="2" lean-forward="false" selection-start-line="133" selection-start-column="2" selection-end-line="133" selection-end-column="2" />
                   <folding>
                     <element signature="e#45#63#0" expanded="true" />
                   </folding>
@@ -157,7 +156,7 @@
           <file leaf-file-name="scratch_2.py" pinned="false" current-in-tab="false">
             <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch_2.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="874">
+                <state relative-caret-position="836">
                   <caret line="46" column="36" lean-forward="false" selection-start-line="46" selection-start-column="36" selection-end-line="46" selection-end-column="36" />
                   <folding>
                     <element signature="e#0#18#0" expanded="true" />
@@ -169,7 +168,7 @@
           <file leaf-file-name="scratch_3.py" pinned="false" current-in-tab="false">
             <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch_3.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1596">
+                <state relative-caret-position="2242">
                   <caret line="120" column="57" lean-forward="false" selection-start-line="120" selection-start-column="57" selection-end-line="120" selection-end-column="57" />
                   <folding>
                     <element signature="e#0#18#0" expanded="true" />
@@ -553,6 +552,12 @@
       <method />
     </configuration>
     <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
+      <node-interpreter>project</node-interpreter>
+      <node-options />
+      <gulpfile />
+      <tasks />
+      <arguments />
+      <envs />
       <method />
     </configuration>
     <configuration default="true" type="js.build_tools.npm" factoryName="npm">
@@ -794,7 +799,14 @@
       <option name="project" value="LOCAL" />
       <updated>1496745495260</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="Create a branch">
+      <created>1496842555757</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1496842555757</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TodoView">
@@ -808,7 +820,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="1912" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1977612" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.48773986" order="5" side_tool="false" content_ui="tabs" />
@@ -816,7 +827,7 @@
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32900432" sideWeight="0.48773986" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.29761904" sideWeight="0.47014925" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.31277058" sideWeight="0.5021322" order="10" side_tool="true" content_ui="tabs" x="2513" y="391" width="2342" height="290" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.31277058" sideWeight="0.5021322" order="10" side_tool="true" content_ui="tabs" x="2513" y="391" width="2342" height="290" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24978651" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32792208" sideWeight="0.4824094" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -1201,7 +1212,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/xuchuan/ToShow4.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1007">
+        <state relative-caret-position="874">
           <caret line="53" column="2" lean-forward="false" selection-start-line="53" selection-start-column="2" selection-end-line="53" selection-end-column="2" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
@@ -1221,7 +1232,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/xuchuan/ToShow5.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3781">
+        <state relative-caret-position="3648">
           <caret line="199" column="75" lean-forward="false" selection-start-line="199" selection-start-column="75" selection-end-line="199" selection-end-column="75" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
@@ -1232,7 +1243,7 @@
     </entry>
     <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch_2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="874">
+        <state relative-caret-position="836">
           <caret line="46" column="36" lean-forward="false" selection-start-line="46" selection-start-column="36" selection-end-line="46" selection-end-column="36" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
@@ -1242,8 +1253,18 @@
     </entry>
     <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch_3.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1596">
+        <state relative-caret-position="2242">
           <caret line="120" column="57" lean-forward="false" selection-start-line="120" selection-start-column="57" selection-end-line="120" selection-end-column="57" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="18" column="10" lean-forward="false" selection-start-line="18" selection-start-column="10" selection-end-line="18" selection-end-column="10" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
@@ -1252,28 +1273,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ptfopt_tools.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="456">
-          <caret line="132" column="60" lean-forward="true" selection-start-line="132" selection-start-column="52" selection-end-line="132" selection-end-column="60" />
+        <state relative-caret-position="475">
+          <caret line="133" column="2" lean-forward="false" selection-start-line="133" selection-start-column="2" selection-end-line="133" selection-end-column="2" />
           <folding>
             <element signature="e#45#63#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="342">
-          <caret line="18" column="10" lean-forward="true" selection-start-line="18" selection-start-column="10" selection-end-line="18" selection-end-column="10" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/xuchuan/ptfopt.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="133">
-          <caret line="64" column="0" lean-forward="false" selection-start-line="64" selection-start-column="0" selection-end-line="78" selection-end-column="15" />
+        <state relative-caret-position="1501">
+          <caret line="79" column="0" lean-forward="true" selection-start-line="79" selection-start-column="0" selection-end-line="79" selection-end-column="0" />
           <folding>
             <element signature="e#45#63#0" expanded="true" />
           </folding>
