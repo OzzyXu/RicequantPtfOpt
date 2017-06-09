@@ -9,20 +9,22 @@ import pandas as pd
 
 
 class OptimizationError(Exception):
+
     def __init__(self, warning_message):
         print(warning_message)
 
 
+# Clean data for covariance matrix calculation
 def data_process(order_book_ids, equity_type, start_date):
 
     windows = 132
     end_date = rqdatac.get_previous_trading_date(start_date)
-    for i in range(windows+1):
+    for i in range(windows + 1):
         start_date = rqdatac.get_previous_trading_date(start_date)
 
-    if equity_type is 'funds':
+    if equity_type is 'fund':
         period_data = rqdatac.fund.get_nav(order_book_ids, start_date, end_date, fields='acc_net_value')
-    elif equity_type is 'stocks':
+    elif equity_type is 'stock':
         period_data = rqdatac.get_price(order_book_ids, start_date, end_date, frequency='1d',
                                         fields=['close', 'volume'])
     period_prices = period_data['close']
@@ -62,24 +64,122 @@ def data_process(order_book_ids, equity_type, start_date):
     return clean_period_prices, final_kickout_list
 
 
-def cons_func(current_weight, lower_bound=None, upper_bound=None):
-    if lower_bound is None:
-        lower_bound = np.zeros(len(current_weight))
-    if upper_bound is None:
-        upper_bound = np.ones(len(current_weight))
-    if len(lower_bound) != len(upper_bound):
-        raise OptimizationError('Upper bound and lower bound have different size!')
+# Generate upper and lower bounds for equities in portfolio
+def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
+
+    if bounds is not None:
+        for key in bounds:
+            if key is not "full_list" and key not in order_book_ids:
+                raise OptimizationError('Bounds contain equities not existing in pool! ')
+            elif bounds[key][0] > bounds[key][1]:
+                raise OptimizationError("Lower bound is larger than upper bound for some equities!")
+
+        general_bnds = list()
+        log_rp_bnds = list()
+        if method is "risk_parity":
+            for i in clean_order_book_ids:
+                if "full_list" in list(bounds):
+                    log_rp_bnds = log_rp_bnds + [(max(10**-6, bounds["full_list"][0]), min(1, bounds["full_list"][1]))]
+                elif i in list(bounds):
+                    log_rp_bnds = log_rp_bnds + [(max(10**-6, bounds[i][0]), min(1, bounds[i][1]))]
+                else:
+                    log_rp_bnds = log_rp_bnds + [(10**-6, 1)]
+        elif method is "all":
+            for i in clean_order_book_ids:
+                if "full_list" in list(bounds):
+                    log_rp_bnds = log_rp_bnds + [(max(10**-6, bounds["full_list"][0]), min(1, bounds["full_list"][1]))]
+                    general_bnds = general_bnds + [(max(0, bounds["full_list"][0]), min(1, bounds["full_list"][1]))]
+                elif i in list(bounds):
+                    log_rp_bnds = log_rp_bnds + [(max(10**-6, bounds[i][0]), min(1, bounds[i][1]))]
+                    general_bnds = general_bnds + [(max(0, bounds[i][0]), min(1, bounds[i][1]))]
+                else:
+                    log_rp_bnds = log_rp_bnds + [(10**-6, 1)]
+                    general_bnds = general_bnds + [(0, 1)]
+        else:
+            for i in clean_order_book_ids:
+                if "full_list" in list(bounds):
+                    general_bnds = general_bnds + [(max(0, bounds["full_list"][0]), min(1, bounds["full_list"][1]))]
+                elif i in list(bounds):
+                    general_bnds = general_bnds + [(max(0, bounds[i][0]), min(1, bounds[i][1]))]
+                else:
+                    general_bnds = general_bnds + [(0, 1)]
+
+        if method is "all":
+            return tuple(log_rp_bnds), tuple(general_bnds)
+        elif method is "risk_parity":
+            return tuple(log_rp_bnds)
+        else:
+            return tuple(general_bnds)
     else:
-        for i in range(len(current_weight)):
-            if lower_bound[i] > upper_bound[i]:
-                raise OptimizationError('lower bound is larger than upper bound for element %i' % i)
-            else:
-                bnds = bnds + [(max(0, lower_bound[i]), min(1, upper_bound[i]))]
-        bnds = tuple(bnds)
-    return bnds
+        log_rp_bnds = [(10**-6, 1)] * len(clean_order_book_ids)
+        general_bnds = [(0, 1)] * len(clean_order_book_ids)
+        if method is "all":
+            return tuple(log_rp_bnds), tuple(general_bnds)
+        elif method is "risk_parity":
+            return tuple(log_rp_bnds)
+        else:
+            return tuple(general_bnds)
 
 
-def optimizer(order_book_ids, start_date, equity_type, method, current_weight=None, cons=None):
+# Generate category constraints for portfolio
+def constraints_gen(clean_order_book_ids, equity_type, method, constraints=None):
+
+    if constraints is not None:
+        df = pd.DataFrame(index=clean_order_book_ids, columns=['type'])
+
+        for key in constraints:
+            if constraints[key][0] > constraints[key][1]:
+                raise OptimizationError("Constraints setup error!")
+
+        if equity_type is 'fund':
+            for i in clean_order_book_ids:
+                df.loc[i, 'type'] = rqdatac.fund.instruments(i).fund_type
+        elif equity_type is 'stock':
+            for i in clean_order_book_ids:
+                df.loc[i, "type"] = rqdatac.instruments(i).shenwan_industry_name
+
+        cons = tuple()
+        for key in constraints:
+            key_list = list(df[df['type'] == key].index)
+            key_pos_list = list()
+            for i in key_list:
+                key_pos_list.append(df.index.get_loc(i))
+            key_cons_fun_lb = lambda x: sum(x[t] for t in key_pos_list) - constraints[key][0]
+            key_cons_fun_ub = lambda x: constraints[key][1] - sum(x[t] for t in key_pos_list)
+            cons = cons + ({"type": "ineq", "fun": key_cons_fun_lb}, {"type": "ineq", "fun": key_cons_fun_ub})
+
+        if method is "all":
+            log_rp_cons = cons
+            general_cons = cons + tuple(({'type': 'eq', 'fun': lambda x: sum(x) - 1}))
+            return log_rp_cons, general_cons
+        elif method is "risk_parity":
+            return cons
+        else:
+            return cons + tuple(({'type': 'eq', 'fun': lambda x: sum(x) - 1}))
+    else:
+        if method is "all":
+            log_rp_cons = None
+            general_cons = tuple(({'type': 'eq', 'fun': lambda x: sum(x) - 1}))
+            return log_rp_cons, general_cons
+        elif method is "risk_parity":
+            return None
+        else:
+            return tuple(({'type': 'eq', 'fun': lambda x: sum(x) - 1}))
+
+
+# order_book_ids: a list of equities(stocks or funds)
+# start_date: Date to set up portfolio or rebalance portfolio
+# equity_type: types of portfolio candidates,  "stock" or "fund", portfolio with mixed equities is not supportted;
+# method: portfolio optimization model: "risk_parity", "min_variance", "all";
+# current_weight: Candidates' weights of current portfolio. Will be set as the initial guess to start optimization.
+#                 None type input means equal weights portfolio.
+# bnds: Lower bounds and upper bounds for each equity in portfolio. Support input format: {equity_code1: (lb1, up1),
+# equity_code2: (lb2, up2), ...} or {'full_list': (lb, up)}(set up universal bounds for all);
+# cons: Lower bounds and upper bounds for each category of equities in portfolio.
+# Funds type: Bond, Stock, Hybrid, Money, ShortBond, StockIndex, BondIndex, Related, QDII, Other;
+# Stocks type: Shenwan_industry_name
+# Support input format: {types1: (lb1, up1), types2: (lb2,up2), ...}
+def optimizer(order_book_ids, start_date, equity_type, method, current_weight=None, bnds=None, cons=None):
 
     if current_weight is None:
         current_weight = [1 / order_book_ids.shape[1]] * order_book_ids.shape[1]
@@ -89,13 +189,19 @@ def optimizer(order_book_ids, start_date, equity_type, method, current_weight=No
     period_daily_return_pct_change = clean_period_prices.pct_change()
     c_m = period_daily_return_pct_change.cov()
 
+    if method is "all":
+        log_rp_bnds, general_bnds = bounds_gen(order_book_ids, clean_period_prices.columns.value, method, bnds)
+        log_rp_cons, general_cons = constraints_gen(clean_period_prices.columns.value, equity_type, method, cons)
+    elif method is "risk_parity":
+        log_rp_bnds = bounds_gen(order_book_ids, clean_period_prices.columns.value, method, bnds)
+        log_rp_cons = constraints_gen(clean_period_prices.columns.value, equity_type, method, cons)
+    else:
+        general_bnds = bounds_gen(order_book_ids, clean_period_prices.columns.value, method, bnds)
+        general_cons = constraints_gen(clean_period_prices.columns.value, equity_type, method, cons)
+
     # Log barrier risk parity model
     c = 15
     log_barrier_risk_parity_obj_fun = lambda x: np.dot(np.dot(x, c_m), x) - c * sum(np.log(x))
-    log_barrier_bnds = []
-    for i in range(len(current_weight)):
-        log_barrier_bnds = log_barrier_bnds + [(0.00001, 1)]
-    log_barrier_bnds = tuple(log_barrier_bnds)
 
     def log_barrier_risk_parity_gradient(x):
         return np.multiply(2, np.dot(c_m, x)) - np.multiply(c, np.reciprocal(x))
@@ -103,10 +209,12 @@ def optimizer(order_book_ids, start_date, equity_type, method, current_weight=No
     def log_barrier_risk_parity_optimizer():
         if cons is None:
             optimization_res = sc_opt.minimize(log_barrier_risk_parity_obj_fun, current_weight, method='L-BFGS-B',
-                                               jac=log_barrier_risk_parity_gradient, bounds=log_barrier_bnds)
+                                               jac=log_barrier_risk_parity_gradient, bounds=log_rp_bnds)
         else:
             optimization_res = sc_opt.minimize(log_barrier_risk_parity_obj_fun, current_weight, method='SLSQP',
-                                               jac=log_barrier_risk_parity_gradient, constraints=cons)
+                                               jac=log_barrier_risk_parity_gradient, bounds=log_rp_bnds,
+                                               constraints=log_rp_cons)
+
         if not optimization_res.success:
             temp = ' @ %s' % clean_period_prices.index[0]
             error_message = 'Risk parity optimization failed, ' + str(optimization_res.message) + temp
@@ -117,12 +225,6 @@ def optimizer(order_book_ids, start_date, equity_type, method, current_weight=No
 
     # Min variance model
     min_variance_obj_fun = lambda x: np.dot(np.dot(x, c_m), x)
-    min_variance_cons_fun = lambda x: sum(x) - 1
-    min_variance_default_cons = ({'type': 'eq', 'fun': min_variance_cons_fun})
-    min_variance_bnds = []
-    for i in range(len(current_weight)):
-        min_variance_bnds = min_variance_bnds + [(0, 1)]
-    min_variance_bnds = tuple(min_variance_bnds)
 
     def min_variance_gradient(x):
         return np.multiply(2, np.dot(c_m, x))
@@ -130,11 +232,12 @@ def optimizer(order_book_ids, start_date, equity_type, method, current_weight=No
     def min_variance_optimizer():
         if cons is None:
             optimization_res = sc_opt.minimize(min_variance_obj_fun, current_weight, method='SLSQP',
-                                               jac=min_variance_gradient, bounds=min_variance_bnds,
-                                               constraints=min_variance_default_cons)
+                                               jac=min_variance_gradient, bounds=general_bnds,
+                                               constraints=general_cons)
         else:
             optimization_res = sc_opt.minimize(min_variance_obj_fun, current_weight, method='SLSQP',
-                                               jac=min_variance_gradient, constraints=cons)
+                                               jac=min_variance_gradient, bounds=general_bnds, constraints=general_cons)
+
         if not optimization_res.success:
             temp = ' @ %s' % clean_period_prices.index[0]
             error_message = 'Min variance optimization failed, ' + str(optimization_res.message) + temp
