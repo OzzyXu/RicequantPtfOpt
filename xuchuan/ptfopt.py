@@ -7,6 +7,7 @@ import scipy.optimize as sc_opt
 from math import *
 import pandas as pd
 
+rqdatac.init('ricequant', '8ricequant8')
 
 class OptimizationError(Exception):
 
@@ -19,41 +20,55 @@ def data_process(order_book_ids, equity_type, start_date):
 
     windows = 132
     end_date = rqdatac.get_previous_trading_date(start_date)
+    end_date = pd.to_datetime(end_date)
     for i in range(windows + 1):
         start_date = rqdatac.get_previous_trading_date(start_date)
+    start_date = pd.to_datetime(start_date)
+    reset_start_date = start_date
 
     if equity_type is 'fund':
-        period_data = rqdatac.fund.get_nav(order_book_ids, start_date, end_date, fields='acc_net_value')
+        period_prices = rqdatac.fund.get_nav(order_book_ids, reset_start_date, end_date, fields='acc_net_value')
     elif equity_type is 'stock':
-        period_data = rqdatac.get_price(order_book_ids, start_date, end_date, frequency='1d',
+        period_data = rqdatac.get_price(order_book_ids, reset_start_date, end_date, frequency='1d',
                                         fields=['close', 'volume'])
-    period_prices = period_data['close']
-    period_volume = period_data['volume']
+        period_prices = period_data['close']
+        period_volume = period_data['volume']
     # Set up the threshhold of elimination
     out_threshold = ceil(period_prices.shape[0] / 2)
     kickout_list = list()
     suspended_list = list()
+    st_list = list()
     # Locate the first valid value of each column, if available sequence length is less than threshhold, add
     # the column name into out_list; if sequence length is longer than threshold but less than chosen period length,
     # reset the start_date to the later date. The latest start_date whose sequence length is greater than threshold
     # will be chose.
     # Check whether any stocks has long suspended trading periods or has been delisted and generate list
     # for such stocks
-    for i in order_book_ids:
-        if not period_volume.loc[:, i].value_counts().empty:
-            if ((end_date - period_prices.loc[:, i].first_valid_index()) / np.timedelta64(1, 'D')) \
-                    < out_threshold:
+    if equity_type is "stock":
+        for i in order_book_ids:
+            if not period_volume.loc[:, i].value_counts().empty:
+                if ((end_date - period_prices.loc[:, i].first_valid_index()) / np.timedelta64(1, 'D')) \
+                        < out_threshold:
+                    kickout_list.append(i)
+                elif period_prices.loc[:, i].first_valid_index() < reset_start_date:
+                    reset_start_date = period_prices.loc[:, i].first_valid_index()
+                elif period_volume.loc[:, i].last_valid_index() < end_date or \
+                                period_volume.loc[:, i].value_counts().iloc[0] >= out_threshold:
+                    suspended_list.append(i)
+            else:
                 kickout_list.append(i)
-            elif period_prices.loc[:, i].first_valid_index() < start_date:
-                reset_start_date = period_prices.loc[:, i].first_valid_index()
-            elif period_volume.loc[:, i].last_valid_index() < end_date or \
-                            period_volume.loc[:, i].value_counts().iloc[0] >= out_threshold:
-                suspended_list.append(i)
-        else:
-            kickout_list.append(i)
-    # Check whether any ST stocks are included and generate a list for ST stocks
-    st_list = list(period_prices.columns.values[rqdatac.is_st_stock(order_book_ids,
-                                                                    reset_start_date, end_date).sum(axis=0) > 0])
+        # Check whether any ST stocks are included and generate a list for ST stocks
+        st_list = list(period_prices.columns.values[rqdatac.is_st_stock(order_book_ids,
+                                                                        reset_start_date, end_date).sum(axis=0) > 0])
+    elif equity_type is "fund":
+        for i in order_book_ids:
+            if period_prices.loc[:, i].first_valid_index() is not None:
+                if ((end_date - period_prices.loc[:, i].first_valid_index()) / np.timedelta64(1, 'D')) < out_threshold:
+                    kickout_list.append(i)
+                elif period_prices.loc[:, i].first_valid_index() < reset_start_date:
+                    reset_start_date = period_prices.loc[:, i].first_valid_index()
+            else:
+                kickout_list.append(i)
     # Generate final kickout list which includes all the above
     final_kickout_list = list(set().union(kickout_list, st_list, suspended_list))
     # Generate clean data
@@ -138,7 +153,7 @@ def constraints_gen(clean_order_book_ids, equity_type, method, constraints=None)
             for i in clean_order_book_ids:
                 df.loc[i, "type"] = rqdatac.instruments(i).shenwan_industry_name
 
-        cons = tuple()
+        cons = list()
         for key in constraints:
             key_list = list(df[df['type'] == key].index)
             key_pos_list = list()
@@ -146,62 +161,70 @@ def constraints_gen(clean_order_book_ids, equity_type, method, constraints=None)
                 key_pos_list.append(df.index.get_loc(i))
             key_cons_fun_lb = lambda x: sum(x[t] for t in key_pos_list) - constraints[key][0]
             key_cons_fun_ub = lambda x: constraints[key][1] - sum(x[t] for t in key_pos_list)
-            cons = cons + ({"type": "ineq", "fun": key_cons_fun_lb}, {"type": "ineq", "fun": key_cons_fun_ub})
+            cons.append({"type": "ineq", "fun": key_cons_fun_lb})
+            cons.append({"type": "ineq", "fun": key_cons_fun_ub})
 
         if method is "all":
             log_rp_cons = cons
-            general_cons = cons + tuple(({'type': 'eq', 'fun': lambda x: sum(x) - 1}))
-            return log_rp_cons, general_cons
+            general_cons = cons.append({'type': 'eq', 'fun': lambda x: sum(x) - 1})
+            return tuple(log_rp_cons), tuple(general_cons)
         elif method is "risk_parity":
-            return cons
+            return tuple(cons)
         else:
-            return cons + tuple(({'type': 'eq', 'fun': lambda x: sum(x) - 1}))
+            return tuple(cons.append({'type': 'eq', 'fun': lambda x: sum(x) - 1}))
     else:
         if method is "all":
             log_rp_cons = None
-            general_cons = tuple(({'type': 'eq', 'fun': lambda x: sum(x) - 1}))
+            general_cons = {'type': 'eq', 'fun': lambda x: sum(x) - 1}
             return log_rp_cons, general_cons
         elif method is "risk_parity":
             return None
         else:
-            return tuple(({'type': 'eq', 'fun': lambda x: sum(x) - 1}))
+            return {'type': 'eq', 'fun': lambda x: sum(x) - 1}
 
 
-# order_book_ids: a list of equities(stocks or funds)
-# start_date: Date to set up portfolio or rebalance portfolio
-# equity_type: types of portfolio candidates,  "stock" or "fund", portfolio with mixed equities is not supportted;
-# method: portfolio optimization model: "risk_parity", "min_variance", "all";
-# current_weight: Candidates' weights of current portfolio. Will be set as the initial guess to start optimization.
-#                 None type input means equal weights portfolio.
-# bnds: Lower bounds and upper bounds for each equity in portfolio. Support input format: {equity_code1: (lb1, up1),
+# order_book_ids: list. A list of equities(stocks or funds)
+# start_date: str. Date to set up portfolio or rebalance portfolio
+# equity_type: str or str list. Types of portfolio candidates,  "stock" or "fund", portfolio with mixed equities
+#              is not supportted;
+# method: str. Portfolio optimization model: "risk_parity", "min_variance", "all";
+# current_weight: float list. Candidates' weights of current portfolio. Will be set as the initial guess
+#                 to start optimization. None type input means equal weights portfolio.
+# bnds: float list. Lower bounds and upper bounds for each equity in portfolio. Support input format: {equity_code1: (lb1, up1),
 # equity_code2: (lb2, up2), ...} or {'full_list': (lb, up)}(set up universal bounds for all);
-# cons: Lower bounds and upper bounds for each category of equities in portfolio.
+# cons: dict. Lower bounds and upper bounds for each category of equities in portfolio.
 # Funds type: Bond, Stock, Hybrid, Money, ShortBond, StockIndex, BondIndex, Related, QDII, Other;
 # Stocks type: Shenwan_industry_name
 # Support input format: {types1: (lb1, up1), types2: (lb2,up2), ...}
 def optimizer(order_book_ids, start_date, equity_type, method, current_weight=None, bnds=None, cons=None):
 
-    if current_weight is None:
-        current_weight = [1 / order_book_ids.shape[1]] * order_book_ids.shape[1]
-
     data_after_processing = data_process(order_book_ids, equity_type, start_date)
     clean_period_prices = data_after_processing[0]
-    period_daily_return_pct_change = clean_period_prices.pct_change()
+    period_daily_return_pct_change = clean_period_prices.pct_change()*100
     c_m = period_daily_return_pct_change.cov()
 
-    if method is "all":
-        log_rp_bnds, general_bnds = bounds_gen(order_book_ids, clean_period_prices.columns.value, method, bnds)
-        log_rp_cons, general_cons = constraints_gen(clean_period_prices.columns.value, equity_type, method, cons)
-    elif method is "risk_parity":
-        log_rp_bnds = bounds_gen(order_book_ids, clean_period_prices.columns.value, method, bnds)
-        log_rp_cons = constraints_gen(clean_period_prices.columns.value, equity_type, method, cons)
+    if current_weight is None:
+        current_weight = [1 / clean_period_prices.shape[1]] * clean_period_prices.shape[1]
     else:
-        general_bnds = bounds_gen(order_book_ids, clean_period_prices.columns.value, method, bnds)
-        general_cons = constraints_gen(clean_period_prices.columns.value, equity_type, method, cons)
+        new_current_weight = current_weight
+        current_weight = list()
+        for i in clean_period_prices.columns.values:
+            current_weight.append(new_current_weight[order_book_ids.index(i)])
 
-    # Log barrier risk parity model
+    if method is "all":
+        log_rp_bnds, general_bnds = bounds_gen(order_book_ids, list(clean_period_prices.columns), method, bnds)
+        log_rp_cons, general_cons = constraints_gen(list(clean_period_prices.columns), equity_type, method, cons)
+    elif method is "risk_parity":
+        log_rp_bnds = bounds_gen(order_book_ids, list(clean_period_prices.columns), method, bnds)
+        log_rp_cons = constraints_gen(list(clean_period_prices.columns), equity_type, method, cons)
+    else:
+        general_bnds = bounds_gen(order_book_ids, list(clean_period_prices.columns), method, bnds)
+        general_cons = constraints_gen(list(clean_period_prices.columns), equity_type, method, cons)
+
+    # Log barrier risk parity modek
     c = 15
-    log_barrier_risk_parity_obj_fun = lambda x: np.dot(np.dot(x, c_m), x) - c * sum(np.log(x))
+    def log_barrier_risk_parity_obj_fun(x):
+        return np.dot(np.dot(x, c_m), x) - c * sum(np.log(x))
 
     def log_barrier_risk_parity_gradient(x):
         return np.multiply(2, np.dot(c_m, x)) - np.multiply(c, np.reciprocal(x))
@@ -230,13 +253,9 @@ def optimizer(order_book_ids, start_date, equity_type, method, current_weight=No
         return np.multiply(2, np.dot(c_m, x))
 
     def min_variance_optimizer():
-        if cons is None:
-            optimization_res = sc_opt.minimize(min_variance_obj_fun, current_weight, method='SLSQP',
-                                               jac=min_variance_gradient, bounds=general_bnds,
-                                               constraints=general_cons)
-        else:
-            optimization_res = sc_opt.minimize(min_variance_obj_fun, current_weight, method='SLSQP',
-                                               jac=min_variance_gradient, bounds=general_bnds, constraints=general_cons)
+
+        optimization_res = sc_opt.minimize(min_variance_obj_fun, current_weight, method='SLSQP',
+                                           jac=min_variance_gradient, bounds=general_bnds, constraints=general_cons)
 
         if not optimization_res.success:
             temp = ' @ %s' % clean_period_prices.index[0]
@@ -250,9 +269,14 @@ def optimizer(order_book_ids, start_date, equity_type, method, current_weight=No
                 'all': [log_barrier_risk_parity_optimizer, min_variance_optimizer]}
 
     if method is not 'all':
-        return pd.DataFrame(opt_dict[method](), index=list(clean_period_prices.columns.value)), data_after_processing[1]
+        return pd.DataFrame(opt_dict[method](), index=list(clean_period_prices.columns), columns='weight'), \
+               data_after_processing[1]
     else:
-        temp1 = list()
+        temp = list(opt_dict)
+        temp = temp[::-1]
+        temp1 = pd.DataFrame(index=clean_period_prices.columns.values, columns=temp[:(len(temp)-1)])
+        n = 0
         for f in opt_dict[method]:
-            temp1.append(pd.DataFrame(f(), index=list(clean_period_prices.columns.value)))
+            temp1.iloc[:, n] = f()
+            n = n + 1
         return temp1, data_after_processing[1]
