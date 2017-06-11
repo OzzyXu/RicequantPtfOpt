@@ -6,6 +6,7 @@ stock_fund_list = stock_fund_list.splitlines()
 # hybrid_fund_list = hybrid_fund_list.splitlines()
 
 equity_funds_list = stock_fund_list
+equity_funds_list = ['540006', '163110', '450009', '160716', '162213']
 
-optimal_weight = pt.optimizer(equity_funds_list, start_date='2015-01-01', equity_type='fund', method="all")
+optimal_weight = pt.optimizer(equity_funds_list, start_date='2015-01-01', equity_type='fund', method='min_variance')
 print(optimal_weight[0])

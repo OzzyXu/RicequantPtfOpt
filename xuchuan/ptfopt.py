@@ -93,23 +93,16 @@ def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
         log_rp_bnds = list()
         if method is "risk_parity":
             for i in clean_order_book_ids:
-                if "full_list" in list(bounds):
-                    log_rp_bnds = log_rp_bnds + [(max(10**-6, bounds["full_list"][0]), min(1, bounds["full_list"][1]))]
-                elif i in list(bounds):
-                    log_rp_bnds = log_rp_bnds + [(max(10**-6, bounds[i][0]), min(1, bounds[i][1]))]
-                else:
-                    log_rp_bnds = log_rp_bnds + [(10**-6, 1)]
+                log_rp_bnds = log_rp_bnds + [(10**-6, inf)]
         elif method is "all":
             for i in clean_order_book_ids:
                 if "full_list" in list(bounds):
-                    log_rp_bnds = log_rp_bnds + [(max(10**-6, bounds["full_list"][0]), min(1, bounds["full_list"][1]))]
                     general_bnds = general_bnds + [(max(0, bounds["full_list"][0]), min(1, bounds["full_list"][1]))]
                 elif i in list(bounds):
-                    log_rp_bnds = log_rp_bnds + [(max(10**-6, bounds[i][0]), min(1, bounds[i][1]))]
                     general_bnds = general_bnds + [(max(0, bounds[i][0]), min(1, bounds[i][1]))]
                 else:
-                    log_rp_bnds = log_rp_bnds + [(10**-6, 1)]
                     general_bnds = general_bnds + [(0, 1)]
+                log_rp_bnds = log_rp_bnds + [(10**-6, inf)]
         else:
             for i in clean_order_book_ids:
                 if "full_list" in list(bounds):
@@ -126,7 +119,7 @@ def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
         else:
             return tuple(general_bnds)
     else:
-        log_rp_bnds = [(10**-6, 1)] * len(clean_order_book_ids)
+        log_rp_bnds = [(10**-6, inf)] * len(clean_order_book_ids)
         general_bnds = [(0, 1)] * len(clean_order_book_ids)
         if method is "all":
             return tuple(log_rp_bnds), tuple(general_bnds)
@@ -164,23 +157,9 @@ def constraints_gen(clean_order_book_ids, equity_type, method, constraints=None)
             cons.append({"type": "ineq", "fun": key_cons_fun_lb})
             cons.append({"type": "ineq", "fun": key_cons_fun_ub})
 
-        if method is "all":
-            log_rp_cons = cons
-            general_cons = cons.append({'type': 'eq', 'fun': lambda x: sum(x) - 1})
-            return tuple(log_rp_cons), tuple(general_cons)
-        elif method is "risk_parity":
-            return tuple(cons)
-        else:
-            return tuple(cons.append({'type': 'eq', 'fun': lambda x: sum(x) - 1}))
+        return tuple(cons.append({'type': 'eq', 'fun': lambda x: sum(x) - 1}))
     else:
-        if method is "all":
-            log_rp_cons = None
-            general_cons = {'type': 'eq', 'fun': lambda x: sum(x) - 1}
-            return log_rp_cons, general_cons
-        elif method is "risk_parity":
-            return None
-        else:
-            return {'type': 'eq', 'fun': lambda x: sum(x) - 1}
+        return {'type': 'eq', 'fun': lambda x: sum(x) - 1}
 
 
 # order_book_ids: list. A list of equities(stocks or funds)
@@ -200,7 +179,7 @@ def optimizer(order_book_ids, start_date, equity_type, method, current_weight=No
 
     data_after_processing = data_process(order_book_ids, equity_type, start_date)
     clean_period_prices = data_after_processing[0]
-    period_daily_return_pct_change = clean_period_prices.pct_change()*100
+    period_daily_return_pct_change = clean_period_prices.pct_change()
     c_m = period_daily_return_pct_change.cov()
 
     if current_weight is None:
@@ -213,13 +192,11 @@ def optimizer(order_book_ids, start_date, equity_type, method, current_weight=No
 
     if method is "all":
         log_rp_bnds, general_bnds = bounds_gen(order_book_ids, list(clean_period_prices.columns), method, bnds)
-        log_rp_cons, general_cons = constraints_gen(list(clean_period_prices.columns), equity_type, method, cons)
     elif method is "risk_parity":
         log_rp_bnds = bounds_gen(order_book_ids, list(clean_period_prices.columns), method, bnds)
-        log_rp_cons = constraints_gen(list(clean_period_prices.columns), equity_type, method, cons)
     else:
         general_bnds = bounds_gen(order_book_ids, list(clean_period_prices.columns), method, bnds)
-        general_cons = constraints_gen(list(clean_period_prices.columns), equity_type, method, cons)
+    general_cons = constraints_gen(list(clean_period_prices.columns), equity_type, method, cons)
 
     # Log barrier risk parity modek
     c = 15
@@ -255,7 +232,8 @@ def optimizer(order_book_ids, start_date, equity_type, method, current_weight=No
     def min_variance_optimizer():
 
         optimization_res = sc_opt.minimize(min_variance_obj_fun, current_weight, method='SLSQP',
-                                           jac=min_variance_gradient, bounds=general_bnds, constraints=general_cons)
+                                           jac=min_variance_gradient, bounds=general_bnds, constraints=general_cons,
+                                           options={"ftol": 10**-12})
 
         if not optimization_res.success:
             temp = ' @ %s' % clean_period_prices.index[0]
@@ -269,12 +247,10 @@ def optimizer(order_book_ids, start_date, equity_type, method, current_weight=No
                 'all': [log_barrier_risk_parity_optimizer, min_variance_optimizer]}
 
     if method is not 'all':
-        return pd.DataFrame(opt_dict[method](), index=list(clean_period_prices.columns), columns='weight'), \
+        return pd.DataFrame(opt_dict[method](), index=clean_period_prices.columns.values, columns=[method]), \
                data_after_processing[1]
     else:
-        temp = list(opt_dict)
-        temp = temp[::-1]
-        temp1 = pd.DataFrame(index=clean_period_prices.columns.values, columns=temp[:(len(temp)-1)])
+        temp1 = pd.DataFrame(index=clean_period_prices.columns.values, columns=['risk_parity', 'min_variance'])
         n = 0
         for f in opt_dict[method]:
             temp1.iloc[:, n] = f()
