@@ -92,9 +92,9 @@ def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
         general_bnds = list()
         log_rp_bnds = list()
         if method is "risk_parity":
-            for i in clean_order_book_ids:
-                log_rp_bnds = log_rp_bnds + [(10**-6, inf)]
+            log_rp_bnds = [(10**-6, inf)] * len(clean_order_book_ids)
         elif method is "all":
+            log_rp_bnds = [(10 ** -6, inf)] * len(clean_order_book_ids)
             for i in clean_order_book_ids:
                 if "full_list" in list(bounds):
                     general_bnds = general_bnds + [(max(0, bounds["full_list"][0]), min(1, bounds["full_list"][1]))]
@@ -102,7 +102,6 @@ def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
                     general_bnds = general_bnds + [(max(0, bounds[i][0]), min(1, bounds[i][1]))]
                 else:
                     general_bnds = general_bnds + [(0, 1)]
-                log_rp_bnds = log_rp_bnds + [(10**-6, inf)]
         else:
             for i in clean_order_book_ids:
                 if "full_list" in list(bounds):
@@ -200,6 +199,7 @@ def optimizer(order_book_ids, start_date, equity_type, method, current_weight=No
 
     # Log barrier risk parity modek
     c = 15
+
     def log_barrier_risk_parity_obj_fun(x):
         return np.dot(np.dot(x, c_m), x) - c * sum(np.log(x))
 
@@ -207,13 +207,8 @@ def optimizer(order_book_ids, start_date, equity_type, method, current_weight=No
         return np.multiply(2, np.dot(c_m, x)) - np.multiply(c, np.reciprocal(x))
 
     def log_barrier_risk_parity_optimizer():
-        if cons is None:
-            optimization_res = sc_opt.minimize(log_barrier_risk_parity_obj_fun, current_weight, method='L-BFGS-B',
-                                               jac=log_barrier_risk_parity_gradient, bounds=log_rp_bnds)
-        else:
-            optimization_res = sc_opt.minimize(log_barrier_risk_parity_obj_fun, current_weight, method='SLSQP',
-                                               jac=log_barrier_risk_parity_gradient, bounds=log_rp_bnds,
-                                               constraints=log_rp_cons)
+        optimization_res = sc_opt.minimize(log_barrier_risk_parity_obj_fun, current_weight, method='L-BFGS-B',
+                                           jac=log_barrier_risk_parity_gradient, bounds=log_rp_bnds)
 
         if not optimization_res.success:
             temp = ' @ %s' % clean_period_prices.index[0]
@@ -230,7 +225,6 @@ def optimizer(order_book_ids, start_date, equity_type, method, current_weight=No
         return np.multiply(2, np.dot(c_m, x))
 
     def min_variance_optimizer():
-
         optimization_res = sc_opt.minimize(min_variance_obj_fun, current_weight, method='SLSQP',
                                            jac=min_variance_gradient, bounds=general_bnds, constraints=general_cons,
                                            options={"ftol": 10**-12})
