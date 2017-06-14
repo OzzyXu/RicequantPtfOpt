@@ -16,7 +16,7 @@ class OptimizationError(Exception):
 
 
 # Clean data for covariance matrix calculation
-def data_process(order_book_ids, equity_type, start_date):
+def data_process(order_book_ids, asset_type, start_date):
 
     windows = 132
     end_date = rqdatac.get_previous_trading_date(start_date)
@@ -26,9 +26,9 @@ def data_process(order_book_ids, equity_type, start_date):
     start_date = pd.to_datetime(start_date)
     reset_start_date = start_date
 
-    if equity_type is 'fund':
+    if asset_type is 'fund':
         period_prices = rqdatac.fund.get_nav(order_book_ids, reset_start_date, end_date, fields='acc_net_value')
-    elif equity_type is 'stock':
+    elif asset_type is 'stock':
         period_data = rqdatac.get_price(order_book_ids, reset_start_date, end_date, frequency='1d',
                                         fields=['close', 'volume'])
         period_prices = period_data['close']
@@ -44,7 +44,7 @@ def data_process(order_book_ids, equity_type, start_date):
     # will be chose.
     # Check whether any stocks has long suspended trading periods or has been delisted and generate list
     # for such stocks
-    if equity_type is "stock":
+    if asset_type is "stock":
         for i in order_book_ids:
             if not period_volume.loc[:, i].value_counts().empty:
                 if ((end_date - period_prices.loc[:, i].first_valid_index()) / np.timedelta64(1, 'D')) \
@@ -60,7 +60,7 @@ def data_process(order_book_ids, equity_type, start_date):
         # Check whether any ST stocks are included and generate a list for ST stocks
         st_list = list(period_prices.columns.values[rqdatac.is_st_stock(order_book_ids,
                                                                         reset_start_date, end_date).sum(axis=0) > 0])
-    elif equity_type is "fund":
+    elif asset_type is "fund":
         for i in order_book_ids:
             if period_prices.loc[:, i].first_valid_index() is not None:
                 if ((end_date - period_prices.loc[:, i].first_valid_index()) / np.timedelta64(1, 'D')) < out_threshold:
@@ -129,7 +129,7 @@ def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
 
 
 # Generate category constraints for portfolio
-def constraints_gen(clean_order_book_ids, equity_type, method, constraints=None):
+def constraints_gen(clean_order_book_ids, asset_type, constraints=None):
 
     if constraints is not None:
         df = pd.DataFrame(index=clean_order_book_ids, columns=['type'])
@@ -138,10 +138,10 @@ def constraints_gen(clean_order_book_ids, equity_type, method, constraints=None)
             if constraints[key][0] > constraints[key][1]:
                 raise OptimizationError("Constraints setup error!")
 
-        if equity_type is 'fund':
+        if asset_type is 'fund':
             for i in clean_order_book_ids:
                 df.loc[i, 'type'] = rqdatac.fund.instruments(i).fund_type
-        elif equity_type is 'stock':
+        elif asset_type is 'stock':
             for i in clean_order_book_ids:
                 df.loc[i, "type"] = rqdatac.instruments(i).shenwan_industry_name
 
@@ -163,7 +163,7 @@ def constraints_gen(clean_order_book_ids, equity_type, method, constraints=None)
 
 # order_book_ids: list. A list of equities(stocks or funds)
 # start_date: str. Date to set up portfolio or rebalance portfolio
-# equity_type: str or str list. Types of portfolio candidates,  "stock" or "fund", portfolio with mixed equities
+# asset_type: str or str list. Types of portfolio candidates,  "stock" or "fund", portfolio with mixed equities
 #              is not supportted;
 # method: str. Portfolio optimization model: "risk_parity", "min_variance", "all";
 # current_weight: float list. Candidates' weights of current portfolio. Will be set as the initial guess
@@ -174,9 +174,9 @@ def constraints_gen(clean_order_book_ids, equity_type, method, constraints=None)
 # Funds type: Bond, Stock, Hybrid, Money, ShortBond, StockIndex, BondIndex, Related, QDII, Other;
 # Stocks type: Shenwan_industry_name
 # Support input format: {types1: (lb1, up1), types2: (lb2,up2), ...}
-def optimizer(order_book_ids, start_date, equity_type, method, current_weight=None, bnds=None, cons=None):
+def optimizer(order_book_ids, start_date, asset_type, method, current_weight=None, bnds=None, cons=None):
 
-    data_after_processing = data_process(order_book_ids, equity_type, start_date)
+    data_after_processing = data_process(order_book_ids, asset_type, start_date)
     clean_period_prices = data_after_processing[0]
     period_daily_return_pct_change = clean_period_prices.pct_change()
     c_m = period_daily_return_pct_change.cov()
@@ -195,7 +195,7 @@ def optimizer(order_book_ids, start_date, equity_type, method, current_weight=No
         log_rp_bnds = bounds_gen(order_book_ids, list(clean_period_prices.columns), method, bnds)
     else:
         general_bnds = bounds_gen(order_book_ids, list(clean_period_prices.columns), method, bnds)
-    general_cons = constraints_gen(list(clean_period_prices.columns), equity_type, method, cons)
+    general_cons = constraints_gen(list(clean_period_prices.columns), asset_type, cons)
 
     # Log barrier risk parity modek
     c = 15
