@@ -258,3 +258,6 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
             temp1.iloc[:, n] = f()
             n = n + 1
         return temp1, data_after_processing[1]
+
+
+

@@ -1,4 +1,5 @@
 import ptfopt as pt
+import xuchuan.ptfopt as pt
 
 stock_fund_list = open("C:\\Users\\xuchu\\Dropbox\\RQ\\Test_Result\\Fund_test_suite\\Stock.txt").read()
 stock_fund_list = stock_fund_list.splitlines()
