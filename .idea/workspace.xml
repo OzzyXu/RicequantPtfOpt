@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="79fae9e2-968f-46f6-80fb-809190191850" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/xuchuan/ptfopt.py" afterPath="$PROJECT_DIR$/xuchuan/ptfopt.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -630,7 +629,14 @@
       <option name="project" value="LOCAL" />
       <updated>1497927934856</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="data_process now is able to count those inconsecutive missing values and delete the ones with too many inconsecutive missing value. This is mainly caused by different time index bewteen different equities.&#10; &#10; scratch_6 is the prototype for BL model.">
+      <created>1497929863262</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1497929863262</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TodoView">
