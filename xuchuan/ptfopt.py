@@ -76,11 +76,8 @@ def data_process(order_book_ids, asset_type, start_date):
     # Generate final kickout list which includes all the above
     final_kickout_list = list(set().union(kickout_list, st_list, suspended_list))
     # Generate clean data
-        #order_book_ids_s = set(order_book_ids)
     final_kickout_list_s = set(final_kickout_list)
-        #clean_order_book_ids = list(order_book_ids_s - final_kickout_list_s)
-
-    ## modified here to keep the original input id order
+    # Keep the original input id order
     clean_order_book_ids = [x for x in order_book_ids if x not in final_kickout_list_s]
 
     clean_period_prices = period_prices.loc[reset_start_date:end_date, clean_order_book_ids]
