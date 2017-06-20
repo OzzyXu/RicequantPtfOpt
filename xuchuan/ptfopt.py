@@ -23,8 +23,7 @@ def data_process(order_book_ids, asset_type, start_date):
     end_date = pd.to_datetime(end_date)
     for i in range(windows + 1):
         start_date = rqdatac.get_previous_trading_date(start_date)
-    start_date = pd.to_datetime(start_date)
-    reset_start_date = start_date
+    reset_start_date = pd.to_datetime(start_date)
 
     if asset_type is 'fund':
         period_prices = rqdatac.fund.get_nav(order_book_ids, reset_start_date, end_date, fields='acc_net_value')
@@ -50,6 +49,8 @@ def data_process(order_book_ids, asset_type, start_date):
                 if ((end_date - period_prices.loc[:, i].first_valid_index()) / np.timedelta64(1, 'D')) \
                         < out_threshold:
                     kickout_list.append(i)
+                elif period_prices.loc[:, i].isnull().sum() >= out_threshold:
+                    kickout_list.append(i)
                 elif period_prices.loc[:, i].first_valid_index() < reset_start_date:
                     reset_start_date = period_prices.loc[:, i].first_valid_index()
                 elif period_volume.loc[:, i].last_valid_index() < end_date or \
@@ -65,10 +66,13 @@ def data_process(order_book_ids, asset_type, start_date):
             if period_prices.loc[:, i].first_valid_index() is not None:
                 if ((end_date - period_prices.loc[:, i].first_valid_index()) / np.timedelta64(1, 'D')) < out_threshold:
                     kickout_list.append(i)
+                elif period_prices.loc[:, i].isnull().sum() >= out_threshold:
+                    kickout_list.append(i)
                 elif period_prices.loc[:, i].first_valid_index() < reset_start_date:
                     reset_start_date = period_prices.loc[:, i].first_valid_index()
             else:
                 kickout_list.append(i)
+    period_prices = period_prices.fillna(method="pad")
     # Generate final kickout list which includes all the above
     final_kickout_list = list(set().union(kickout_list, st_list, suspended_list))
     # Generate clean data
@@ -76,7 +80,7 @@ def data_process(order_book_ids, asset_type, start_date):
     final_kickout_list_s = set(final_kickout_list)
     clean_order_book_ids = list(order_book_ids_s - final_kickout_list_s)
     clean_period_prices = period_prices.loc[reset_start_date:end_date, clean_order_book_ids]
-    return clean_period_prices, final_kickout_list
+    return clean_period_prices, final_kickout_list, reset_start_date
 
 
 # Generate upper and lower bounds for equities in portfolio
