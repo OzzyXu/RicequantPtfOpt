@@ -344,7 +344,6 @@ def optimizer(order_book_ids, start_date, asset_type, method, windows = 66, curr
               expected_return=None, expected_return_covar=None, risk_aversion_coefficient=1):
 
     # Get clean data and calculate covariance matrix
-
     data_after_processing = data_process(order_book_ids, asset_type, start_date, windows)
     clean_period_prices = data_after_processing[0]
     period_daily_return_pct_change = clean_period_prices.pct_change()
