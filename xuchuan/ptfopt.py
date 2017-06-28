@@ -350,7 +350,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, windows = 66, curr
     c_m = period_daily_return_pct_change.cov()
 
     if clean_period_prices.shape[1] == 0:
-        print('All selected funds have been ruled out')
+        # print('All selected funds have been ruled out')
         return -1, data_after_processing[1]
     else:
 
