@@ -340,11 +340,10 @@ def constraints_gen(clean_order_book_ids, asset_type, constraints=None):
 # expected_return_covar: numpy matrix, optional. Covariance matrix of expected return. Default: covariance of the means
 #                        of the returns of order_book_ids within windows;
 # risk_aversion_coefficient: float, optional. Risk aversion coefficient of Mean-Variance model. Default: 1.
-def optimizer(order_book_ids, start_date, asset_type, method, frequency = 66, current_weight=None, bnds=None, cons=None,
+def optimizer(order_book_ids, start_date, asset_type, method, windows = 66, current_weight=None, bnds=None, cons=None,
               expected_return=None, expected_return_covar=None, risk_aversion_coefficient=1):
 
     # Get clean data and calculate covariance matrix
-    windows = frequency
     data_after_processing = data_process(order_book_ids, asset_type, start_date, windows)
     clean_period_prices = data_after_processing[0]
     period_daily_return_pct_change = clean_period_prices.pct_change()
@@ -352,7 +351,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, frequency = 66, cu
 
     if clean_period_prices.shape[1] == 0:
         print('All selected funds have been ruled out')
-        return data_after_processing[1]
+        return 1, data_after_processing[1]
     else:
 
         if current_weight is None:
