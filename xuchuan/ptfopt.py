@@ -351,7 +351,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, windows = 66, curr
 
     if clean_period_prices.shape[1] == 0:
         print('All selected funds have been ruled out')
-        return 1, data_after_processing[1]
+        return 1, data_after_processing[1], 2
     else:
 
         if current_weight is None:
