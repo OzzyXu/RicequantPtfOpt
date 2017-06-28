@@ -32,7 +32,7 @@ def get_fund_test_suite(before_date = dt.date.today().strftime("%Y-%m-%d")):
         len_combo = len(k)
         for l in each_fund_num[len_combo]:
             temp = [a for x in k for a in fund_pool[x][0:l]]
-            fund_test_suite['_'.join(k)+'_'+str(len_combo)+'*'+str(l)+'='+str(len(temp))] = temp
+            fund_test_suite['_'.join(k)+'_'+str(len_combo)+' x '+str(l)+'='+str(len(temp))] = temp
 
 
 

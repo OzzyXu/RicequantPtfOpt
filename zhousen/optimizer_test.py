@@ -27,6 +27,9 @@ def optimizer_test(order_book_ids, start_date, asset_type, method, frequency=66,
     for i in range(0, count+1):
         opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i],  asset_type=asset_type, method=method, frequency = frequency)
 
+        if opt_res[i][0] == 1:
+
+
     #     if opt_res[i] is None:
     #         break_tag = 1
     #         print(name, i, opt_res[i], equity_funds_list, start_date)
