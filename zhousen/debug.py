@@ -158,9 +158,9 @@ def abc(a, b=1, c=2):
             break
     print(a)
     a = 11
-    return  a
+    return  a, -1
 
-abc(1)
+c = abc(1)
 
 abc(1,c=3)
 

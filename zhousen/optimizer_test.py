@@ -5,7 +5,7 @@
 
 
 
-def optimizer_test(order_book_ids, start_date, asset_type, method, frequency=66,
+def optimizer_test(order_book_ids, start_date, asset_type, method, windows=66,
                    current_weight=None, bnds=None, cons=None, expected_return=None, expected_return_covar=None, risk_aversion_coefficient=1,
                    end_date = dt.date.today().strftime("%Y-%m-%d"), name = None):
 
@@ -15,34 +15,21 @@ def optimizer_test(order_book_ids, start_date, asset_type, method, frequency=66,
     trading_date_e = get_previous_trading_date(end_date)
     trading_dates = get_trading_dates(trading_date_s, trading_date_e)
     time_len = len(trading_dates)
-    count = floor(time_len/frequency)
+    count = floor(time_len/windows)
 
     time_frame = {}
     for i in range(0, count+1):
-        time_frame[i] = trading_dates[i*frequency]
+        time_frame[i] = trading_dates[i*windows]
 
 
-    #break_tag = 0
+
     opt_res = {}
     for i in range(0, count+1):
-        opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i],  asset_type=asset_type, method=method, frequency = frequency)
+        opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i],  asset_type=asset_type, method=method, windows = windows)
 
-        if opt_res[i][0] == -1:
-            print('')
-            return
-
-
-    #     if opt_res[i] is None:
-    #         break_tag = 1
-    #         print(name, i, opt_res[i], equity_funds_list, start_date)
-    #
-    # if break_tag ==1:
-    #     pass
-    #
-
-
-
-
+        # if opt_res[i][0] == -1:
+        #     print('All selected ' + asset + ' have been ruled out')
+        #     return -1
 
 
 
@@ -53,10 +40,7 @@ def optimizer_test(order_book_ids, start_date, asset_type, method, frequency=66,
 
 
     for i in range(0,count+1):
-        try:
-            opt_res[i][0]['equal_weight']= [1 / len(opt_res[i][0])] * len(opt_res[i][0])
-        except:
-            print(i, name)
+        opt_res[i][0]['equal_weight']= [1 / len(opt_res[i][0])] * len(opt_res[i][0])
 
 
     weights = {}
@@ -103,16 +87,11 @@ def optimizer_test(order_book_ids, start_date, asset_type, method, frequency=66,
         daily_cum_log_return = temp.cumsum()
         annualized_return[j] = (daily_cum_log_return[-1] + 1) ** (365 / days_count) - 1
 
-    #fig1 = plt.figure()
-
-        # diff_daily_return = daily_methods_a_r[j] - risk_free_rate['Daily']
-        # sharpe_r = (diff_daily_return)/diff_daily_return.std
 
 
 
-        str1 = "%s: r = %f, $\sigma$ = %f, s_r = %f" %(j, annualized_return[j], annualized_vol[j], annualized_return[j]/annualized_vol[j] )
-    #s   tr2 = """Minimum variance: r = %f, $\sigma$ = %f.""" % %(annualized_return[j], annualized_vol[j])
-
+        str1 = "%s: r = %f, $\sigma$ = %f, s_r = %f" %(j, annualized_return[j], annualized_vol[j],
+                                                       annualized_return[j]/annualized_vol[j] )
 
         plt.figure(1, figsize=(10, 8))
 
@@ -121,11 +100,7 @@ def optimizer_test(order_book_ids, start_date, asset_type, method, frequency=66,
 
 
     plt.savefig('test_res/%s'%(name))
-#    plt.ioff()
     plt.close()
-
-    #plt.figure(2)
-    #p2 = daily_cum_log_return.plot(legend=True, label=str1)
 
     return weights, annualized_return, annualized_vol
 
@@ -158,13 +133,13 @@ end_date = '2017-06-25'
 #end_date = today_date,
 
 
-a = optimizer_test(equity_funds_list, start_date, end_date , frequency= 60, name = None)
+a = optimizer_test(equity_funds_list, start_date, end_date , windows= 60, name = None)
 
 
 
 
 
-def wrap_and_run(test_suite, start_date, end_date, frequency):
+def wrap_and_run(test_suite, start_date, end_date, windows = 66):
 
 
     test_res = pd.DataFrame(columns=['risk_parity_return', 'min_variance_return', 'equal_weight_return',
@@ -174,10 +149,11 @@ def wrap_and_run(test_suite, start_date, end_date, frequency):
                                              'risk_parity_sigma', 'min_variance_sigma', 'equal_weight_sigma'])
         equity_funds_list = test_suite[i]
         # try:
-        #     a = optimizer_test(equity_funds_list, start_date, end_date, frequency, name=i)
+        #     a = optimizer_test(equity_funds_list, start_date, end_date, windows, name=i)
         # except:
         #     print('outside:', i)
-        a = optimizer_test(equity_funds_list, start_date, end_date, frequency, name=i)
+        a = optimizer_test(equity_funds_list, start_date, 'fund', end_date = end_date, method = 'all', windows = windows, name=i)
+
         if a is None:
             pass
         else:
@@ -200,13 +176,13 @@ test_suite =  {key:fund_test_suite[key] for key in ['Hybrid_Related_Stock_3*2=6'
 
  start_date = '2014-01-01'
  end_date = '2017-06-25'
- frequency = 132
+ windows = 132
 
 
 
 test_suite = fund_test_suite
 len(fund_test_suite)
-res_zs = wrap_and_run(test_suite, start_date, end_date, frequency )
+res_zs = wrap_and_run(test_suite, start_date, end_date, windows )
 
 
 
