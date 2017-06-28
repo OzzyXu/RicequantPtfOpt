@@ -1421,7 +1421,14 @@
       <option name="project" value="LOCAL" />
       <updated>1498618912360</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="data_process now is able to count those inconsecutive missing values and delete the ones with too many inconsecutive missing value. This is mainly caused by different time index bewteen different equities.&#10; &#10; scratch_6 is the prototype for BL model.">
+      <created>1498618925902</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1498618925902</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TodoView">
