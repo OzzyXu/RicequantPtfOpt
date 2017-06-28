@@ -5,25 +5,19 @@
 
 
 
-def optimizer_test(equity_funds_list, start_date,
-                   end_date = dt.date.today().strftime("%Y/%m/%d"), frequency = 60, name = None):
+def optimizer_test(order_book_ids, start_date, asset_type, method, frequency=66,
+                   current_weight=None, bnds=None, cons=None, expected_return=None, expected_return_covar=None, risk_aversion_coefficient=1,
+                   end_date = dt.date.today().strftime("%Y-%m-%d"), name = None):
 
     # according to start_date to work out testing time_frame
 
     trading_date_s = get_previous_trading_date(start_date)
     trading_date_e = get_previous_trading_date(end_date)
-
     trading_dates = get_trading_dates(trading_date_s, trading_date_e)
     time_len = len(trading_dates)
-
     count = floor(time_len/frequency)
 
-
-    #for i in range(frequency + 1):
-    #    start_date = get_previous_trading_date(start_date)
-
     time_frame = {}
-    #time_frame[0] = start_date
     for i in range(0, count+1):
         time_frame[i] = trading_dates[i*frequency]
 
@@ -31,7 +25,7 @@ def optimizer_test(equity_funds_list, start_date,
     #break_tag = 0
     opt_res = {}
     for i in range(0, count+1):
-        opt_res[i] = optimizer(equity_funds_list, start_date=time_frame[i],  asset_type='fund', method='all')
+        opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i],  asset_type=asset_type, method=method, frequency = frequency)
 
     #     if opt_res[i] is None:
     #         break_tag = 1
@@ -64,10 +58,12 @@ def optimizer_test(equity_funds_list, start_date,
 
     daily_methods_a_r = {}
 
+    test_try = {}
+
     for j in methods:
-        daily_arithmetic_return = []
+        daily_arithmetic_return = pd.Series()
 
-
+        test_try_temp = []
         for i in range(0, count):
 
             weights[j+str(i)] = opt_res[i][0]
@@ -81,12 +77,13 @@ def optimizer_test(equity_funds_list, start_date,
                                         [x in weights[j+str(i)].index for x in period_daily_return_pct_change.columns]]
 
             weighted_sum = corresponding_data_in_weights.multiply(weights[j+str(i)][j]).sum(axis=1)
-            daily_arithmetic_return.extend(weighted_sum)
+            daily_arithmetic_return = daily_arithmetic_return.append(weighted_sum)
 
-
+            test_try_temp.append(weighted_sum)
 
         daily_methods_a_r[j] = daily_arithmetic_return
 
+        test_try[j] = test_try_temp
 
 
 
@@ -94,17 +91,21 @@ def optimizer_test(equity_funds_list, start_date,
     annualized_return = {}
 
     for j in methods:
-        temp = np.log(daily_methods_a_r[j][0] + 1)
+        temp = np.log(daily_methods_a_r[j]+1)
 
         annualized_vol[j] = sqrt(244) * temp.std()
-        days_count = len(daily_methods_a_r[j][0])
+        days_count = len(daily_methods_a_r[j])
         daily_cum_log_return = temp.cumsum()
         annualized_return[j] = (daily_cum_log_return[-1] + 1) ** (365 / days_count) - 1
 
     #fig1 = plt.figure()
 
+        # diff_daily_return = daily_methods_a_r[j] - risk_free_rate['Daily']
+        # sharpe_r = (diff_daily_return)/diff_daily_return.std
 
-        str1 = """%s: r = %f, $\sigma$ = %f. """ %(j, annualized_return[j], annualized_vol[j])
+
+
+        str1 = "%s: r = %f, $\sigma$ = %f, s_r = %f" %(j, annualized_return[j], annualized_vol[j], annualized_return[j]/annualized_vol[j] )
     #s   tr2 = """Minimum variance: r = %f, $\sigma$ = %f.""" % %(annualized_return[j], annualized_vol[j])
 
 
