@@ -431,5 +431,5 @@ def optimizer(order_book_ids, start_date, asset_type, method, frequency = 66, cu
             for f in opt_dict[method]:
                 temp1.iloc[:, n] = f()
                 n = n + 1
-            return temp1, temp1, period_daily_return_pct_change, c_m, data_after_processing[1]
+            return temp1, period_daily_return_pct_change, c_m, data_after_processing[1]
 

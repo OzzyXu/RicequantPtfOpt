@@ -30,10 +30,15 @@ import matplotlib.pyplot as plt
 
 fund_test_suite = get_fund_test_suite('2014-01-01')
 
+len(fund_test_suite)
+# 379
+
 # now wrap and run
 
 start_date = '2014-01-01'
 end_date =  '2017-06-13'
-frequency = 132
+frequency = 66
+
+
 
 res_zs = wrap_and_run(fund_test_suite, start_date, end_date, frequency )

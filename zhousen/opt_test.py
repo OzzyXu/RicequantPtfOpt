@@ -32,126 +32,22 @@ today_date = dt.date.today().strftime("%Y-%m-%d")
 
 
 
-import datetime
-datetime.date(2017,6,20) - datetime.date.today()
-# create fund test suites
 
 
+###############
+
+# # get daily risk free rate
+# risk_free_rate_tenor = None
+#
+# if risk_free_rate_tenor is None:
+#     risk_free_rate = rqdatac.get_yield_curve(start_date, end_date, tenor='0S', country='cn')
+# elif risk_free_rate_tenor in risk_free_rate_dict:
+#     risk_free_rate = rqdatac.get_yield_curve(start_date, end_date, tenor=risk_free_rate_tenor, country='cn')
+#
+# risk_free_rate['Daily'] = pd.Series(np.power(1 + risk_free_rate['0S'], 1 / 365) - 1, index=risk_free_rate.index)
 
 
-
-
-
-def get_fund_test_suite(before_date = dt.date.today().strftime("%Y-%m-%d")):
-    fund_pool = {}
-    combo = []
-    fund_test_suite = {}
-
-    all_fund = fund.all_instruments(date=before_date)[['order_book_id', 'listed_date', 'symbol', 'fund_type']]
-    #fund_types = np.unique(all_fund.fund_type)
-
-    fund_types = ['Bond', 'BondIndex', 'Hybrid', 'Other', 'QDII', 'Related', 'Stock', 'StockIndex']
-
-
-
-    len_fund_types = len(fund_types)
-
-
-    # get a dictionary of all_fund according to fund_types
-    for i in fund_types:
-        fund_pool[i] = (all_fund[all_fund['fund_type'] == i]['order_book_id'].values[:])
-
-
-    # get all possible combinations of fund_types
-    for j in range(1, len_fund_types + 1):
-        for subset in itertools.combinations(fund_types, j):
-            combo.append(subset)
-            #print(subset)
-
-    each_fund_num = {1: [5, 6, 7, 8], 2: [3,4,5,6], 3: [2,3,4], 4:[1,2,3], 5:[1,2], 6:[1,2], 7:[1], 8:[1]}
-    #, 9:[1]}
-
-    for k in combo:
-        len_combo = len(k)
-        for l in each_fund_num[len_combo]:
-            temp = [a for x in k for a in fund_pool[x][0:l]]
-            fund_test_suite['_'.join(k)+'_'+str(len_combo)+'*'+str(l)+'='+str(len(temp))] = temp
-
-
-
-    return fund_test_suite
-
-
-
-
-#########
-fund_test_suite = get_fund_test_suite('2014-01-01')
-
-# len(fund_test_suite)
-# 1276
-
-# 699
-
-
-
-
-
-b =a['Bond_Hybrid_QDII_Related_Stock_StockIndex_6*1=6']
-fund.instruments(b).fund_type
-
-
-for x in fund_types:
-    print(len(fund_pool[x]))
-
-###########
-
-
-
-    all_fund.fund_type in fund_types[1]
-
-    all_fund = fund.all_instruments(date='2017-7-1')[['order_book_id', 'listed_date', 'symbol', 'fund_type']]
-
-    all_fund.shape
-    # 5104 4
-    all_fund.head()
-    len(np.unique(all_fund.fund_type))
-    # 9  共9类基金
-
-
-    a = np.unique(all_fund.fund_type)
-
-
-
-
-
-
-# create stock test suites
-
-
-def get_stock_test_suite(shenwan_industry_names, start_date='2017-05-25', end_date='2017-05-26', threshold_num = 60):
-    stock_test_suite = {}
-    for i in shenwan_industry_names:
-        stock_list = shenwan_industry(i)
-        market_values = get_market_value(stock_list, start_date, end_date)
-        ncol = market_values.shape[1]
-        if  ncol < threshold_num:
-            stock_test_suite[i] = stock_list
-        else:
-            df1 = market_values.iloc[:, np.argsort(market_values.loc[end_date])]
-            num1 = int(threshold_num/3)
-            stocks_picked = list(df1.columns[: num1]) +  \
-                            list(df1.columns[num1 + 1 : num1 + num1])+ \
-                            list(df1.columns[-num1:])
-                            #list(range(1, threshold_num/3)), listthreshold_num/3+1:]
-            stock_test_suite[i] = stocks_picked
-
-    return(stock_test_suite)
-
-
-
-
-
-
+avg_risk_free_rate = np.mean(risk_free_rate['Daily'])
 
 ######### test and generate tables and plots
 
