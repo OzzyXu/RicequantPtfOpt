@@ -1,7 +1,713 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="0fa19e4e-9c02-4000-a1f6-22394119794f" name="Default" comment="">
+    <list default="true" id="af6b79ff-4765-464c-8a64-9bde049bc407" name="Default" comment="">
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/.name" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/.workspace.xml.swp" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/codeStyleSettings.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/dictionaries/ChuanXu.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/rq_prototype.iml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_1*5=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_1*6=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_1*7=7.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_1*8=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_2*3=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_2*4=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_2*5=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_2*6=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_QDII_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_QDII_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_QDII_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_QDII_Related_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_QDII_Related_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_QDII_Related_StockIndex_6*1=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_QDII_Related_StockIndex_6*2=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_QDII_Related_Stock_6*1=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_QDII_Related_Stock_6*2=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_QDII_Related_Stock_StockIndex_7*1=7.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_QDII_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_QDII_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_QDII_Stock_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_QDII_Stock_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_QDII_Stock_StockIndex_6*1=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_QDII_Stock_StockIndex_6*2=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_Related_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_Related_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_Related_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_Related_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_Related_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_Related_Stock_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_Related_Stock_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_Related_Stock_StockIndex_6*1=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_Related_Stock_StockIndex_6*2=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_Stock_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_Stock_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_Stock_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_Stock_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Other_Stock_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_QDII_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_QDII_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_QDII_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_QDII_Related_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_QDII_Related_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_QDII_Related_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_QDII_Related_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_QDII_Related_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_QDII_Related_Stock_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_QDII_Related_Stock_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_QDII_Related_Stock_StockIndex_6*1=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_QDII_Related_Stock_StockIndex_6*2=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_QDII_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_QDII_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_QDII_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_QDII_Stock_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_QDII_Stock_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_QDII_Stock_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_QDII_Stock_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_QDII_Stock_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Related_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Related_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Related_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Related_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Related_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Related_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Related_Stock_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Related_Stock_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Related_Stock_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Related_Stock_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Related_Stock_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_StockIndex_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_StockIndex_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_StockIndex_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Stock_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Stock_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Stock_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Stock_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Stock_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Hybrid_Stock_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_2*3=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_2*4=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_2*5=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_2*6=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_QDII_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_QDII_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_QDII_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_QDII_Related_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_QDII_Related_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_QDII_Related_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_QDII_Related_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_QDII_Related_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_QDII_Related_Stock_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_QDII_Related_Stock_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_QDII_Related_Stock_StockIndex_6*1=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_QDII_Related_Stock_StockIndex_6*2=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_QDII_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_QDII_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_QDII_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_QDII_Stock_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_QDII_Stock_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_QDII_Stock_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_QDII_Stock_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_QDII_Stock_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_Related_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_Related_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_Related_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_Related_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_Related_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_Related_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_Related_Stock_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_Related_Stock_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_Related_Stock_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_Related_Stock_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_Related_Stock_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_StockIndex_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_StockIndex_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_StockIndex_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_Stock_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_Stock_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_Stock_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_Stock_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_Stock_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Other_Stock_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_QDII_2*3=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_QDII_2*4=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_QDII_2*5=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_QDII_2*6=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_QDII_Related_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_QDII_Related_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_QDII_Related_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_QDII_Related_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_QDII_Related_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_QDII_Related_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_QDII_Related_Stock_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_QDII_Related_Stock_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_QDII_Related_Stock_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_QDII_Related_Stock_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_QDII_Related_Stock_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_QDII_StockIndex_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_QDII_StockIndex_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_QDII_StockIndex_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_QDII_Stock_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_QDII_Stock_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_QDII_Stock_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_QDII_Stock_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_QDII_Stock_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_QDII_Stock_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Related_2*3=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Related_2*4=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Related_2*5=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Related_2*6=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Related_StockIndex_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Related_StockIndex_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Related_StockIndex_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Related_Stock_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Related_Stock_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Related_Stock_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Related_Stock_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Related_Stock_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Related_Stock_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_StockIndex_2*3=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_StockIndex_2*4=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_StockIndex_2*5=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_StockIndex_2*6=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Stock_2*3=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Stock_2*4=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Stock_2*5=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Stock_2*6=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Stock_StockIndex_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Stock_StockIndex_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/BondIndex_Stock_StockIndex_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_1*5=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_1*6=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_1*7=7.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_1*8=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_2*3=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_2*4=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_2*5=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_2*6=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Other_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Other_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Other_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Other_QDII_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Other_QDII_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Other_QDII_Related_6*1=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Other_QDII_Related_6*2=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Other_QDII_Related_StockIndex_7*1=7.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Other_QDII_Related_Stock_7*1=7.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Other_QDII_Related_Stock_StockIndex_8*1=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Other_QDII_StockIndex_6*1=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Other_QDII_StockIndex_6*2=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Other_QDII_Stock_6*1=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Other_QDII_Stock_6*2=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Other_QDII_Stock_StockIndex_7*1=7.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Other_Related_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Other_Related_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Other_Related_StockIndex_6*1=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Other_Related_StockIndex_6*2=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Other_Related_Stock_6*1=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Other_Related_Stock_6*2=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Other_Related_Stock_StockIndex_7*1=7.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Other_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Other_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Other_Stock_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Other_Stock_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Other_Stock_StockIndex_6*1=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Other_Stock_StockIndex_6*2=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_QDII_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_QDII_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_QDII_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_QDII_Related_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_QDII_Related_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_QDII_Related_StockIndex_6*1=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_QDII_Related_StockIndex_6*2=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_QDII_Related_Stock_6*1=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_QDII_Related_Stock_6*2=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_QDII_Related_Stock_StockIndex_7*1=7.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_QDII_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_QDII_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_QDII_Stock_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_QDII_Stock_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_QDII_Stock_StockIndex_6*1=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_QDII_Stock_StockIndex_6*2=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Related_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Related_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Related_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Related_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Related_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Related_Stock_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Related_Stock_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Related_Stock_StockIndex_6*1=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Related_Stock_StockIndex_6*2=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Stock_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Stock_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Stock_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Stock_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Hybrid_Stock_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_QDII_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_QDII_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_QDII_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_QDII_Related_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_QDII_Related_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_QDII_Related_StockIndex_6*1=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_QDII_Related_StockIndex_6*2=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_QDII_Related_Stock_6*1=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_QDII_Related_Stock_6*2=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_QDII_Related_Stock_StockIndex_7*1=7.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_QDII_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_QDII_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_QDII_Stock_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_QDII_Stock_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_QDII_Stock_StockIndex_6*1=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_QDII_Stock_StockIndex_6*2=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_Related_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_Related_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_Related_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_Related_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_Related_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_Related_Stock_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_Related_Stock_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_Related_Stock_StockIndex_6*1=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_Related_Stock_StockIndex_6*2=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_Stock_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_Stock_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_Stock_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_Stock_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Other_Stock_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_QDII_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_QDII_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_QDII_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_QDII_Related_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_QDII_Related_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_QDII_Related_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_QDII_Related_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_QDII_Related_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_QDII_Related_Stock_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_QDII_Related_Stock_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_QDII_Related_Stock_StockIndex_6*1=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_QDII_Related_Stock_StockIndex_6*2=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_QDII_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_QDII_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_QDII_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_QDII_Stock_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_QDII_Stock_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_QDII_Stock_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_QDII_Stock_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_QDII_Stock_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Related_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Related_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Related_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Related_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Related_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Related_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Related_Stock_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Related_Stock_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Related_Stock_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Related_Stock_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Related_Stock_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_StockIndex_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_StockIndex_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_StockIndex_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Stock_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Stock_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Stock_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Stock_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Stock_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_BondIndex_Stock_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_2*3=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_2*4=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_2*5=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_2*6=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_QDII_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_QDII_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_QDII_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_QDII_Related_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_QDII_Related_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_QDII_Related_StockIndex_6*1=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_QDII_Related_StockIndex_6*2=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_QDII_Related_Stock_6*1=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_QDII_Related_Stock_6*2=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_QDII_Related_Stock_StockIndex_7*1=7.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_QDII_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_QDII_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_QDII_Stock_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_QDII_Stock_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_QDII_Stock_StockIndex_6*1=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_QDII_Stock_StockIndex_6*2=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_Related_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_Related_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_Related_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_Related_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_Related_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_Related_Stock_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_Related_Stock_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_Related_Stock_StockIndex_6*1=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_Related_Stock_StockIndex_6*2=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_Stock_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_Stock_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_Stock_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_Stock_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Other_Stock_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_QDII_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_QDII_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_QDII_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_QDII_Related_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_QDII_Related_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_QDII_Related_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_QDII_Related_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_QDII_Related_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_QDII_Related_Stock_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_QDII_Related_Stock_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_QDII_Related_Stock_StockIndex_6*1=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_QDII_Related_Stock_StockIndex_6*2=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_QDII_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_QDII_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_QDII_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_QDII_Stock_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_QDII_Stock_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_QDII_Stock_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_QDII_Stock_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_QDII_Stock_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Related_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Related_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Related_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Related_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Related_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Related_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Related_Stock_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Related_Stock_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Related_Stock_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Related_Stock_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Related_Stock_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_StockIndex_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_StockIndex_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_StockIndex_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Stock_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Stock_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Stock_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Stock_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Stock_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Hybrid_Stock_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_2*3=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_2*4=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_2*5=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_2*6=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_QDII_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_QDII_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_QDII_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_QDII_Related_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_QDII_Related_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_QDII_Related_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_QDII_Related_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_QDII_Related_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_QDII_Related_Stock_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_QDII_Related_Stock_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_QDII_Related_Stock_StockIndex_6*1=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_QDII_Related_Stock_StockIndex_6*2=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_QDII_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_QDII_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_QDII_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_QDII_Stock_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_QDII_Stock_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_QDII_Stock_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_QDII_Stock_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_QDII_Stock_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_Related_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_Related_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_Related_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_Related_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_Related_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_Related_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_Related_Stock_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_Related_Stock_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_Related_Stock_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_Related_Stock_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_Related_Stock_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_StockIndex_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_StockIndex_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_StockIndex_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_Stock_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_Stock_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_Stock_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_Stock_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_Stock_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Other_Stock_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_QDII_2*3=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_QDII_2*4=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_QDII_2*5=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_QDII_2*6=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_QDII_Related_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_QDII_Related_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_QDII_Related_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_QDII_Related_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_QDII_Related_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_QDII_Related_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_QDII_Related_Stock_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_QDII_Related_Stock_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_QDII_Related_Stock_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_QDII_Related_Stock_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_QDII_Related_Stock_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_QDII_StockIndex_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_QDII_StockIndex_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_QDII_StockIndex_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_QDII_Stock_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_QDII_Stock_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_QDII_Stock_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_QDII_Stock_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_QDII_Stock_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_QDII_Stock_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Related_2*3=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Related_2*4=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Related_2*5=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Related_2*6=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Related_StockIndex_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Related_StockIndex_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Related_StockIndex_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Related_Stock_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Related_Stock_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Related_Stock_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Related_Stock_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Related_Stock_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Related_Stock_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_StockIndex_2*3=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_StockIndex_2*4=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_StockIndex_2*5=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_StockIndex_2*6=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Stock_2*3=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Stock_2*4=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Stock_2*5=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Stock_2*6=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Stock_StockIndex_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Stock_StockIndex_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Bond_Stock_StockIndex_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_1*5=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_1*6=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_1*7=7.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_1*8=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_2*3=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_2*4=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_2*5=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_2*6=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_QDII_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_QDII_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_QDII_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_QDII_Related_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_QDII_Related_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_QDII_Related_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_QDII_Related_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_QDII_Related_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_QDII_Related_Stock_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_QDII_Related_Stock_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_QDII_Related_Stock_StockIndex_6*1=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_QDII_Related_Stock_StockIndex_6*2=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_QDII_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_QDII_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_QDII_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_QDII_Stock_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_QDII_Stock_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_QDII_Stock_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_QDII_Stock_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_QDII_Stock_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_Related_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_Related_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_Related_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_Related_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_Related_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_Related_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_Related_Stock_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_Related_Stock_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_Related_Stock_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_Related_Stock_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_Related_Stock_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_StockIndex_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_StockIndex_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_StockIndex_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_Stock_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_Stock_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_Stock_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_Stock_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_Stock_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Other_Stock_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_QDII_2*3=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_QDII_2*4=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_QDII_2*5=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_QDII_2*6=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_QDII_Related_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_QDII_Related_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_QDII_Related_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_QDII_Related_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_QDII_Related_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_QDII_Related_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_QDII_Related_Stock_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_QDII_Related_Stock_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_QDII_Related_Stock_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_QDII_Related_Stock_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_QDII_Related_Stock_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_QDII_StockIndex_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_QDII_StockIndex_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_QDII_StockIndex_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_QDII_Stock_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_QDII_Stock_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_QDII_Stock_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_QDII_Stock_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_QDII_Stock_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_QDII_Stock_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Related_2*3=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Related_2*4=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Related_2*5=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Related_2*6=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Related_StockIndex_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Related_StockIndex_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Related_StockIndex_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Related_Stock_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Related_Stock_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Related_Stock_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Related_Stock_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Related_Stock_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Related_Stock_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_StockIndex_2*3=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_StockIndex_2*4=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_StockIndex_2*5=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_StockIndex_2*6=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Stock_2*3=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Stock_2*4=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Stock_2*5=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Stock_2*6=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Stock_StockIndex_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Stock_StockIndex_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Hybrid_Stock_StockIndex_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_1*5=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_1*6=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_1*7=7.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_1*8=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_QDII_2*3=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_QDII_2*4=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_QDII_2*5=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_QDII_2*6=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_QDII_Related_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_QDII_Related_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_QDII_Related_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_QDII_Related_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_QDII_Related_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_QDII_Related_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_QDII_Related_Stock_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_QDII_Related_Stock_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_QDII_Related_Stock_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_QDII_Related_Stock_StockIndex_5*1=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_QDII_Related_Stock_StockIndex_5*2=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_QDII_StockIndex_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_QDII_StockIndex_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_QDII_StockIndex_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_QDII_Stock_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_QDII_Stock_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_QDII_Stock_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_QDII_Stock_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_QDII_Stock_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_QDII_Stock_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_Related_2*3=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_Related_2*4=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_Related_2*5=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_Related_2*6=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_Related_StockIndex_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_Related_StockIndex_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_Related_StockIndex_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_Related_Stock_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_Related_Stock_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_Related_Stock_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_Related_Stock_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_Related_Stock_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_Related_Stock_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_StockIndex_2*3=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_StockIndex_2*4=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_StockIndex_2*5=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_StockIndex_2*6=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_Stock_2*3=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_Stock_2*4=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_Stock_2*5=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_Stock_2*6=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_Stock_StockIndex_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_Stock_StockIndex_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Other_Stock_StockIndex_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/QDII_1*5=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/QDII_1*6=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/QDII_1*7=7.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/QDII_1*8=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/QDII_Related_2*3=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/QDII_Related_2*4=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/QDII_Related_2*5=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/QDII_Related_2*6=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/QDII_Related_StockIndex_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/QDII_Related_StockIndex_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/QDII_Related_StockIndex_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/QDII_Related_Stock_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/QDII_Related_Stock_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/QDII_Related_Stock_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/QDII_Related_Stock_StockIndex_4*1=4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/QDII_Related_Stock_StockIndex_4*2=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/QDII_Related_Stock_StockIndex_4*3=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/QDII_StockIndex_2*3=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/QDII_StockIndex_2*4=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/QDII_StockIndex_2*5=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/QDII_StockIndex_2*6=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/QDII_Stock_2*3=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/QDII_Stock_2*4=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/QDII_Stock_2*5=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/QDII_Stock_2*6=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/QDII_Stock_StockIndex_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/QDII_Stock_StockIndex_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/QDII_Stock_StockIndex_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Related_1*5=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Related_1*6=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Related_1*7=7.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Related_1*8=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Related_StockIndex_2*3=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Related_StockIndex_2*4=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Related_StockIndex_2*5=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Related_StockIndex_2*6=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Related_Stock_2*3=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Related_Stock_2*4=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Related_Stock_2*5=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Related_Stock_2*6=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Related_Stock_StockIndex_3*2=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Related_Stock_StockIndex_3*3=9.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Related_Stock_StockIndex_3*4=12.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/StockIndex_1*5=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/StockIndex_1*6=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/StockIndex_1*7=7.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/StockIndex_1*8=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Stock_1*5=5.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Stock_1*6=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Stock_1*7=7.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Stock_1*8=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Stock_StockIndex_2*3=6.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Stock_StockIndex_2*4=8.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Stock_StockIndex_2*5=10.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test_res1/Stock_StockIndex_2*6=12.png" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -14,11 +720,11 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="ptfopt.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/xuchuan/ptfopt.py">
+      <file leaf-file-name="ipython_log.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/ipython_log.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4905">
-              <caret line="346" column="23" lean-forward="false" selection-start-line="346" selection-start-column="14" selection-end-line="346" selection-end-column="23" />
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -27,26 +733,14 @@
     </leaf>
   </component>
   <component name="Git.Settings">
+    <option name="UPDATE_TYPE" value="MERGE" />
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="IdeDocumentHistory">
-    <option name="CHANGED_PATHS">
-      <list>
-        <option value="$PROJECT_DIR$/xuchuan/ptfopt.py" />
-      </list>
-    </option>
-  </component>
-  <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
-  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
-  <component name="JsGulpfileManager">
-    <detection-done>true</detection-done>
-    <sorting>DEFINITION_ORDER</sorting>
-  </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1912" />
-    <option name="y" value="-8" />
-    <option name="width" value="1936" />
-    <option name="height" value="1094" />
+    <option name="x" value="41" />
+    <option name="y" value="28" />
+    <option name="width" value="1399" />
+    <option name="height" value="793" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -63,157 +757,23 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scratches" />
       <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
             <PATH_ELEMENT>
-              <option name="myItemId" value="rq_prototype" />
+              <option name="myItemId" value="ForTest" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="bl_prototype" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="rq_prototype" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="bl_prototype" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="xuchuan" />
+              <option name="myItemId" value="ForTest" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scratches" />
     </panes>
-  </component>
-  <component name="PropertiesComponent">
-    <property name="WebServerToolWindowFactoryState" value="false" />
-  </component>
-  <component name="RestoreUpdateTree" date="Moments ago" ActionInfo="_Update">
-    <UpdatedFiles>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Updated from server" />
-        <option name="myStatusName" value="Changed on server" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="CHANGED_ON_SERVER" />
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Updated" />
-          <option name="myStatusName" value="Changed" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="UPDATED" />
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/.idea/misc.xml</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/.idea/rq_prototype.iml</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/.idea/workspace.xml</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/xuchuan/ptfopt.py</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/zhousen/debug.py</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/zhousen/opt_test.py</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/zhousen/optimizer_fund_test.py</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/zhousen/optimizer_test.py</PATH>
-        </FILE-GROUP>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Created" />
-          <option name="myStatusName" value="Created" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="CREATED" />
-        </FILE-GROUP>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Deleted" />
-          <option name="myStatusName" value="Deleted" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="true" />
-          <option name="myId" value="REMOVED_FROM_REPOSITORY" />
-        </FILE-GROUP>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Restored" />
-          <option name="myStatusName" value="Will be restored" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="RESTORED" />
-        </FILE-GROUP>
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Modified" />
-        <option name="myStatusName" value="Modified" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="MODIFIED" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Skipped" />
-        <option name="myStatusName" value="Skipped" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="SKIPPED" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Merged with conflicts" />
-        <option name="myStatusName" value="Will be merged with conflicts" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="MERGED_WITH_CONFLICTS" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Merged with tree conflicts" />
-        <option name="myStatusName" value="Merged with tree conflicts" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="MERGED_WITH_TREE_CONFLICT" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Merged with property conflicts" />
-        <option name="myStatusName" value="Will be merged with property conflicts" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="MERGED_WITH_PROPERTY_CONFLICT" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Merged" />
-        <option name="myStatusName" value="Will be merged" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="MERGED" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Not in repository" />
-        <option name="myStatusName" value="Not in repository" />
-        <option name="mySupportsDeletion" value="true" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="UNKNOWN" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Locally added" />
-        <option name="myStatusName" value="Locally added" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="LOCALLY_ADDED" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Locally removed" />
-        <option name="myStatusName" value="Locally removed" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="LOCALLY_REMOVED" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Switched" />
-        <option name="myStatusName" value="Switched" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="SWITCHED" />
-      </FILE-GROUP>
-    </UpdatedFiles>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -232,29 +792,28 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="0fa19e4e-9c02-4000-a1f6-22394119794f" name="Default" comment="" />
-      <created>1498622090553</created>
+      <changelist id="af6b79ff-4765-464c-8a64-9bde049bc407" name="Default" comment="" />
+      <created>1498629428275</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1498622090553</updated>
+      <updated>1498629428275</updated>
     </task>
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1912" y="-8" width="1936" height="1094" extended-state="0" />
+    <frame x="41" y="28" width="1399" height="793" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24981578" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3292683" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
@@ -265,9 +824,6 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
-  <component name="TypeScriptGeneratedFilesManager">
-    <option name="processedProjectFiles" value="true" />
-  </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
@@ -276,10 +832,10 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/xuchuan/ptfopt.py">
+    <entry file="file://$PROJECT_DIR$/ipython_log.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4905">
-          <caret line="346" column="23" lean-forward="false" selection-start-line="346" selection-start-column="14" selection-end-line="346" selection-end-column="23" />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
