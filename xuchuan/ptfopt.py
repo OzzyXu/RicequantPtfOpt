@@ -323,110 +323,113 @@ def constraints_gen(clean_order_book_ids, asset_type, constraints=None):
 # expected_return_covar: numpy matrix, optional. Covariance matrix of expected return. Default: covariance of the means
 #                        of the returns of order_book_ids within windows;
 # risk_aversion_coefficient: float, optional. Risk aversion coefficient of Mean-Variance model. Default: 1.
-def optimizer(order_book_ids, start_date, asset_type, method, current_weight=None, bnds=None, cons=None,
+def optimizer(order_book_ids, start_date, asset_type, method, frequency = 66, current_weight=None, bnds=None, cons=None,
               expected_return=None, expected_return_covar=None, risk_aversion_coefficient=1):
 
     # Get clean data and calculate covariance matrix
-    windows = 132
+    windows = frequency
     data_after_processing = data_process(order_book_ids, asset_type, start_date, windows)
     clean_period_prices = data_after_processing[0]
     period_daily_return_pct_change = clean_period_prices.pct_change()
     c_m = period_daily_return_pct_change.cov()
 
-    if current_weight is None:
-        current_weight = [1 / clean_period_prices.shape[1]] * clean_period_prices.shape[1]
+    if clean_period_prices.shape[1] == 0:
+        print('All selected funds have been ruled out')
+        return data_after_processing[1]
     else:
-        new_current_weight = current_weight
-        current_weight = list()
-        for i in clean_period_prices.columns.values:
-            current_weight.append(new_current_weight[order_book_ids.index(i)])
 
-    if method is "all":
-        log_rp_bnds, general_bnds = bounds_gen(order_book_ids, list(clean_period_prices.columns), method, bnds)
-    elif method is "risk_parity":
-        log_rp_bnds = bounds_gen(order_book_ids, list(clean_period_prices.columns), method, bnds)
-    else:
-        general_bnds = bounds_gen(order_book_ids, list(clean_period_prices.columns), method, bnds)
-    general_cons = constraints_gen(list(clean_period_prices.columns), asset_type, cons)
-
-    # Log barrier risk parity model
-    c = 15
-
-    def log_barrier_risk_parity_obj_fun(x):
-        return np.dot(np.dot(x, c_m), x) - c * sum(np.log(x))
-
-    def log_barrier_risk_parity_gradient(x):
-        return np.multiply(2, np.dot(c_m, x)) - np.multiply(c, np.reciprocal(x))
-
-    def log_barrier_risk_parity_optimizer():
-        optimization_res = sc_opt.minimize(log_barrier_risk_parity_obj_fun, current_weight, method='L-BFGS-B',
-                                           jac=log_barrier_risk_parity_gradient, bounds=log_rp_bnds)
-        if not optimization_res.success:
-            temp = ' @ %s' % clean_period_prices.index[0]
-            error_message = 'Risk parity optimization failed, ' + str(optimization_res.message) + temp
-            raise OptimizationError(error_message)
+        if current_weight is None:
+            current_weight = [1 / clean_period_prices.shape[1]] * clean_period_prices.shape[1]
         else:
-            optimal_weights = (optimization_res.x / sum(optimization_res.x))
-            return optimal_weights
+            new_current_weight = current_weight
+            current_weight = list()
+            for i in clean_period_prices.columns.values:
+                current_weight.append(new_current_weight[order_book_ids.index(i)])
 
-    # Min variance model
-    min_variance_obj_fun = lambda x: np.dot(np.dot(x, c_m), x)
-
-    def min_variance_gradient(x):
-        return np.multiply(2, np.dot(c_m, x))
-
-    def min_variance_optimizer():
-        optimization_res = sc_opt.minimize(min_variance_obj_fun, current_weight, method='SLSQP',
-                                           jac=min_variance_gradient, bounds=general_bnds, constraints=general_cons,
-                                           options={"ftol": 10**-12})
-        if not optimization_res.success:
-            temp = ' @ %s' % clean_period_prices.index[0]
-            error_message = 'Min variance optimization failed, ' + str(optimization_res.message) + temp
-            raise OptimizationError(error_message)
+        if method is "all":
+            log_rp_bnds, general_bnds = bounds_gen(order_book_ids, list(clean_period_prices.columns), method, bnds)
+        elif method is "risk_parity":
+            log_rp_bnds = bounds_gen(order_book_ids, list(clean_period_prices.columns), method, bnds)
         else:
-            return optimization_res.x
+            general_bnds = bounds_gen(order_book_ids, list(clean_period_prices.columns), method, bnds)
+        general_cons = constraints_gen(list(clean_period_prices.columns), asset_type, cons)
 
-    # Mean variance model
-    if expected_return is None:
-        expected_return = period_daily_return_pct_change.mean()
-    if expected_return_covar is None:
-        expected_return_covar = c_m
+        # Log barrier risk parity model
+        c = 15
 
-    def mean_variance_obj_fun(x):
-        return (np.multiply(risk_aversion_coefficient/2, np.dot(np.dot(x, expected_return_covar), x)) -
-                np.dot(x, expected_return))
+        def log_barrier_risk_parity_obj_fun(x):
+            return np.dot(np.dot(x, c_m), x) - c * sum(np.log(x))
 
-    def mean_variance_gradient(x):
-        return np.asfarray(np.multiply(risk_aversion_coefficient, np.dot(x, expected_return_covar)).transpose()
-                           - expected_return).flatten()
+        def log_barrier_risk_parity_gradient(x):
+            return np.multiply(2, np.dot(c_m, x)) - np.multiply(c, np.reciprocal(x))
 
-    def mean_variance_optimizer():
-        optimization_res = sc_opt.minimize(mean_variance_obj_fun, current_weight, method='SLSQP',
-                                           jac=mean_variance_gradient, bounds=general_bnds,
-                                           constraints=general_cons, options={"ftol": 10**-12})
-        if not optimization_res.success:
-            temp = ' @ %s' % clean_period_prices.index[0]
-            error_message = 'Mean variance optimization failed, ' + str(optimization_res.message) + temp
-            raise OptimizationError(error_message)
+        def log_barrier_risk_parity_optimizer():
+            optimization_res = sc_opt.minimize(log_barrier_risk_parity_obj_fun, current_weight, method='L-BFGS-B',
+                                               jac=log_barrier_risk_parity_gradient, bounds=log_rp_bnds)
+            if not optimization_res.success:
+                temp = ' @ %s' % clean_period_prices.index[0]
+                error_message = 'Risk parity optimization failed, ' + str(optimization_res.message) + temp
+                raise OptimizationError(error_message)
+            else:
+                optimal_weights = (optimization_res.x / sum(optimization_res.x))
+                return optimal_weights
+
+        # Min variance model
+        min_variance_obj_fun = lambda x: np.dot(np.dot(x, c_m), x)
+
+        def min_variance_gradient(x):
+            return np.multiply(2, np.dot(c_m, x))
+
+        def min_variance_optimizer():
+            optimization_res = sc_opt.minimize(min_variance_obj_fun, current_weight, method='SLSQP',
+                                               jac=min_variance_gradient, bounds=general_bnds, constraints=general_cons,
+                                               options={"ftol": 10**-12})
+            if not optimization_res.success:
+                temp = ' @ %s' % clean_period_prices.index[0]
+                error_message = 'Min variance optimization failed, ' + str(optimization_res.message) + temp
+                raise OptimizationError(error_message)
+            else:
+                return optimization_res.x
+
+        # Mean variance model
+        if expected_return is None:
+            expected_return = period_daily_return_pct_change.mean()
+        if expected_return_covar is None:
+            expected_return_covar = c_m
+
+        def mean_variance_obj_fun(x):
+            return (np.multiply(risk_aversion_coefficient/2, np.dot(np.dot(x, expected_return_covar), x)) -
+                    np.dot(x, expected_return))
+
+        def mean_variance_gradient(x):
+            return np.asfarray(np.multiply(risk_aversion_coefficient, np.dot(x, expected_return_covar)).transpose()
+                               - expected_return).flatten()
+
+        def mean_variance_optimizer():
+            optimization_res = sc_opt.minimize(mean_variance_obj_fun, current_weight, method='SLSQP',
+                                               jac=mean_variance_gradient, bounds=general_bnds,
+                                               constraints=general_cons, options={"ftol": 10**-12})
+            if not optimization_res.success:
+                temp = ' @ %s' % clean_period_prices.index[0]
+                error_message = 'Mean variance optimization failed, ' + str(optimization_res.message) + temp
+                raise OptimizationError(error_message)
+            else:
+                return optimization_res.x
+
+        opt_dict = {'risk_parity': log_barrier_risk_parity_optimizer,
+                    'min_variance': min_variance_optimizer,
+                    'mean_variance': mean_variance_optimizer,
+                    'all': [log_barrier_risk_parity_optimizer, min_variance_optimizer, mean_variance_optimizer]}
+
+        if method is not 'all':
+            return pd.DataFrame(opt_dict[method](), index=clean_period_prices.columns.values, columns=[method]), \
+                   period_daily_return_pct_change, c_m, data_after_processing[1]
         else:
-            return optimization_res.x
-
-    opt_dict = {'risk_parity': log_barrier_risk_parity_optimizer,
-                'min_variance': min_variance_optimizer,
-                'mean_variance': mean_variance_optimizer,
-                'all': [log_barrier_risk_parity_optimizer, min_variance_optimizer, mean_variance_optimizer]}
-
-    if method is not 'all':
-        return pd.DataFrame(opt_dict[method](), index=clean_period_prices.columns.values, columns=[method]), \
-               data_after_processing[1]
-    else:
-        temp1 = pd.DataFrame(index=clean_period_prices.columns.values, columns=['risk_parity', 'min_variance',
-                                                                                "mean_variance"])
-        n = 0
-        for f in opt_dict[method]:
-            temp1.iloc[:, n] = f()
-            n = n + 1
-        return temp1, data_after_processing[1]
-
-
+            temp1 = pd.DataFrame(index=clean_period_prices.columns.values, columns=['risk_parity', 'min_variance',
+                                                                                    "mean_variance"])
+            n = 0
+            for f in opt_dict[method]:
+                temp1.iloc[:, n] = f()
+                n = n + 1
+            return temp1, temp1, period_daily_return_pct_change, c_m, data_after_processing[1]
 
