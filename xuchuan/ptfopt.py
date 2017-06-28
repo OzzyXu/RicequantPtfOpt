@@ -15,13 +15,22 @@ class OptimizationError(Exception):
         print(warning_message)
 
 
-# Clean data for covariance matrix calculation
 def data_process(order_book_ids, asset_type, start_date, windows):
+
+    """
+    Clean data for covariance matrix calculation
+    :param order_book_ids: str list. A group of assets.
+    :param asset_type: str. "fund" or "stock"
+    :param start_date: str. The first day of backtest period
+    :param windows: int. Interval length of sample
+    :return: DataFrame, str list, str. The DataFrame contains the prices after cleaning; the str list contains the
+             order_book_ids been filtered out due to unqualified in covariance matrix calculation; the new start date
+             of covariance calculation interval which may differ from default.
+    """
 
     end_date = rqdatac.get_previous_trading_date(start_date)
     end_date = pd.to_datetime(end_date)
-    for i in range(windows + 1):
-        start_date = rqdatac.get_previous_trading_date(start_date)
+    start_date = rqdatac.get_trading_dates("2005-01-01", end_date)[-windows-1]
     reset_start_date = pd.to_datetime(start_date)
 
     if asset_type is 'fund':
@@ -83,28 +92,36 @@ def data_process(order_book_ids, asset_type, start_date, windows):
     return clean_period_prices, final_kickout_list, reset_start_date
 
 
-# Generate expected return and expected return covariance matrix with Black-Litterman model.
-# Suppose we have N assets and K views:
-# Investors_views: N*1 numpy matrix, each row represents one view.
-# Investors_view_indicate_M: K*N numpy matrix, each row corresponds to one view. Indicate which view is involved during
-#                            calculation;
-# investors_views_uncertainty: K*K diagonal matrix, optional. If it is skipped, He and Litterman's method will be called
-#                              to generate diagonal matrix if confidence_of_view is also skipped; Idzorek's method will
-#                              be called if confidence_of_view is passed in; Has to be non-singular;
-# risk_free_rate_tenor: str, optional. The period of risk free rate will be used. Default: "0s";
-# risk_aversion_coefficient: float, optional. If no risk_aversion_coefficient is passed in, then
-#                            risk_aversion_coefficient = market portfolio risk premium / market portfolio volatility
-# excess_return_cov_uncertainty: float, optional. Default: 1/N;
-# confidence_of_view: list of K elements, optional. Represent investors' confidence levels on each view.
-# windows: int, optional. Length of time interval for calculation.
-########
-# It's highly recommended to use your own ways to create investors_views_uncertainty, risk_aversion_coefficient and
-# excess_return_cov_uncertainty beforehand to get the desired distribution parameters.
-########
 def black_litterman_prep(order_book_ids, start_date, investors_views, investors_views_indicate_M,
                          investors_views_uncertainty=None, asset_type=None, market_weight=None,
                          risk_free_rate_tenor=None, risk_aversion_coefficient=None, excess_return_cov_uncertainty=None,
                          confidence_of_views=None, windows=None):
+    """
+    Generate expected return and expected return covariance matrix with Black-Litterman model. Suppose we have N assets
+    and K views.
+    :param order_book_ids: str list. A group of assets;
+    :param asset_type: str. "fund" or "stock";
+    :param start_date: str. The first day of backtest period;
+    :param windows: int. Interval length of sample;
+    :param investors_views: K*1 numpy matrix. Each row represents one view;
+    :param investors_views_indicate_M: K*N numpy matrix. Each row corresponds to one view. Indicate which view is
+    involved during calculation;
+    :param investors_views_uncertainty: K*K diagonal matrix, optional. If it is skipped, He and Litterman's method will
+    be called to generate diagonal matrix if confidence_of_view is also skipped; Idzorek's method will be called if
+    confidence_of_view is passed in; Has to be non-singular;
+    :param market_weight: floats list, optional. Weights for market portfolio; Default: Equal weights portfolio;
+    :param risk_free_rate_tenor: str, optional. The period of risk free rate will be used. Default: "0s";
+    :param risk_aversion_coefficient: float, optional. If no risk_aversion_coefficient is passed in, then
+    risk_aversion_coefficient = market portfolio risk premium / market portfolio volatility;
+    :param excess_return_cov_uncertainty: float, optional. Default: 1/T where T is the time length of sample;
+    :param confidence_of_views: floats list, optional. Represent investors' confidence levels on each view.
+    :return: expected return vector, covariance matrix of expected return, risk_aversion_coefficient,
+    investors_views_uncertainty.
+    ########
+    # It's highly recommended to use your own ways to create investors_views_uncertainty, risk_aversion_coefficient and
+    # excess_return_cov_uncertainty beforehand to get the desired distribution parameters.
+    ########
+    """
 
     risk_free_rate_dict = ['0S', '1M', '2M', '3M', '6M', '9M', '1Y', '2Y', '3Y', '4Y', '5Y', '6Y', '7Y', '8Y',
                            '9Y', '10Y', '15Y', '20Y', '30Y', '40Y', '50Y']
