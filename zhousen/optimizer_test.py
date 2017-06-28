@@ -25,10 +25,10 @@ def optimizer_test(order_book_ids, start_date, asset_type, method, windows=66,
 
     opt_res = {}
     for i in range(0, count+1):
-        opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i],  asset_type=asset_type, method=method, windows = windows)
+        opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i],  asset_type=asset_type, method=method)
 
-        # if opt_res[i][0] == -1:
-        #     print('All selected ' + asset + ' have been ruled out')
+        if len(opt_res[i]) == 1:
+             print('All selected ' + asset + ' have been ruled out')
         #     return -1
 
 
