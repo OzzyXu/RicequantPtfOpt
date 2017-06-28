@@ -4,10 +4,8 @@
     <bookmark url="file://$PROJECT_DIR$/xuchuan/Test.py" line="11" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="79fae9e2-968f-46f6-80fb-809190191850" name="Default" comment="data_process now is able to count those inconsecutive missing values and delete the ones with too many inconsecutive missing value. This is mainly caused by different time index bewteen different equities.&#10; &#10; scratch_6 is the prototype for BL model.">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/rq_prototype.iml" afterPath="$PROJECT_DIR$/.idea/rq_prototype.iml" />
+    <list default="true" id="79fae9e2-968f-46f6-80fb-809190191850" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zhousen/optimizer_indicators.py" afterPath="$PROJECT_DIR$/zhousen/optimizer_indicators.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -72,8 +70,8 @@
       <file leaf-file-name="ptfopt.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/xuchuan/ptfopt.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1440">
-              <caret line="105" column="75" lean-forward="true" selection-start-line="105" selection-start-column="75" selection-end-line="105" selection-end-column="75" />
+            <state relative-caret-position="672">
+              <caret line="105" column="75" lean-forward="false" selection-start-line="105" selection-start-column="75" selection-end-line="105" selection-end-column="75" />
               <folding>
                 <element signature="e#45#63#0" expanded="true" />
               </folding>
@@ -119,6 +117,7 @@
     </replaceStrings>
   </component>
   <component name="Git.Settings">
+    <option name="UPDATE_TYPE" value="MERGE" />
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
@@ -565,11 +564,10 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="1912" y="-8" width="1936" height="1094" extended-state="0" />
-    <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1890625" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.48773986" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32825205" sideWeight="0.5143923" order="6" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32825205" sideWeight="0.5143923" order="6" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.30425963" sideWeight="0.5605428" order="9" side_tool="true" content_ui="tabs" x="2513" y="391" width="2342" height="290" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3266762" sideWeight="0.48347548" order="8" side_tool="false" content_ui="tabs" />
@@ -648,7 +646,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Done" />
     <MESSAGE value="data_process now is able to count those inconsecutive missing values and delete the ones with too many inconsecutive missing value. This is mainly caused by different time index bewteen different equities.&#10; &#10; scratch_6 is the prototype for BL model." />
-    <option name="LAST_COMMIT_MESSAGE" value="data_process now is able to count those inconsecutive missing values and delete the ones with too many inconsecutive missing value. This is mainly caused by different time index bewteen different equities.&#10; &#10; scratch_6 is the prototype for BL model." />
+    <MESSAGE value="I don't know what happened." />
+    <option name="LAST_COMMIT_MESSAGE" value="I don't know what happened." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -898,8 +897,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/xuchuan/ptfopt.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1440">
-          <caret line="105" column="75" lean-forward="true" selection-start-line="105" selection-start-column="75" selection-end-line="105" selection-end-column="75" />
+        <state relative-caret-position="672">
+          <caret line="105" column="75" lean-forward="false" selection-start-line="105" selection-start-column="75" selection-end-line="105" selection-end-column="75" />
           <folding>
             <element signature="e#45#63#0" expanded="true" />
           </folding>
