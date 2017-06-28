@@ -31,7 +31,7 @@ optimizer(equity_funds_list, start_date='2017-06-19', asset_type='fund', method=
 
 
 
-
+daf
 
 
 import ptfopt_zs as pt
