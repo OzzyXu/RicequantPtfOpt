@@ -308,6 +308,8 @@ def constraints_gen(clean_order_book_ids, asset_type, constraints=None):
 
         cons = list()
         for key in constraints:
+            if key not in df.type.unique():
+                raise OptimizationError("Non-existing category in constraints: %s" % key)
             key_list = list(df[df['type'] == key].index)
             key_pos_list = list()
             for i in key_list:
@@ -316,8 +318,8 @@ def constraints_gen(clean_order_book_ids, asset_type, constraints=None):
             key_cons_fun_ub = lambda x: constraints[key][1] - sum(x[t] for t in key_pos_list)
             cons.append({"type": "ineq", "fun": key_cons_fun_lb})
             cons.append({"type": "ineq", "fun": key_cons_fun_ub})
-
-        return tuple(cons.append({'type': 'eq', 'fun': lambda x: sum(x) - 1}))
+        cons.append({'type': 'eq', 'fun': lambda x: sum(x) - 1})
+        return tuple(cons)
     else:
         return {'type': 'eq', 'fun': lambda x: sum(x) - 1}
 
@@ -436,7 +438,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
         opt_dict = {'risk_parity': log_barrier_risk_parity_optimizer,
                     'min_variance': min_variance_optimizer,
                     'mean_variance': mean_variance_optimizer,
-                    'all': [log_barrier_risk_parity_optimizer, min_variance_optimizer, mean_variance_optimizer]}
+                    'all': [log_barrier_risk_parity_optimizer, min_variance_optimizer]}
 
         if method is not 'all':
             return pd.DataFrame(opt_dict[method](), index=clean_period_prices.columns.values, columns=[method]), \
