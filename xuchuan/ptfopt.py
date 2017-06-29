@@ -442,7 +442,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
 
         if method is not 'all':
             return pd.DataFrame(opt_dict[method](), index=clean_period_prices.columns.values, columns=[method]), \
-                   period_daily_return_pct_change, c_m, data_after_processing[1]
+                   c_m, data_after_processing[1]
         else:
             temp1 = pd.DataFrame(index=clean_period_prices.columns.values, columns=['risk_parity', 'min_variance',
                                                                                     "mean_variance"])
