@@ -34,7 +34,7 @@ def data_process(order_book_ids, asset_type, start_date, windows):
     reset_start_date = pd.to_datetime(start_date)
 
     if asset_type is 'fund':
-        period_prices = rqdatac.fund.get_nav(order_book_ids, reset_start_date, end_date, fields='acc_net_value')
+        period_prices = rqdatac.fund.get_nav(order_book_ids, reset_start_date, end_date, fields='adjusted_net_value')
     elif asset_type is 'stock':
         period_data = rqdatac.get_price(order_book_ids, reset_start_date, end_date, frequency='1d',
                                         fields=['close', 'volume'])
@@ -448,5 +448,5 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
             for f in opt_dict[method]:
                 temp1.iloc[:, n] = f()
                 n = n + 1
-            return temp1, period_daily_return_pct_change, c_m, data_after_processing[1]
+            return temp1, c_m, data_after_processing[1]
 
