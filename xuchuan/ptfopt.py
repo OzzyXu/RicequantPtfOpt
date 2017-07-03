@@ -402,7 +402,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
         def min_variance_optimizer():
             optimization_res = sc_opt.minimize(min_variance_obj_fun, current_weight, method='SLSQP',
                                                jac=min_variance_gradient, bounds=general_bnds, constraints=general_cons,
-                                               options={"ftol": 10**-12})
+                                               options={"ftol": 10**-12, 'maxiter': 100000})
             if not optimization_res.success:
                 temp = ' @ %s' % clean_period_prices.index[0]
                 error_message = 'Min variance optimization failed, ' + str(optimization_res.message) + temp
