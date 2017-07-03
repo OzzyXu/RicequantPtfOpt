@@ -1,5 +1,9 @@
 import xuchuan.ptfopt as pt
 import numpy as np
+import rqdatac
+
+rqdatac.init("ricequant", "8ricequant8")
+
 
 stock_fund_list = open("C:\\Users\\xuchu\\Dropbox\\RQ\\Test_Result\\Fund_test_suite\\Stock.txt").read()
 stock_fund_list = stock_fund_list.splitlines()
@@ -15,9 +19,11 @@ equity_funds_list = stock_fund_list
 #  '000916',
 #  '001416']
 
-equity_funds_list = ['000181', '000386', '000069', '160123', '510080', '160124', '460010', '164815']
+# equity_funds_list = ['000181', '000386', '000069', '160123', '510080', '160124', '460010', '164815']
 
 # equity_funds_list = ['540006', '163110', '450009', '160716', '162213']
+
+equity_funds_list = rqdatac.index_components("000300.XSHG", "2016-12-31")
 
 # N*1 vector
 investors_views = np.matrix([[0.0001], [0.0002]])
@@ -37,9 +43,11 @@ confidence_of_views_list = [0.5, 0.5]
 # risk_aversion_c = res[2]
 # expected_return_list = np.matrix([0.01]*7).transpose()
 
-constraints = {"Bond": (0.3, 0.3)}
-bounds =  {"000386": (0.15, 0.20)}
+constraints = {"国防军工": (0, 0.005)}
+bounds = {"600150.XSHG": (0, 0.001)}
 
-optimal_weight = pt.optimizer(equity_funds_list, start_date="2017-01-01", asset_type='fund', method='min_variance', bnds=bounds)
+optimal_weight = pt.optimizer(equity_funds_list, start_date="2016-12-31", asset_type='stock',
+                              method='risk_parity_with_con', cons=constraints)
 print(optimal_weight[0])
-print(optimal_weight[3])
+print(optimal_weight[2])
+

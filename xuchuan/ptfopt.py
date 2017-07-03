@@ -6,6 +6,8 @@ import rqdatac
 import scipy.optimize as sc_opt
 from math import *
 import pandas as pd
+import scipy.spatial as scsp
+# import numdifftools as nd
 
 rqdatac.init('ricequant', '8ricequant8')
 
@@ -30,6 +32,8 @@ def data_process(order_book_ids, asset_type, start_date, windows):
 
     end_date = rqdatac.get_previous_trading_date(start_date)
     end_date = pd.to_datetime(end_date)
+    # Choose the start date based on the windows inputted, can't work if backtest start date is earlier than
+    # "2005-07-01"
     start_date = rqdatac.get_trading_dates("2005-01-01", end_date)[-windows-1]
     reset_start_date = pd.to_datetime(start_date)
 
@@ -99,10 +103,12 @@ def black_litterman_prep(order_book_ids, start_date, investors_views, investors_
     """
     Generate expected return and expected return covariance matrix with Black-Litterman model. Suppose we have N assets
     and K views.
+    It's highly recommended to use your own ways to create investors_views_uncertainty, risk_aversion_coefficient and
+    excess_return_cov_uncertainty beforehand to get the desired distribution parameters.
     :param order_book_ids: str list. A group of assets;
     :param asset_type: str. "fund" or "stock";
     :param start_date: str. The first day of backtest period;
-    :param windows: int. Interval length of sample;
+    :param windows: int. Interval length of sample; Default: 132;
     :param investors_views: K*1 numpy matrix. Each row represents one view;
     :param investors_views_indicate_M: K*N numpy matrix. Each row corresponds to one view. Indicate which view is
     involved during calculation;
@@ -117,10 +123,6 @@ def black_litterman_prep(order_book_ids, start_date, investors_views, investors_
     :param confidence_of_views: floats list, optional. Represent investors' confidence levels on each view.
     :return: expected return vector, covariance matrix of expected return, risk_aversion_coefficient,
     investors_views_uncertainty.
-    ########
-    # It's highly recommended to use your own ways to create investors_views_uncertainty, risk_aversion_coefficient and
-    # excess_return_cov_uncertainty beforehand to get the desired distribution parameters.
-    ########
     """
 
     risk_free_rate_dict = ['0S', '1M', '2M', '3M', '6M', '9M', '1Y', '2Y', '3Y', '4Y', '5Y', '6Y', '7Y', '8Y',
@@ -324,26 +326,32 @@ def constraints_gen(clean_order_book_ids, asset_type, constraints=None):
         return {'type': 'eq', 'fun': lambda x: sum(x) - 1}
 
 
-# order_book_ids: list. A list of assets(stocks or funds);
-# start_date: str. Date to initialize a portfolio or rebalance a portfolio;
-# asset_type: str or str list. Types of portfolio candidates,  "stock" or "fund", portfolio with mixed equities
-#              is not supportted;
-# method: str. Portfolio optimization model: "risk_parity", "min_variance", "mean_variance", "all";
-# current_weight: list of floats, optional. Candidates' weights of current portfolio. Will be used as the initial guess
-#                 to start optimization. Default: equal weights portfolio;
-# bnds: list of floats. Lower bounds and upper bounds for each equity in portfolio.
-#       Support input format: {equity_code1: (lb1, up1), equity_code2: (lb2, up2), ...} or {'full_list': (lb, up)}
-#       (set up universal bounds for all);
-# cons: dict, optional. Lower bounds and upper bounds for each category of equities in portfolio;
-# Supported funds type: Bond, Stock, Hybrid, Money, ShortBond, StockIndex, BondIndex, Related, QDII, Other; supported
-# stocks type: Shenwan_industry_name;
-# cons: {types1: (lb1, up1), types2: (lb2, up2), ...};
-# expected_return: column vector of floats, optional. Default: Means of the returns of order_book_ids within windows.
-# expected_return_covar: numpy matrix, optional. Covariance matrix of expected return. Default: covariance of the means
-#                        of the returns of order_book_ids within windows;
-# risk_aversion_coefficient: float, optional. Risk aversion coefficient of Mean-Variance model. Default: 1.
 def optimizer(order_book_ids, start_date, asset_type, method, current_weight=None, bnds=None, cons=None,
               expected_return=None, expected_return_covar=None, risk_aversion_coefficient=1):
+
+    """
+    :param order_book_ids: list. A list of assets(stocks or funds);
+    :param start_date: str. Date to initialize a portfolio or rebalance a portfolio;
+    :param asset_type: str or str list. Types of portfolio candidates,  "stock" or "fund", portfolio with mixed assets
+    is not supported;
+    :param method: str. Portfolio optimization model: "risk_parity", "min_variance", "mean_variance",
+    "risk_parity_with_con", "all";
+    :param current_weight:
+    :param bnds: list of floats. Lower bounds and upper bounds for each asset in portfolio.
+    Support input format: {"asset_code1": (lb1, up1), "asset_code2": (lb2, up2), ...} or {'full_list': (lb, up)} (set up
+    universal bounds for all assets);
+    :param cons: dict, optional. Lower bounds and upper bounds for each category of assets in portfolio;
+    Supported funds type: Bond, Stock, Hybrid, Money, ShortBond, StockIndex, BondIndex, Related, QDII, Other; supported
+    stocks industry sector: Shenwan_industry_name;
+    cons: {"types1": (lb1, up1), "types2": (lb2, up2), ...};
+    :param expected_return: column vector of floats, optional. Default: Means of the returns of order_book_ids
+    within windows.
+    :param expected_return_covar: numpy matrix, optional. Covariance matrix of expected return. Default: covariance of
+    the means of the returns of order_book_ids within windows;
+    :param risk_aversion_coefficient: float, optional. Risk aversion coefficient of Mean-Variance model. Default: 1.
+    :return: DataFrame(containing optimal weights), covariance matrix, kickout_list(str list, list of asssets been
+    filtered out due to unqualify in covariance calculation)
+    """
 
     # Get clean data and calculate covariance matrix
     windows = 132
@@ -393,6 +401,25 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
                 optimal_weights = (optimization_res.x / sum(optimization_res.x))
                 return optimal_weights
 
+        # Risk parity with constraints model
+        def risk_parity_with_con_obj_fun(x):
+            temp1 = np.multiply(x, np.dot(c_m, x))
+            c = temp1[:, None]
+            return np.sum(scsp.distance.pdist(c, "euclidean"))
+
+        # risk_parity_with_con_gradient = nd.Gradient(risk_parity_with_con_obj_fun)
+
+        def risk_parity_with_con_optimizer():
+            optimization_res = sc_opt.minimize(risk_parity_with_con_obj_fun, current_weight, method='SLSQP',
+                                               bounds=general_bnds, constraints=general_cons,
+                                               options={"ftol": 10**-12, 'maxiter': 100000})
+            if not optimization_res.success:
+                temp = ' @ %s' % clean_period_prices.index[0]
+                error_message = 'Min variance optimization failed, ' + str(optimization_res.message) + temp
+                raise OptimizationError(error_message)
+            else:
+                return optimization_res.x
+
         # Min variance model
         min_variance_obj_fun = lambda x: np.dot(np.dot(x, c_m), x)
 
@@ -438,6 +465,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
         opt_dict = {'risk_parity': log_barrier_risk_parity_optimizer,
                     'min_variance': min_variance_optimizer,
                     'mean_variance': mean_variance_optimizer,
+                    'risk_parity_with_con': risk_parity_with_con_optimizer,
                     'all': [log_barrier_risk_parity_optimizer, min_variance_optimizer]}
 
         if method is not 'all':
@@ -445,7 +473,8 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
                    c_m, data_after_processing[1]
         else:
             temp1 = pd.DataFrame(index=clean_period_prices.columns.values, columns=['risk_parity', 'min_variance',
-                                                                                    "mean_variance"])
+                                                                                    "mean_variance",
+                                                                                    "risk_parity_with_con"])
             n = 0
             for f in opt_dict[method]:
                 temp1.iloc[:, n] = f()
