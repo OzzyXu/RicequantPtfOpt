@@ -25,7 +25,9 @@ def get_fund_test_suite(before_date = dt.date.today().strftime("%Y-%m-%d")):
             combo.append(subset)
             #print(subset)
 
-    each_fund_num = {1: [5, 6, 7, 8], 2: [3,4,5,6], 3: [2,3,4], 4:[1,2,3], 5:[1,2], 6:[1,2], 7:[1]}
+    # each_fund_num = {1: [5, 6, 7, 8], 2: [3,4,5,6], 3: [2,3,4], 4:[1,2,3], 5:[1,2], 6:[1,2], 7:[1]}
+
+    each_fund_num = {1: [ 6, 7, 8], 2: [3,4,5,6], 3: [2,3,4], 4:[2,3], 5:[2], 6:[1,2], 7:[1]}
         #, 8:[1], 9:[1]}
 
     for k in combo:
@@ -45,6 +47,10 @@ def get_fund_test_suite(before_date = dt.date.today().strftime("%Y-%m-%d")):
 # fund_test_suite = get_fund_test_suite('2014-01-01')
 # len(fund_test_suite)
 # 379
+
+
+
+# 316
 
 
 

@@ -37,7 +37,7 @@ len(fund_test_suite)
 
 start_date = '2014-01-01'
 end_date =  '2017-06-13'
-frequency = 66
+adjust_frequency = 66
 
 
 

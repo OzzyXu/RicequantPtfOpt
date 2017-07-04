@@ -32,16 +32,14 @@ elif foo is 'stocks':
 
 
 
-def get_optimizer_indicators(weight, cov_matrix, type_tag = None):
+def get_optimizer_indicators(weight, cov_matrix, type_tag = 0):
 
     weight = np.array(weight)
     # refer to paper formula 2.19 2.20
     production_i = weight * ( cov_matrix.dot(weight) )
     productions = weight.dot(cov_matrix).dot(weight)
 
-
-## calculate for individual:
-
+    ## calculate for individual:
     # calculate hightest risk contributions
     HRCs = production_i / productions
     #index, value = max(enumerate(HRCs), key=operator.itemgetter(1))
@@ -50,7 +48,7 @@ def get_optimizer_indicators(weight, cov_matrix, type_tag = None):
     # calculate Herfindahl
     Herfindahl = np.sum(HRCs**2)
 
-    if type_tag is None:
+    if type_tag == 0:
         return(HRC, HRC_index, Herfindahl)
 
 ## calculate for groups:

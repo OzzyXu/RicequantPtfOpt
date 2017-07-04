@@ -71,8 +71,10 @@ equity_funds_list = test_suite1
 
 
 
+# this code 8.24  adjusted value 更合理
+stock = '162107'
 
-
+order_book_ids = ['160127', '320022', '163110', '000082', '540007', '519714', '162107']
 
 
 q2_key = 'Other_1*7=7'
@@ -165,4 +167,59 @@ c = abc(1)
 abc(1,c=3)
 
 
-askjdfjl
+def abc1(a, *b):
+    return a+b[0] +b[1]
+
+
+
+abc1(1,2,3)
+
+
+time_frame_s
+
+zs1 = daily_methods_a_r['risk_parity']
+zs1[0:70]
+zs1[0:70].index
+
+
+len(zs1)
+849
+len(np.unique(zs1.index))
+
+849
+
+time_frame = {}
+time_frame_e = {}
+for i in range(0, count):
+    time_frame_s[i] = trading_dates[i * tr_frequency]
+    time_frame_e[i] = trading_dates[(i + 1) * tr_frequency - 1]
+time_frame_s[count] = trading_dates[count * tr_frequency]
+time_frame_e[count] = end_date
+
+
+
+zs2 = weights[0]
+type(zs2)
+zs2['risk_parity'].index
+
+
+for i in zs2['risk_parity'].index:
+    print(i)
+
+
+t1=np.array([1,2])
+
+t2 = np.array([[1,2],[3,4]])
+
+t1*(t2.dot(t1))
+
+t1.dot(t2).dot(t1)
+
+
+
+###################
+
+
+kk = 'Bond_Hybrid_Related_Stock_4 x 1=4'
+
+order_book_ids = fund_test_suite[kk]

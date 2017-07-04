@@ -5,31 +5,30 @@
 
 
 
-def optimizer_test(order_book_ids, start_date, asset_type, method, windows=66,
+def optimizer_test(order_book_ids, start_date, asset_type, method, adjust_frequency=66,
                    current_weight=None, bnds=None, cons=None, expected_return=None, expected_return_covar=None, risk_aversion_coefficient=1,
                    end_date = dt.date.today().strftime("%Y-%m-%d"), name = None):
 
     # according to start_date to work out testing time_frame
-
     trading_date_s = get_previous_trading_date(start_date)
     trading_date_e = get_previous_trading_date(end_date)
     trading_dates = get_trading_dates(trading_date_s, trading_date_e)
     time_len = len(trading_dates)
-    count = floor(time_len/windows)
+    count = floor(time_len/adjust_frequency)
 
     time_frame = {}
     for i in range(0, count+1):
-        time_frame[i] = trading_dates[i*windows]
+        time_frame[i] = trading_dates[i*adjust_frequency]
 
 
-
+    # run
     opt_res = {}
     for i in range(0, count+1):
         opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i],  asset_type=asset_type, method=method)
 
         if len(opt_res[i]) == 1:
-             print('All selected ' + asset + ' have been ruled out')
-        #     return -1
+            print('All selected ' + asset + ' have been ruled out')
+            return -1
 
 
 
@@ -44,15 +43,13 @@ def optimizer_test(order_book_ids, start_date, asset_type, method, windows=66,
 
 
     weights = {}
-
     daily_methods_a_r = {}
 
-    test_try = {}
+
 
     for j in methods:
         daily_arithmetic_return = pd.Series()
 
-        test_try_temp = []
         for i in range(0, count):
 
             weights[j+str(i)] = opt_res[i][0]
@@ -68,13 +65,13 @@ def optimizer_test(order_book_ids, start_date, asset_type, method, windows=66,
             weighted_sum = corresponding_data_in_weights.multiply(weights[j+str(i)][j]).sum(axis=1)
             daily_arithmetic_return = daily_arithmetic_return.append(weighted_sum)
 
-            test_try_temp.append(weighted_sum)
 
         daily_methods_a_r[j] = daily_arithmetic_return
 
-        test_try[j] = test_try_temp
 
 
+    # calculate the annualized vol and return
+    # generate plots and save
 
     annualized_vol = {}
     annualized_return = {}
@@ -133,13 +130,13 @@ end_date = '2017-06-25'
 #end_date = today_date,
 
 
-a = optimizer_test(equity_funds_list, start_date, end_date , windows= 60, name = None)
+a = optimizer_test(equity_funds_list, start_date, end_date , adjust_frequency= 60, name = None)
 
 
 
 
 
-def wrap_and_run(test_suite, start_date, end_date, windows = 66):
+def wrap_and_run(test_suite, start_date, end_date, adjust_frequency = 66):
 
 
     test_res = pd.DataFrame(columns=['risk_parity_return', 'min_variance_return', 'equal_weight_return',
@@ -149,10 +146,10 @@ def wrap_and_run(test_suite, start_date, end_date, windows = 66):
                                              'risk_parity_sigma', 'min_variance_sigma', 'equal_weight_sigma'])
         equity_funds_list = test_suite[i]
         # try:
-        #     a = optimizer_test(equity_funds_list, start_date, end_date, windows, name=i)
+        #     a = optimizer_test(equity_funds_list, start_date, end_date, adjust_frequency, name=i)
         # except:
         #     print('outside:', i)
-        a = optimizer_test(equity_funds_list, start_date, 'fund', end_date = end_date, method = 'all', windows = windows, name=i)
+        a = optimizer_test(equity_funds_list, start_date, 'fund', end_date = end_date, method = 'all', adjust_frequency = adjust_frequency, name=i)
 
         if a is None:
             pass
@@ -176,13 +173,13 @@ test_suite =  {key:fund_test_suite[key] for key in ['Hybrid_Related_Stock_3*2=6'
 
  start_date = '2014-01-01'
  end_date = '2017-06-25'
- windows = 132
+ adjust_frequency = 132
 
 
 
 test_suite = fund_test_suite
 len(fund_test_suite)
-res_zs = wrap_and_run(test_suite, start_date, end_date, windows )
+res_zs = wrap_and_run(test_suite, start_date, end_date, adjust_frequency )
 
 
 
