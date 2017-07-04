@@ -415,7 +415,8 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
                                                options={"ftol": 10**-12, 'maxiter': 100000})
             if not optimization_res.success:
                 temp = ' @ %s' % clean_period_prices.index[0]
-                error_message = 'Min variance optimization failed, ' + str(optimization_res.message) + temp
+                error_message = 'Risk parity with constraints optimization failed, ' + str(optimization_res.message) \
+                                + temp
                 raise OptimizationError(error_message)
             else:
                 return optimization_res.x
@@ -466,14 +467,13 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
                     'min_variance': min_variance_optimizer,
                     'mean_variance': mean_variance_optimizer,
                     'risk_parity_with_con': risk_parity_with_con_optimizer,
-                    'all': [log_barrier_risk_parity_optimizer, min_variance_optimizer]}
+                    'all': [log_barrier_risk_parity_optimizer, min_variance_optimizer, risk_parity_with_con_optimizer]}
 
         if method is not 'all':
             return pd.DataFrame(opt_dict[method](), index=clean_period_prices.columns.values, columns=[method]), \
                    c_m, data_after_processing[1]
         else:
             temp1 = pd.DataFrame(index=clean_period_prices.columns.values, columns=['risk_parity', 'min_variance',
-                                                                                    "mean_variance",
                                                                                     "risk_parity_with_con"])
             n = 0
             for f in opt_dict[method]:
