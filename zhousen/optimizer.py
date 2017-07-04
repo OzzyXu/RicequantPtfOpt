@@ -48,7 +48,7 @@ def get_optimizer(order_book_ids, start_date, asset_type, method, tr_frequency =
 
     # determine methods name for later use
     if method == 'all':
-        methods = ['risk_parity', 'min_variance']
+        methods = ['risk_parity', 'min_variance', "risk_parity_with_con"]
     else:
         methods = method
 
@@ -68,13 +68,13 @@ def get_optimizer(order_book_ids, start_date, asset_type, method, tr_frequency =
             opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i], asset_type=asset_type, method=method)
         elif bc == 1:
             opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i], asset_type=asset_type, method=method,
-                                   bnds = {'full_list': (0, 0.25)})
+                                   bnds = {'full_list': (0, 0.2)})
         elif bc == 2:
             opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i], asset_type=asset_type, method=method,
                                    cons = {name[:name.find('_')]: (0.6, 1)} )
         elif bc == 3:
             opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i], asset_type=asset_type, method=method,
-                                   bnds={'full_list': (0, 0.25)}, cons = {name[:name.find('_')]: (0.6, 1)} )
+                                   bnds={'full_list': (0, 0.4)}, cons = {name[:name.find('_')]: (0.4, 1)} )
 
         # if all assets have been ruled out, print and return -1
         if len(opt_res[i]) == 1:
@@ -173,7 +173,9 @@ bigboss_b_nc = test_fund_opt(fund_test_suite, 1)
 
 bigboss_nb_c = test_fund_opt(fund_test_suite, 2)
 
-biboss_b_c = test_fund_opt(fund_test_suite, 3)
+bigboss_b_c = test_fund_opt(fund_test_suite, 3)
+
+
 ###########
 
 def get_optimizer_indicators(weight0, cov_matrix, asset_type, type_tag=1):
@@ -304,7 +306,7 @@ def wrap_and_run(test_suite, start_date, end_date, adjust_frequency = 66):
 
 
 import json
-with open('./fund_test_suite_0703.txt', 'w') as file:
+with open('./fund_test_suite_0704.txt', 'w') as file:
     file.write(json.dumps(fund_test_suite, ensure_ascii=False))
 
 
