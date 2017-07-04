@@ -257,7 +257,7 @@ def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
         if method is "risk_parity":
             log_rp_bnds = [(10**-6, inf)] * len(clean_order_book_ids)
         elif method is "all":
-            log_rp_bnds = [(10 ** -6, inf)] * len(clean_order_book_ids)
+            log_rp_bnds = [(10**-6, inf)] * len(clean_order_book_ids)
             for i in clean_order_book_ids:
                 if "full_list" in list(bounds):
                     general_bnds = general_bnds + [(max(0, bounds["full_list"][0]), min(1, bounds["full_list"][1]))]
@@ -327,15 +327,17 @@ def constraints_gen(clean_order_book_ids, asset_type, constraints=None):
 
 
 def optimizer(order_book_ids, start_date, asset_type, method, current_weight=None, bnds=None, cons=None,
-              expected_return=None, expected_return_covar=None, risk_aversion_coefficient=1):
-
+              expected_return=None, expected_return_covar=None, risk_aversion_coefficient=1,
+              fun_tol=10**-12, max_iteration=10**5):
     """
+
     :param order_book_ids: list. A list of assets(stocks or funds);
     :param start_date: str. Date to initialize a portfolio or rebalance a portfolio;
     :param asset_type: str or str list. Types of portfolio candidates,  "stock" or "fund", portfolio with mixed assets
     is not supported;
     :param method: str. Portfolio optimization model: "risk_parity", "min_variance", "mean_variance",
-    "risk_parity_with_con", "all";
+    "risk_parity_with_con", "all"("all" method only contains "risk_parity", "min_variance", "risk_parity_with_con" but
+    not "mean_variance");
     :param current_weight:
     :param bnds: list of floats. Lower bounds and upper bounds for each asset in portfolio.
     Support input format: {"asset_code1": (lb1, up1), "asset_code2": (lb2, up2), ...} or {'full_list': (lb, up)} (set up
@@ -349,6 +351,8 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
     :param expected_return_covar: numpy matrix, optional. Covariance matrix of expected return. Default: covariance of
     the means of the returns of order_book_ids within windows;
     :param risk_aversion_coefficient: float, optional. Risk aversion coefficient of Mean-Variance model. Default: 1.
+    :param fun_tol: int. Optimization accuracy requirement. The smaller, the more accurate, but cost more time.
+    :param max_iteration: int. Max iteration number allows during optimization.
     :return: DataFrame(containing optimal weights), covariance matrix, kickout_list(str list, list of asssets been
     filtered out due to unqualify in covariance calculation)
     """
@@ -362,9 +366,8 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
 
     if clean_period_prices.shape[1] == 0:
         # print('All selected funds have been ruled out')
-        return  data_after_processing[1]
+        return data_after_processing[1]
     else:
-
         if current_weight is None:
             current_weight = [1 / clean_period_prices.shape[1]] * clean_period_prices.shape[1]
         else:
@@ -412,7 +415,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
         def risk_parity_with_con_optimizer():
             optimization_res = sc_opt.minimize(risk_parity_with_con_obj_fun, current_weight, method='SLSQP',
                                                bounds=general_bnds, constraints=general_cons,
-                                               options={"ftol": 10**-12, 'maxiter': 100000})
+                                               options={"ftol": fun_tol, 'maxiter': max_iteration})
             if not optimization_res.success:
                 temp = ' @ %s' % clean_period_prices.index[0]
                 error_message = 'Risk parity with constraints optimization failed, ' + str(optimization_res.message) \
@@ -430,7 +433,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
         def min_variance_optimizer():
             optimization_res = sc_opt.minimize(min_variance_obj_fun, current_weight, method='SLSQP',
                                                jac=min_variance_gradient, bounds=general_bnds, constraints=general_cons,
-                                               options={"ftol": 10**-12, 'maxiter': 100000})
+                                               options={"ftol": fun_tol, 'maxiter': max_iteration})
             if not optimization_res.success:
                 temp = ' @ %s' % clean_period_prices.index[0]
                 error_message = 'Min variance optimization failed, ' + str(optimization_res.message) + temp
@@ -455,7 +458,8 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
         def mean_variance_optimizer():
             optimization_res = sc_opt.minimize(mean_variance_obj_fun, current_weight, method='SLSQP',
                                                jac=mean_variance_gradient, bounds=general_bnds,
-                                               constraints=general_cons, options={"ftol": 10**-12})
+                                               constraints=general_cons,
+                                               options={"ftol": fun_tol, "maxiter": max_iteration})
             if not optimization_res.success:
                 temp = ' @ %s' % clean_period_prices.index[0]
                 error_message = 'Mean variance optimization failed, ' + str(optimization_res.message) + temp

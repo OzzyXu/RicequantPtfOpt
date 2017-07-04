@@ -47,7 +47,6 @@ constraints = {"国防军工": (0, 0.005)}
 bounds = {"600150.XSHG": (0, 0.001)}
 
 optimal_weight = pt.optimizer(equity_funds_list, start_date="2016-12-31", asset_type='stock',
-                              method='risk_parity_with_con', cons=constraints)
+                              method='risk_parity_with_con')
 print(optimal_weight[0])
 print(optimal_weight[2])
-
