@@ -109,28 +109,7 @@ equity_list1 = list(portfolio1.index)
 portfolio2 = rqdatac.index_weights(index_name, third_period_s)
 equity_list2 = list(portfolio2.index)
 portfolio3 = rqdatac.index_weights(index_name, fourth_period_s)
-equity_list3 = list(portfolio3.index)
-portfolio4 = rqdatac.index_weights(index_name, fifth_period_s)
-equity_list4 = list(portfolio4.index)
-portfolio5 = rqdatac.index_weights(index_name, sixth_period_s)
-equity_list5 = list(portfolio5.index)
-portfolio6 = rqdatac.index_weights(index_name, seventh_period_s)
-equity_list6 = list(portfolio6.index)
-
-# Min variance optimizer
-equity_fund_portfolio_min_variance = pt.TestPortfolio(equity_list1, 'stocks')
-t = time.time()
-equity_fund_portfolio_min_variance.data_preprocessing(equity_list1, first_period_s, first_period_e)
-print(time.time()-t)
-elimination_list = equity_fund_portfolio_min_variance.kickout_list+equity_fund_portfolio_min_variance.st_list + \
-                   equity_fund_portfolio_min_variance.suspended_list
-inherited_holdings_weights = list(portfolio1.loc[elimination_list])
-start_time1 = time.time()
-optimal_weights = list(equity_fund_portfolio_min_variance.min_variance_optimizer())
-print('MV optimizer running time 1: %s' % (time.time()-start_time1))
-optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
-weights = optimal_weights+inherited_holdings_weights
-output_res1 = pd.Series(weights, index=(equity_fund_portfolio_min_variance.clean_equity_list+elimination_list))
+ty_list+elimination_list))
 output_res1.to_csv(path='C:\\Users\\xuchu\\Dropbox\\RQ\\Result\\MV20140701.csv')
 
 equity_fund_portfolio_min_variance.data_preprocessing(equity_list2, second_period_s, second_period_e)
@@ -149,108 +128,96 @@ equity_fund_portfolio_min_variance.data_preprocessing(equity_list3, third_period
 elimination_list = equity_fund_portfolio_min_variance.kickout_list+equity_fund_portfolio_min_variance.st_list + \
                    equity_fund_portfolio_min_variance.suspended_list
 inherited_holdings_weights = list(portfolio3.loc[elimination_list])
-start_time3 = time.time()
-optimal_weights = list(equity_fund_portfolio_min_variance.min_variance_optimizer())
-print('MV optimizer running time 3: %s' % (time.time()-start_time3))
-optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
-weights = optimal_weights+inherited_holdings_weights
-output_res3 = pd.Series(weights, index=(equity_fund_portfolio_min_variance.clean_equity_list+elimination_list))
-output_res3.to_csv(path='C:\\Users\\xuchu\\Dropbox\\RQ\\Result\\MV20150701.csv')
 
-equity_fund_portfolio_min_variance.data_preprocessing(equity_list4, fourth_period_s, fourth_period_e)
-elimination_list = equity_fund_portfolio_min_variance.kickout_list+equity_fund_portfolio_min_variance.st_list + \
-                   equity_fund_portfolio_min_variance.suspended_list
-inherited_holdings_weights = list(portfolio4.loc[elimination_list])
-optimal_weights = list(equity_fund_portfolio_min_variance.min_variance_optimizer())
-optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
-weights = optimal_weights+inherited_holdings_weights
-output_res4 = pd.Series(weights, index=(equity_fund_portfolio_min_variance.clean_equity_list+elimination_list))
-output_res4.to_csv(path='C:\\Users\\xuchu\\Dropbox\\RQ\\Result\\MV20160101.csv')
 
-equity_fund_portfolio_min_variance.data_preprocessing(equity_list5, fifth_period_s, fifth_period_e)
-elimination_list = equity_fund_portfolio_min_variance.kickout_list+equity_fund_portfolio_min_variance.st_list + \
-                   equity_fund_portfolio_min_variance.suspended_list
-inherited_holdings_weights = list(portfolio5.loc[elimination_list])
-optimal_weights = list(equity_fund_portfolio_min_variance.min_variance_optimizer())
-optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
-weights = optimal_weights+inherited_holdings_weights
-output_res5 = pd.Series(weights, index=(equity_fund_portfolio_min_variance.clean_equity_list+elimination_list))
-output_res5.to_csv(path='C:\\Users\\xuchu\\Dropbox\\RQ\\Result\\MV20160701.csv')
+###########################################
 
-equity_fund_portfolio_min_variance.data_preprocessing(equity_list6, sixth_period_s, sixth_period_e)
-elimination_list = equity_fund_portfolio_min_variance.kickout_list+equity_fund_portfolio_min_variance.st_list + \
-                   equity_fund_portfolio_min_variance.suspended_list
-inherited_holdings_weights = list(portfolio6.loc[elimination_list])
-optimal_weights = list(equity_fund_portfolio_min_variance.min_variance_optimizer())
-optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
-weights = optimal_weights+inherited_holdings_weights
-output_res6 = pd.Series(weights, index=(equity_fund_portfolio_min_variance.clean_equity_list+elimination_list))
-output_res6.to_csv(path='C:\\Users\\xuchu\\Dropbox\\RQ\\Result\\MV20170101.csv')
 
-# Log barrier risk parity optimizer
-equity_fund_portfolio_log_barrier = pt.TestPortfolio(equity_list1, 'stocks')
-equity_fund_portfolio_log_barrier.data_preprocessing(equity_list1, first_period_s, first_period_e)
-elimination_list = equity_fund_portfolio_log_barrier.kickout_list+equity_fund_portfolio_log_barrier.st_list + \
-                   equity_fund_portfolio_log_barrier.suspended_list
-inherited_holdings_weights = list(portfolio1.loc[elimination_list])
-start_time4 = time.time()
-optimal_weights = list(equity_fund_portfolio_log_barrier.log_barrier_risk_parity_optimizer())
-print('RP optimizer running time 1: %s' % (time.time()-start_time4))
-optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
-weights = optimal_weights+inherited_holdings_weights
-output_res7 = pd.Series(weights, index=(equity_fund_portfolio_log_barrier.clean_equity_list+elimination_list))
-output_res7.to_csv(path='C:\\Users\\xuchu\\Dropbox\\RQ\\Result\\RP20140701.csv')
 
-equity_fund_portfolio_log_barrier.data_preprocessing(equity_list2, second_period_s, second_period_e)
-elimination_list = equity_fund_portfolio_log_barrier.kickout_list+equity_fund_portfolio_log_barrier.st_list + \
-                   equity_fund_portfolio_log_barrier.suspended_list
-inherited_holdings_weights = list(portfolio2.loc[elimination_list])
-start_time5 = time.time()
-optimal_weights = list(equity_fund_portfolio_log_barrier.log_barrier_risk_parity_optimizer())
-print('RP optimizer running time 2: %s' % (time.time()-start_time5))
-optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
-weights = optimal_weights+inherited_holdings_weights
-output_res8 = pd.Series(weights, index=(equity_fund_portfolio_log_barrier.clean_equity_list+elimination_list))
-output_res8.to_csv(path='C:\\Users\\xuchu\\Dropbox\\RQ\\Result\\RP20150101.csv')
+function[c, p] = real_option_price(z)
 
-equity_fund_portfolio_log_barrier.data_preprocessing(equity_list3, third_period_s, third_period_e)
-elimination_list = equity_fund_portfolio_log_barrier.kickout_list+equity_fund_portfolio_log_barrier.st_list + \
-                   equity_fund_portfolio_log_barrier.suspended_list
-inherited_holdings_weights = list(portfolio3.loc[elimination_list])
-start_time6 = time.time()
-optimal_weights = list(equity_fund_portfolio_log_barrier.log_barrier_risk_parity_optimizer())
-print('RP optimizer running time 3: %s' % (time.time()-start_time6))
-optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
-weights = optimal_weights+inherited_holdings_weights
-output_res9 = pd.Series(weights, index=(equity_fund_portfolio_log_barrier.clean_equity_list+elimination_list))
-output_res9.to_csv(path='C:\\Users\\xuchu\\Dropbox\\RQ\\Result\\RP20150701.csv')
+% z is strike price
+% This function is used to generate call and put price
+% Assumed three log normal adding each other
+% refer to Table 1 Case 1 in page 5 in Feng
 
-equity_fund_portfolio_log_barrier.data_preprocessing(equity_list4, fourth_period_s, fourth_period_e)
-elimination_list = equity_fund_portfolio_log_barrier.kickout_list+equity_fund_portfolio_log_barrier.st_list + \
-                   equity_fund_portfolio_log_barrier.suspended_list
-inherited_holdings_weights = list(portfolio4.loc[elimination_list])
-optimal_weights = list(equity_fund_portfolio_log_barrier.log_barrier_risk_parity_optimizer())
-optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
-weights = optimal_weights+inherited_holdings_weights
-output_res10 = pd.Series(weights, index=(equity_fund_portfolio_log_barrier.clean_equity_list+elimination_list))
-output_res10.to_csv(path='C:\\Users\\xuchu\\Dropbox\\RQ\\Result\\RP20160101.csv')
+p1 = 0.1076;
+v1 = 7.3580;
+sigma1 = 0.1544;
 
-equity_fund_portfolio_log_barrier.data_preprocessing(equity_list5, fifth_period_s, fifth_period_e)
-elimination_list = equity_fund_portfolio_log_barrier.kickout_list+equity_fund_portfolio_log_barrier.st_list + \
-                   equity_fund_portfolio_log_barrier.suspended_list
-inherited_holdings_weights = list(portfolio5.loc[elimination_list])
-optimal_weights = list(equity_fund_portfolio_log_barrier.log_barrier_risk_parity_optimizer())
-optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
-weights = optimal_weights+inherited_holdings_weights
-output_res11 = pd.Series(weights, index=(equity_fund_portfolio_log_barrier.clean_equity_list+elimination_list))
-output_res11.to_csv(path='C:\\Users\\xuchu\\Dropbox\\RQ\\Result\\RP20160701.csv')
+p2 = 0.3350;
+v2 = 7.5154;
+sigma2 = 0.0769;
 
-equity_fund_portfolio_log_barrier.data_preprocessing(equity_list6, sixth_period_s, sixth_period_e)
-elimination_list = equity_fund_portfolio_log_barrier.kickout_list+equity_fund_portfolio_log_barrier.st_list + \
-                   equity_fund_portfolio_log_barrier.suspended_list
-inherited_holdings_weights = list(portfolio6.loc[elimination_list])
-optimal_weights = list(equity_fund_portfolio_log_barrier.log_barrier_risk_parity_optimizer())
-optimal_weights = [x*(1-sum(inherited_holdings_weights)) for x in optimal_weights]
-weights = optimal_weights+inherited_holdings_weights
-output_res12 = pd.Series(weights, index=(equity_fund_portfolio_log_barrier.clean_equity_list+elimination_list))
-output_res12.to_csv(path='C:\\Users\\xuchu\\Dropbox\\RQ\\Result\\RP20170101.csv')
+p3 = 0.5574;
+v3 = 7.6045;
+sigma3 = 0.0410;
+
+St = 1920.24;
+r = 0.003;
+delta = 0.021;
+dT = 136 / 365;
+
+
+
+% a1 = p1*exp(v1+(sigma1^2)/2)+p2*exp(v2+sigma2^2/2)+p3*exp(v3+sigma3^2/2);
+% a2 = St*exp((r-delta)*136/365)
+% a1-a2
+
+% integrate from z, xi is the strike price points
+
+
+fun = @(x) p1*lognpdf(x,v1,sigma1)+p2*lognpdf(x,v2,sigma2)+p3*lognpdf(x,v3,sigma3);
+
+
+
+for i = 1:length(z)
+
+    fun_call = @(x) (x-z(i)).*fun(x);
+    fun_put = @(x) (z(i)-x).*fun(x);
+
+%q = integral(fun,z,Inf,'ArrayValued',true)
+    c(i) = exp(-r*dT)*integral(fun_call,z(i),Inf);
+    p(i) = exp(-r*dT)*integral(fun_put, 0, z(i));
+end
+
+
+##################
+
+function[x, fval] = pengbofeng
+
+n = 41;
+global K
+global gamma
+global lambda
+K=linspace(800, 2400, n); % Starting guess for strike prices
+
+
+St = 1920.24;
+lambda = 100;
+gamma = 30;
+
+r = 0.003;
+delta = 0.021;
+dT = 136 / 365;
+
+for i = 1:n,
+    B0(i,:) = c_int(K(i), K, gamma);
+end
+
+B1 = exp(-r * dT) * B0;
+B = [B1;
+
+-B1;
+
+zeros(n, n)];
+
+A = [eye(n), -eye(n), zeros(n);
+
+-eye(n), -eye(n), zeros(n);
+
+zeros(n), -eye(n), zeros(n);
+
+B, zeros(3 * n, n), kron(ones(3, 1), -eye(n))];
+
+[c, p] = real_option_price(K);

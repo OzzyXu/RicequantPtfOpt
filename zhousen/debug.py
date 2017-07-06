@@ -223,3 +223,10 @@ t1.dot(t2).dot(t1)
 kk = 'Bond_Hybrid_Related_Stock_4 x 1=4'
 
 order_book_ids = fund_test_suite[kk]
+
+
+
+dict1 = {}
+dict1.append({1:2})
+
+df0 = pd.DataFrame(columns = 'type')

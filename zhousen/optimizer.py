@@ -24,14 +24,22 @@ def get_optimizer(order_book_ids, start_date, asset_type, method, tr_frequency =
                   cons=None, expected_return=None, expected_return_covar=None, risk_aversion_coefficient=1, fields = 'weights',
                   end_date = dt.date.today().strftime("%Y-%m-%d"), name = None, bc = 0):
     """
-    API to use RQ optimizer
-    :param order_book_ids: str list. A group of assets.
-    :param asset_type: str. "fund" or "stock"
-    :param start_date: str. The first day of backtest period
-    :param windows: int. Interval length of sample
-    :return: DataFrame, str list, str. The DataFrame contains the prices after cleaning; the str list contains the
-             order_book_ids been filtered out due to unqualified in covariance matrix calculation; the new start date
-             of covariance calculation interval which may differ from default.
+    :param order_book_ids:
+    :param start_date:
+    :param asset_type:
+    :param method:
+    :param tr_frequency:
+    :param current_weight:
+    :param bnds:
+    :param cons:
+    :param expected_return:
+    :param expected_return_covar:
+    :param risk_aversion_coefficient:
+    :param fields:
+    :param end_date:
+    :param name:
+    :param bc:
+    :return:
     """
 
     # according to start_date and tr_frequency to determine time points
@@ -52,7 +60,9 @@ def get_optimizer(order_book_ids, start_date, asset_type, method, tr_frequency =
     else:
         methods = method
 
-    # call ptfopt.py and run optimizer
+
+
+    # call ptfopt.py and run 'optimizer'
     opt_res = {}
     weights = {}
     c_m = {}
@@ -65,16 +75,18 @@ def get_optimizer(order_book_ids, start_date, asset_type, method, tr_frequency =
         # if all kicked out: kicked out list
         # if not all kicked out: weight, cov_mtrx, kicked out list
         if bc == 0:
-            opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i], asset_type=asset_type, method=method)
+            opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i], asset_type=asset_type, method=method, fun_tol=10**-8)
         elif bc == 1:
             opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i], asset_type=asset_type, method=method,
-                                   bnds = {'full_list': (0, 0.2)})
+                                   bnds = {'full_list': (0, 0.2)}, fun_tol=10**-8)
         elif bc == 2:
+            # opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i], asset_type=asset_type, method=method,
+            #                        cons = {name[:name.find('_')]: (0.6, 1)} )
             opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i], asset_type=asset_type, method=method,
-                                   cons = {name[:name.find('_')]: (0.6, 1)} )
+                                   cons= 1, fun_tol=10**-8)
         elif bc == 3:
             opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i], asset_type=asset_type, method=method,
-                                   bnds={'full_list': (0, 0.4)}, cons = {name[:name.find('_')]: (0.4, 1)} )
+                                   bnds={'full_list': (0, 0.2)}, cons = 1, fun_tol=10**-8)
 
         # if all assets have been ruled out, print and return -1
         if len(opt_res[i]) == 1:
@@ -140,7 +152,7 @@ def get_optimizer(order_book_ids, start_date, asset_type, method, tr_frequency =
         p1 = daily_cum_log_return.plot(legend=True, label=str1)
         plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.3))
 
-    plt.savefig('test_res'+str(bc)+'/%s' % (name))
+    plt.savefig('./figure/test_res'+str(bc)+'/%s' % (name))
     plt.close()
 
 
@@ -158,7 +170,8 @@ def get_optimizer(order_book_ids, start_date, asset_type, method, tr_frequency =
 def test_fund_opt(fund_test_suite, bc = 0):
     a = {}
     for k in fund_test_suite.keys():
-        a[k] = get_optimizer(fund_test_suite[k],  start_date = '2014-01-01', asset_type='fund', method='all', fields ='all', name = k,bc = bc)
+        a[k] = get_optimizer(fund_test_suite[k],  start_date = '2014-01-01',end_date= '2017-05-31',
+                             asset_type='fund', method='all', fields ='all', name = k,bc = bc)
 
     return a
 
@@ -174,6 +187,24 @@ bigboss_b_nc = test_fund_opt(fund_test_suite, 1)
 bigboss_nb_c = test_fund_opt(fund_test_suite, 2)
 
 bigboss_b_c = test_fund_opt(fund_test_suite, 3)
+
+
+## test for large
+
+bigboss = test_fund_opt(fund_test_suite_large)
+
+
+bigboss_b_nc = test_fund_opt(fund_test_suite_large, 1)
+
+
+bigboss_nb_c = test_fund_opt(fund_test_suite_large, 2)
+
+bigboss_b_c = test_fund_opt(fund_test_suite_large, 3)
+
+
+
+
+
 
 
 ###########
@@ -310,6 +341,27 @@ with open('./fund_test_suite_0704.txt', 'w') as file:
     file.write(json.dumps(fund_test_suite, ensure_ascii=False))
 
 
+
+with open('./bigboss_0705.txt', 'w') as file:
+    file.write(json.dumps(bigboss, ensure_ascii=False))
+
+json.dump(bigboss, open("text.txt",'w'))
+
+
+
+import pickle
+
+pickle.dump(bigboss, open( "bigboss_0705.p", "wb" ) )
+
+pickle.dump(bigboss_b_nc, open( "bigboss_b_nc_0705.p", "wb" ) )
+
+pickle.dump(bigboss_nb_c, open( "bigboss_nb_c_0705.p", "wb" ) )
+
+pickle.dump(bigboss_b_c, open( "bigboss_b_c_0705.p", "wb" ) )
+
+
+
+qq1 = pickle.load(open( "bigboss_0705.p", "rb" ))
 
 # ## 如需重新读入使用：
 # with open('./common/stock_test_suite.txt', 'r') as f:
