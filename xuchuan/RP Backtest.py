@@ -1,24 +1,19 @@
-# 06/07/2017 By Chuan Xu @ Ricequant V 3.0
-
-
+# 可以自己import我们平台支持的第三方python模块，比如pandas、numpy等。
 import numpy as np
 import rqdatac
 import scipy.optimize as sc_opt
 from math import *
 import pandas as pd
 import scipy.spatial as scsp
-# import numdifftools as nd
+import datetime
 
-rqdatac.init('ricequant', '8ricequant8')
 
 class OptimizationError(Exception):
-
     def __init__(self, warning_message):
         print(warning_message)
 
 
 def data_process(order_book_ids, asset_type, start_date, windows, out_threshold_coefficient=None):
-
     """
     Clean data for covariance matrix calculation
     :param order_book_ids: str list. A group of assets.
@@ -33,11 +28,11 @@ def data_process(order_book_ids, asset_type, start_date, windows, out_threshold_
     covariance calculation interval which may differ from default.
     """
 
-    end_date = rqdatac.get_previous_trading_date(start_date)
+    end_date = get_previous_trading_date(start_date)
     end_date = pd.to_datetime(end_date)
     # Choose the start date based on the windows inputted, can't work if backtest start date is earlier than
     # "2005-07-01"
-    start_date = rqdatac.get_trading_dates("2005-01-01", end_date)[-windows-1]
+    start_date = rqdatac.get_trading_dates("2005-01-01", end_date)[-windows - 1]
     reset_start_date = pd.to_datetime(start_date)
 
     if asset_type is 'fund':
@@ -85,7 +80,7 @@ def data_process(order_book_ids, asset_type, start_date, windows, out_threshold_
         # Check whether any ST stocks are included and generate a list for ST stocks
         st_list = list(period_prices.columns.values[rqdatac.is_st_stock(order_book_ids,
                                                                         reset_start_date, end_date).sum(axis=0) > 0])
-        kickout_assets = kickout_assets.append(pd.DataFrame(["ST stocks"]*len(st_list),
+        kickout_assets = kickout_assets.append(pd.DataFrame(["ST stocks"] * len(st_list),
                                                             columns=["Elimination Reason"], index=[st_list]))
     elif asset_type is "fund":
         for i in order_book_ids:
@@ -106,7 +101,7 @@ def data_process(order_book_ids, asset_type, start_date, windows, out_threshold_
     # Generate final kickout list which includes all the above
     final_kickout_list = list(set(kickout_assets.index))
     # Generate clean data and keep the original input id order
-    clean_order_book_ids = list(set(order_book_ids)-set(final_kickout_list))
+    clean_order_book_ids = list(set(order_book_ids) - set(final_kickout_list))
 
     clean_period_prices = period_prices.loc[reset_start_date:end_date, clean_order_book_ids]
     return clean_period_prices, kickout_assets, reset_start_date
@@ -260,7 +255,6 @@ def black_litterman_prep(order_book_ids, start_date, investors_views, investors_
 
 # Generate upper and lower bounds for equities in portfolio
 def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
-
     if bounds is not None:
         for key in bounds:
             if key is not "full_list" and key not in order_book_ids:
@@ -271,9 +265,9 @@ def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
         general_bnds = list()
         log_rp_bnds = list()
         if method is "risk_parity":
-            log_rp_bnds = [(10**-6, float('inf'))] * len(clean_order_book_ids)
+            log_rp_bnds = [(10 ** -6, float('inf'))] * len(clean_order_book_ids)
         elif method is "all":
-            log_rp_bnds = [(10**-6, float('inf'))] * len(clean_order_book_ids)
+            log_rp_bnds = [(10 ** -6, float('inf'))] * len(clean_order_book_ids)
             for i in clean_order_book_ids:
                 if "full_list" in list(bounds):
                     general_bnds = general_bnds + [(max(0, bounds["full_list"][0]), min(1, bounds["full_list"][1]))]
@@ -297,7 +291,7 @@ def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
         else:
             return tuple(general_bnds)
     else:
-        log_rp_bnds = [(10**-6, float('inf'))] * len(clean_order_book_ids)
+        log_rp_bnds = [(10 ** -6, float('inf'))] * len(clean_order_book_ids)
         general_bnds = [(0, 1)] * len(clean_order_book_ids)
         if method is "all":
             return tuple(log_rp_bnds), tuple(general_bnds)
@@ -309,7 +303,6 @@ def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
 
 # Generate category constraints for portfolio
 def constraints_gen(clean_order_book_ids, asset_type, constraints=None):
-
     if constraints is not None:
         df = pd.DataFrame(index=clean_order_book_ids, columns=['type'])
 
@@ -344,7 +337,7 @@ def constraints_gen(clean_order_book_ids, asset_type, constraints=None):
 
 def optimizer(order_book_ids, start_date, asset_type, method, current_weight=None, bnds=None, cons=None,
               expected_return=None, expected_return_covar=None, risk_aversion_coefficient=1,
-              fun_tol=10**-12, max_iteration=10**5, disp=False, iprint=1):
+              fun_tol=10 ** -12, max_iteration=10 ** 5, disp=False, iprint=1):
     """
 
     :param order_book_ids: list. A list of assets(stocks or funds);
@@ -480,7 +473,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
             expected_return_covar = c_m
 
         def mean_variance_obj_fun(x):
-            return (np.multiply(risk_aversion_coefficient/2, np.dot(np.dot(x, expected_return_covar), x)) -
+            return (np.multiply(risk_aversion_coefficient / 2, np.dot(np.dot(x, expected_return_covar), x)) -
                     np.dot(x, expected_return))
 
         def mean_variance_gradient(x):
@@ -516,3 +509,46 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
                 n = n + 1
             return temp1, c_m, data_after_processing[1]
 
+
+# 在这个方法中编写任何的初始化逻辑。context对象将会在你的算法策略的任何方法之间做传递。
+def init(context):
+    # 在context中保存全局变量
+    equity_funds_list = rqdatac.index_components("000300.XSHG", "2014-01-01")
+    to_test_list = list(np.random.choice(equity_funds_list, size=100, replace=False))
+    context.s1 = to_test_list
+    frequency = 15
+    context.rebalance_time = [get_next_trading_date(datetime.date(2014, 1, 1))]
+    for i in range(11):
+        temp = context.rebalance_time[-1] + datetime.timedelta(weeks=frequency)
+        context.rebalance_time.append(get_next_trading_date(temp))
+    # 实时打印日志
+    logger.info("RunInfo: {}".format(context.run_info))
+
+
+# before_trading此函数会在每天策略交易开始前被调用，当天只会被调用一次
+def before_trading(context):
+    pass
+
+
+# 你选择的证券的数据更新将会触发此段逻辑，例如日或分钟历史数据切片或者是实时数据切片更新
+def handle_bar(context, bar_dict):
+    # 开始编写你的主要的算法逻辑
+
+    # bar_dict[order_book_id] 可以拿到某个证券的bar信息
+    # context.portfolio 可以拿到现在的投资组合信息
+
+    # 使用order_shares(id_or_ins, amount)方法进行落单
+    # TODO: 开始编写你的算法吧
+    if len(context.rebalance_time) != 0:
+        if context.rebalance_time[0].year == context.now.year and context.rebalance_time[
+            0].month == context.now.month and context.rebalance_time[0].day == context.now.day:
+            opt_weight = optimizer(context.s1, start_date=context.rebalance_time[0].isoformat(), asset_type="stock",
+                                   method="risk_parity")
+            for i in opt_weight[0].index.values:
+                order_target_percent(i, opt_weight[0].loc[i][0])
+            context.rebalance_time.pop(0)
+
+
+# after_trading函数会在每天交易结束后被调用，当天只会被调用一次
+def after_trading(context):
+    pass
