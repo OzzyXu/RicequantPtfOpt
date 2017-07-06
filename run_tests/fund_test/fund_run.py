@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 # get_optimizer.py (notice, you need to have github structure or change the folder to save plots)
 
 # generate fund_test_suite
-fund_test_suite  = get_fund_test_suite('2014-01-01')
+fund_test_suite = get_fund_test_suite('2014-01-01')
 
 
 # test_fund_opt is to wrap get_optimizer to run all suite
