@@ -3,6 +3,18 @@
 
 
 
+import talib
+
+close = np.array([1.1,2.1,3.1,4,5,6,7])
+SMA = talib.MA(close,3,matype=0)[-1]
+SMA
+
+# plot('SMA',SMA)
+
+
+
+
+
 
 # import modules
 import rqdatac

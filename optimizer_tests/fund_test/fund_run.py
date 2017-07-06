@@ -2,6 +2,8 @@
 # fund test
 ####################
 
+
+########################################
 # import all necessary libraries
 
 import rqdatac
@@ -12,8 +14,18 @@ import itertools
 import matplotlib.pyplot as plt
 
 
-# run ptfopt1.py , get_fund_test_suite.py and
-# get_optimizer.py (notice, you need to have github structure or change the folder to save plots)
+########################################
+# !!!! You need to have github structure to run all the code without modificaiton.
+########################################
+# import all related functions
+
+import optimizer_tests.fund_test.ptfopt1
+import optimizer_tests.fund_test.get_fund_suite
+import optimizer_tests.fund_test.get_optimizer
+import optimizer_tests.fund_test.get_optimizer_indicators
+import optimizer_tests.fund_test.get_efficient_plots
+
+
 
 # generate fund_test_suite
 fund_test_suite = get_fund_test_suite('2014-01-01')
