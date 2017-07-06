@@ -1,19 +1,23 @@
-# 05/31/2017 By Chuan Xu @ Ricequant V 2.0
+# Created by ZS @ Ricequant 07/06/2017
+# Purpose: Create an optimization class
 
 
-import statsmodels.api as sm
 
-import inspect
 
-src = inspect.getsource(sm.OLS)
+# import modules
+import rqdatac
+from rqdatac import *
+rqdatac.init("ricequant", "8ricequant8")
+import datetime as dt
+import itertools
+import matplotlib.pyplot as plt
 
 import numpy as np
-import rqdatac
 import scipy.optimize as sc_opt
 from math import *
 import pandas as pd
-from scipy.optimize import check_grad
-# import matplotlib.pyplot as plt
+import scipy.spatial as scsp
+
 
 
 class OptimizationError(Exception):
