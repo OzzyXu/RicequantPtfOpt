@@ -383,7 +383,9 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
         else:
             general_bnds = bounds_gen(order_book_ids, list(clean_period_prices.columns), method, bnds)
 
-        # add for test purpose by zs on 0705
+
+        #########################################################################
+        # add for test purpose to set all constraints by zs on 0705
         if cons == 1:
             # get type and determine cons
             clean_order_book_ids = list(clean_period_prices.columns)
@@ -400,7 +402,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
             cons = {}
             for i in all_types:
                 cons[i] = (0, cons_num)
-
+        #########################################################################
         general_cons = constraints_gen(list(clean_period_prices.columns), asset_type, cons)
 
         # Log barrier risk parity model

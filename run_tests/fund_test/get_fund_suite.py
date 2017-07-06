@@ -1,8 +1,10 @@
 def get_fund_test_suite(before_date = dt.date.today().strftime("%Y-%m-%d"), big = 0):
     """
-    :param before_date: str: generate test_suite before this date
-    :param big: int: an indicator to whether we want get big test suite
-    :return: fund_test_suite: dic: a dictionary, e.x.  {'Bond_1 x 2=2': ['161216', '166003']
+    Args:
+    :param before_date (str): generate test_suite before this date
+    :param big (int): an indicator to whether we want get big test suite
+    :return
+    fund_test_suite: (dic): a dictionary, e.x.  {'Bond_1 x 2=2': ['161216', '166003']
                                    the key is in this format for the convenience of saving plots
                                    "Bond_1 x 80=80" means Bond type, in total this combination involves 1 type,
                                    we select 80 out of 1 type and in total the length is 80 (this is calculated for proofread)

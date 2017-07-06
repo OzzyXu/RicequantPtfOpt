@@ -16,14 +16,14 @@ import matplotlib.pyplot as plt
 # get_optimizer.py (notice, you need to have github structure or change the folder to save plots)
 
 # generate fund_test_suite
-fund_test_suite = fund_test_suite = get_fund_test_suite('2014-01-01')
+fund_test_suite  = get_fund_test_suite('2014-01-01')
 
 
-# the next function is to wrap get_optimizer
+# test_fund_opt is to wrap get_optimizer to run all suite
 def test_fund_opt(fund_test_suite, bc = 0):
     """
-    :param fund_test_suite:
-    :param bc: int, an indicator about bounds and constraints. 0 means nothing;
+    :param fund_test_suite (dic)
+    :param bc (int): an indicator about bounds and constraints. 0 means nothing;
                                                                1 means have bounds, no constraints;
                                                                2 means no bounds, have constraints;
                                                                3 means have both
