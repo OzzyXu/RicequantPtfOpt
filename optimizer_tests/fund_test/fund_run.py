@@ -14,8 +14,8 @@ from optimizer_tests.fund_test.optimizer_fund_test import *
 
 # generate fund_test_suite
 fund_test_suite = get_fund_test_suite('2014-01-01')
-
-
+fund_test_suite_large = get_fund_test_suite('2014-01-01', big = 1)
+#len(fund_test_suite_large)
 
 # run
 
