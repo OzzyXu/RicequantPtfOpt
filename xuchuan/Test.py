@@ -139,9 +139,18 @@ confidence_of_views_list = [0.5, 0.5]
 constraints = {"国防军工": (0, 0.005)}
 bounds = {"600150.XSHG": (0, 0.001)}
 
-to_do_list = list(np.random.choice(equity_funds_list, size=30, replace=False))
+# to_do_list = list(np.random.choice(equity_funds_list, size=100, replace=False))
+to_do_list = ["601099.XSHG", "002594.XSHE", "000423.XSHE", "601390.XSHG", "002195.XSHE", "603000.XSHG", "603885.XSHG",
+              "600369.XSHG", "600547.XSHG"]
 
-optimal_weight = pt.optimizer(equity_funds_list, start_date="2016-6-7", asset_type='stock',
-                              method='risk_parity', fun_tol=10**-8, disp=True)
-print(optimal_weight[0])
-print(optimal_weight[2])
+# optimal_weight = pt.optimizer(to_do_list, start_date="2016-6-7", asset_type='stock',
+#                               method='risk_parity')
+# print(optimal_weight[0])
+# print(optimal_weight[2])
+
+# # Test shrinkage efficacy
+clean_price = pt.data_process(to_do_list, asset_type="stock", start_date="2016-6-7", windows=132)
+result_m = pt.cov_shrinkage(clean_price[0])
+print(clean_price[0].pct_change())
+print(result_m[0])
+print(result_m[1])

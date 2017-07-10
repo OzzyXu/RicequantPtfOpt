@@ -8,6 +8,7 @@ from math import *
 import pandas as pd
 import scipy.spatial as scsp
 # import numdifftools as nd
+import datetime
 
 rqdatac.init('ricequant', '8ricequant8')
 
@@ -47,6 +48,7 @@ def data_process(order_book_ids, asset_type, start_date, windows, out_threshold_
                                         fields=['close', 'volume'])
         period_prices = period_data['close']
         period_volume = period_data['volume']
+
     # Set up the threshold of elimination
     if out_threshold_coefficient is None:
         out_threshold = ceil(windows * 0.5)
@@ -110,6 +112,74 @@ def data_process(order_book_ids, asset_type, start_date, windows, out_threshold_
 
     clean_period_prices = period_prices.loc[reset_start_date:end_date, clean_order_book_ids]
     return clean_period_prices, kickout_assets, reset_start_date
+
+
+def cov_shrinkage(clean_period_prices):
+    """
+    Based on Ledoit and Wolf(2003). No r.v.s should have zero sample variance.
+    :param clean_period_prices: DataFrame. Sample data after clean.
+    :return: DataFrame. Covariance matrix after shrinkage.
+             Float. Optimal shrinkage intensity.
+    """
+
+    cov_m = clean_period_prices.pct_change().cov()
+    N = cov_m.shape[0]
+
+    # Generate desired shrinkage target matrix F
+    diag_std_m = np.multiply(np.eye(N), np.power(np.diag(cov_m), -0.5))
+    corr_m = np.dot(diag_std_m, np.dot(cov_m, diag_std_m))
+    corr_avg = 2 * (np.triu(corr_m).sum() - N) / ((N-1) * N)
+    diag_std_v = np.power(np.diag(cov_m), 0.5)
+    diag_std_v = diag_std_v[:, None]
+    F = np.dot(diag_std_v, diag_std_v.T)
+    F_real = np.multiply(np.ones((N, N))-np.eye(N), corr_avg*F) + np.multiply(np.diag(F), np.eye(N))
+
+    # Generate estimator pi
+    sample_average_v = clean_period_prices.pct_change().mean()
+    pct_after_subtract_m = clean_period_prices.pct_change().subtract(sample_average_v)
+    pi_estimator = 0
+    pi_ii_list = list()
+    for i in range(N):
+        temp = np.multiply(np.array(pct_after_subtract_m.iloc[:, i]), pct_after_subtract_m.T).T
+        temp1 = np.subtract(temp, np.array(cov_m.iloc[i, :])).pow(2).mean()
+        pi_ii_list.append(temp1[i])
+        temp2 = temp1.sum()
+        pi_estimator += temp2
+
+    # Generate estimator gamma
+    gamma_estimator = np.subtract(F_real, cov_m).pow(2).sum().sum()
+
+    # Generate estimator pho. Efficiency may get improved by changing the two loops structure to matrix operation.
+    # v_estimator = np.matrix([])
+    # for i in range(N):
+    #     temp = np.multiply(np.array(pct_after_subtract_m.iloc[:, i]), pct_after_subtract_m.T).T
+    #     temp1 = np.subtract(temp, np.array(cov_m.iloc[i, :]))
+    #     temp2 = np.subtract(pct_after_subtract_m.iloc[:, i].pow(2), cov_m.iloc[i, i])
+    #     temp3 = np.multiply(temp2, temp1.T).T
+    #     v_estimator_i = temp3.mean()
+    #     v_estimator = v_estimator.append(v_estimator, [v_estimator_i], axis=0)
+    temp = 0
+    for i in range(N):
+        for j in range(N):
+            if j != i:
+                temp1 = np.subtract(pct_after_subtract_m.iloc[:, i].pow(2), cov_m.iloc[i, i])
+                temp2 = np.multiply(pct_after_subtract_m.iloc[:, i], pct_after_subtract_m.iloc[:, j])
+                v_ii_ij = np.multiply(temp1, np.subtract(temp2, cov_m.iloc[i, j])).mean()
+                temp3 = np.subtract(pct_after_subtract_m.iloc[:, j].pow(2), cov_m.iloc[j, j])
+                v_jj_ij = np.multiply(temp3, np.subtract(temp2, cov_m.iloc[i, j])).mean()
+                temp += (sqrt(cov_m.iloc[j, j]/cov_m.iloc[i, i])*v_ii_ij +
+                         sqrt(cov_m.iloc[i, i]/cov_m.iloc[j, j])*v_jj_ij)
+    pho_estimator = sum(pi_ii_list) + corr_avg/2*temp
+
+    # Generate estimator kai
+    if gamma_estimator != 0:
+        kai_estimator = (pi_estimator-pho_estimator)/gamma_estimator
+    else:
+        raise OptimizationError("Shrinkage target F matrix is exactly the same as sample covariance matrix!")
+
+    # Generate optimal shrinkage intensity delta
+    delta = max(0, min(kai_estimator/clean_period_prices.shape[0], 1))
+    return delta*F_real+(1-delta)*cov_m, delta
 
 
 def black_litterman_prep(order_book_ids, start_date, investors_views, investors_views_indicate_M,
@@ -344,7 +414,7 @@ def constraints_gen(clean_order_book_ids, asset_type, constraints=None):
 
 def optimizer(order_book_ids, start_date, asset_type, method, current_weight=None, bnds=None, cons=None,
               expected_return=None, expected_return_covar=None, risk_aversion_coefficient=1,
-              fun_tol=10**-12, max_iteration=10**5, disp=False, iprint=1):
+              fun_tol=10**-12, max_iteration=10**5, disp=False, iprint=1, cov_enhancement=True):
     """
 
     :param order_book_ids: list. A list of assets(stocks or funds);
@@ -372,6 +442,8 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
     :param max_iteration: int, optional. Max iteration number allows during optimization. Default: 10E5.
     :param disp: bool, optional. Optimization summary display control. Override iprint interface. Default: False.
     :param iprint: int, optional.
+    :param cov_enhancement: bool, optional. Default: True. Use shrinkage method based on Ledoit and Wolf(2003) to
+    improve the estimation for sample covariance matrix. It's recommended to set it to True when the stock pool is large.
     The verbosity of optimization:
         * iprint <= 0 : Silent operation
         * iprint == 1 : Print summary upon completion (default)
@@ -393,13 +465,14 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
     data_after_processing = data_process(order_book_ids, asset_type, start_date, windows)
     clean_period_prices = data_after_processing[0]
     period_daily_return_pct_change = clean_period_prices.pct_change()
-    c_m = period_daily_return_pct_change.cov()
+    if cov_enhancement:
+        c_m = cov_shrinkage(clean_period_prices)
+    else:
+        c_m = period_daily_return_pct_change.cov()
 
     if clean_period_prices.shape[1] == 0:
         # print('All selected funds have been ruled out')
         return data_after_processing[1]
-
-
     else:
         if current_weight is None:
             current_weight = [1 / clean_period_prices.shape[1]] * clean_period_prices.shape[1]
