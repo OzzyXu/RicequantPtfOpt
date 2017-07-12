@@ -434,7 +434,6 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
               out_threshold_coefficient=None, data_freq=None, fun_tol=10**-8, max_iteration=10**5, disp=False,
               iprint=1, cov_enhancement=True, benchmark=None):
     """
-
     :param order_book_ids: list. A list of assets(stocks or funds);
     :param start_date: str. Date to initialize a portfolio or rebalance a portfolio;
     :param asset_type: str or str list. Types of portfolio candidates,  "stock" or "fund", portfolio with mixed assets
