@@ -17,17 +17,17 @@ class OptimizationError(Exception):
         print(warning_message)
 
 
-def data_process(order_book_ids, asset_type, start_date, windows, out_threshold_coefficient=None, data_freq=None):
+def data_process(order_book_ids, asset_type, start_date, windows, data_freq, out_threshold_coefficient=None):
     """
     Clean data for covariance matrix calculation
     :param order_book_ids: str list. A group of assets.
     :param asset_type: str. "fund" or "stock"
     :param start_date: str. The first day for backtest.
-    :param windows: int. Interval length of sample.
+    :param windows: int. Interval length for sample.
     :param out_threshold_coefficient: float, optional. Determine the threshold to filter out assets with too short data
     which may cause problem in covariance matrix calculation. Whose data length is shorter than threshold will
     be eliminated. Default: 0.5(out_threshold = 0.5*windows).
-    :param data_freq: str, optional. Default: "D". Support input: "D": daily data; "W": weekly data; "M": monthly data.
+    :param data_freq: str. Support input: "D": daily data; "W": weekly data; "M": monthly data.
     Weekly data means the close price at the end of each week is taken; monthly means the close price at the end of each
     month. When weekly and monthly data are used, suspended days issues will not be considered. In addition, weekly and
     monthly data don't consider public holidays which have no trading. Users should use a windows a little bit larger
@@ -37,9 +37,6 @@ def data_process(order_book_ids, asset_type, start_date, windows, out_threshold_
     contains the order_book_ids been filtered out and the reasons of elimination; str is a new start date for
     covariance calculation interval which may differ from default.
     """
-
-    if data_freq is None:
-        data_freq = "D"
 
     end_date = rqdatac.get_previous_trading_date(start_date)
     end_date = pd.to_datetime(end_date)
@@ -59,10 +56,8 @@ def data_process(order_book_ids, asset_type, start_date, windows, out_threshold_
         period_prices = period_data['close']
         period_volume = period_data['volume']
 
-    freq_dict = {"W": period_prices.asfreq("W", method="pad"),
-                 "M": period_prices.asfreq("M", method="pad")}
     if data_freq is not "D":
-        period_prices = freq_dict[data_freq]
+        period_prices = period_prices.asfreq(data_freq, method="pad")
 
     # Set up the threshold of elimination
     if out_threshold_coefficient is None:
@@ -89,7 +84,8 @@ def data_process(order_book_ids, asset_type, start_date, windows, out_threshold_
                         temp = pd.DataFrame({"Elimination Reason": "Delisted"}, index=[i])
                         kickout_assets = kickout_assets.append(temp)
                     elif 0 in period_volume.loc[:, i].value_counts().index.values:
-                        if period_volume.loc[:, i].value_counts()[period_volume.loc[:, i].value_counts().index.values == 0][0] >= out_threshold:
+                        if period_volume.loc[:, i].value_counts()[
+                                    period_volume.loc[:, i].value_counts().index.values == 0][0] >= out_threshold:
                             temp = pd.DataFrame({"Elimination Reason": "Suspended days over threshold"}, index=[i])
                             kickout_assets = kickout_assets.append(temp)
                     elif period_prices.loc[:, i].first_valid_index() < reset_start_date:
@@ -435,8 +431,8 @@ def constraints_gen(clean_order_book_ids, asset_type, constraints=None):
 
 def optimizer(order_book_ids, start_date, asset_type, method, current_weight=None, bnds=None, cons=None,
               expected_return=None, expected_return_covar=None, risk_aversion_coefficient=1, windows=None,
-              out_threshold_coefficient=None, data_freq=None, fun_tol=10 ** -12, max_iteration=10 ** 5, disp=False,
-              iprint=1, cov_enhancement=True):
+              out_threshold_coefficient=None, data_freq=None, fun_tol=10**-8, max_iteration=10**5, disp=False,
+              iprint=1, cov_enhancement=True, benchmark=None):
     """
 
     :param order_book_ids: list. A list of assets(stocks or funds);
@@ -485,6 +481,10 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
 
     if not disp:
         iprint = 0
+    if data_freq is None:
+        data_freq = "D"
+    if windows is None:
+        windows = 132
 
     opts = {'maxiter': max_iteration,
             'ftol': fun_tol,
@@ -492,16 +492,11 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
             'disp': disp}
 
     # Get clean data and calculate covariance matrix
-    if windows is None:
-        windows = 132
-    if data_freq is None:
-        data_freq = "D"
-    if out_threshold_coefficient is None:
-        out_threshold_coefficient = 0.5
-    data_after_processing = data_process(order_book_ids, asset_type, start_date,windows, out_threshold_coefficient,
-                                         data_freq)
+    data_after_processing = data_process(order_book_ids, asset_type, start_date, windows, data_freq,
+                                         out_threshold_coefficient)
     clean_period_prices = data_after_processing[0]
-    period_daily_return_pct_change = clean_period_prices.pct_change()
+    reset_start_date = data_after_processing[2]
+    period_daily_return_pct_change = clean_period_prices.pct_change()[1:]
     if cov_enhancement:
         c_m = cov_shrinkage(clean_period_prices)[0]
     else:
@@ -518,6 +513,22 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
             current_weight = list()
             for i in clean_period_prices.columns.values:
                 current_weight.append(new_current_weight[order_book_ids.index(i)])
+
+    if method is "mean_variance":
+        if expected_return is None:
+            expected_return = period_daily_return_pct_change.mean()
+        if expected_return_covar is None:
+            expected_return_covar = c_m
+
+    if method is "min_TE":
+        if benchmark is None:
+            raise OptimizationError("Input no benchmark!")
+        benchmark_price = rqdatac.get_price(benchmark, start_date=reset_start_date,
+                                            end_date=rqdatac.get_previous_trading_date(start_date), fields="close")
+        if data_freq is not "D":
+            benchmark_price_change = benchmark_price.asfreq(data_freq, method="pad").pct_change()[1:]
+        else:
+            benchmark_price_change = benchmark_price.pct_change()[1:]
 
     if method is "all":
         log_rp_bnds, general_bnds = bounds_gen(order_book_ids, list(clean_period_prices.columns), method, bnds)
@@ -584,11 +595,6 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
             return optimization_res.x
 
     # Mean variance model
-    if expected_return is None:
-        expected_return = period_daily_return_pct_change.mean()
-    if expected_return_covar is None:
-        expected_return_covar = c_m
-
     def mean_variance_obj_fun(x):
         return (np.multiply(risk_aversion_coefficient / 2, np.dot(np.dot(x, expected_return_covar), x)) -
                 np.dot(x, expected_return))
@@ -608,10 +614,26 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
         else:
             return optimization_res.x
 
+    # Minimizing tracking error model
+    def min_TE_obj_fun(x):
+        return np.dot(np.subtract(benchmark_price_change, np.dot(period_daily_return_pct_change, x)).T,
+                      np.subtract(benchmark_price_change, np.dot(period_daily_return_pct_change, x)))
+
+    def min_TE_optimizer():
+        optimization_res = sc_opt.minimize(min_TE_obj_fun, current_weight, method='SLSQP',
+                                           bounds=general_bnds, constraints=general_cons, options=opts)
+        if not optimization_res.success:
+            temp = ' @ %s' % clean_period_prices.index[0]
+            error_message = 'Min TE optimization failed, ' + str(optimization_res.message) + temp
+            raise OptimizationError(error_message)
+        else:
+            return optimization_res.x
+
     opt_dict = {'risk_parity': log_barrier_risk_parity_optimizer,
                 'min_variance': min_variance_optimizer,
                 'mean_variance': mean_variance_optimizer,
                 'risk_parity_with_con': risk_parity_with_con_optimizer,
+                "min_TE": min_TE_optimizer,
                 'all': [log_barrier_risk_parity_optimizer, min_variance_optimizer, risk_parity_with_con_optimizer]}
 
     if method is not 'all':

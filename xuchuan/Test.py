@@ -144,7 +144,7 @@ to_do_list = ["601099.XSHG", "002594.XSHE", "000423.XSHE", "601390.XSHG", "00219
               "600369.XSHG", "600547.XSHG"]
 
 optimal_weight = pt.optimizer(to_do_list, start_date="2017-6-1", asset_type='stock',
-                              method='risk_parity', data_freq="W")
+                              method='min_TE', benchmark="000300.XSHG")
 print(optimal_weight[0])
 print(optimal_weight[2])
 
