@@ -1,25 +1,26 @@
 import rqdatac
 from rqdatac import *
 rqdatac.init("ricequant", "8ricequant8")
+
 import datetime as dt
 import itertools
 import matplotlib.pyplot as plt
-
 import numpy as np
 from math import *
 import pandas as pd
-
-
 from optimizer_tests.fund_test.ptfopt1 import *
+
 
 
 def get_fund_test_suite(before_date, big = 0):
     """
     Args:
-    :param before_date (str): generate test_suite before this date
-    :param big (int): an indicator to whether we want get big test suite
-    :return
-    fund_test_suite: (dic): a dictionary, e.x.  {'Bond_1 x 2=2': ['161216', '166003']
+    :param before_date: str
+        generate test_suite before this date
+    :param big: int
+        an indicator to whether we want get big test suite
+    :return fund_test_suite: dic
+        a dictionary, e.x.  {'Bond_1 x 2=2': ['161216', '166003']
                                    the key is in this format for the convenience of saving plots
                                    "Bond_1 x 80=80" means Bond type, in total this combination involves 1 type,
                                    we select 80 out of 1 type and in total the length is 80 (this is calculated for proofread)
@@ -179,6 +180,7 @@ def get_optimizer(order_book_ids, start_date, asset_type, method, tr_frequency =
         elif asset_type is 'stock':
             period_data = rqdatac.get_price(assets_list, time_frame[i], time_frame[i+1], frequency='1d', fields=['close'])
             period_prices = period_data['close']
+
 
         period_daily_return_pct_change = period_prices.pct_change()
 
