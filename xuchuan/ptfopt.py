@@ -435,13 +435,13 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
               iprint=1, cov_enhancement=True, benchmark=None):
     """
     :param order_book_ids: list. A list of assets(stocks or funds);
-    :param start_date: str. Date to initialize a portfolio or rebalance a portfolio;
+    :param start_date: str. Date to initialize a portfolio or re-balance a portfolio;
     :param asset_type: str or str list. Types of portfolio candidates,  "stock" or "fund", portfolio with mixed assets
     is not supported;
     :param method: str. Portfolio optimization model: "risk_parity", "min_variance", "mean_variance",
-    "risk_parity_with_con", "all"("all" method only contains "risk_parity", "min_variance", "risk_parity_with_con" but
-    not "mean_variance");
-    :param current_weight:
+    "risk_parity_with_con", "min_TE", "all"("all" method only contains "risk_parity", "min_variance",
+    "risk_parity_with_con");
+    :param current_weight: floats list. Will be used as the initial guess for optimization.
     :param bnds: list of floats, optional. Lower bounds and upper bounds for each asset in portfolio.
     Support input format: {"asset_code1": (lb1, up1), "asset_code2": (lb2, up2), ...} or {'full_list': (lb, up)} (set up
     universal bounds for all assets);
@@ -467,9 +467,11 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
     Default: 10E-12.
     :param max_iteration: int, optional. Max iteration number allows during optimization. Default: 10E5.
     :param disp: bool, optional. Optimization summary display control. Override iprint interface. Default: False.
-    :param iprint: int, optional.
     :param cov_enhancement: bool, optional. Default: True. Use shrinkage method based on Ledoit and Wolf(2003) to
-    improve the estimation for sample covariance matrix. It's recommended to set it to True when the stock pool is large.
+    improve the estimation for sample covariance matrix. It's recommended to set it to True when the stock pool is
+    large.
+    :param benchmark: str, optional. Target to track in minimum tracking error("min_TE") method.
+    :param iprint: int, optional.
     The verbosity of optimization:
         * iprint <= 0 : Silent operation
         * iprint == 1 : Print summary upon completion (default)
