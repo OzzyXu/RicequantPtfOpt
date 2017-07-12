@@ -112,11 +112,11 @@ equity_funds_list = ['000118',
  '000139',
  '206004']
 
-# equity_funds_list = ['000181', '000386', '000069', '160123', '510080', '160124', '460010', '164815']
+equity_funds_list = ['000181', '000386', '000069', '160123', '510080', '160124', '460010']
 
 # equity_funds_list = ['540006', '163110', '450009', '160716', '162213']
 
-equity_funds_list = rqdatac.index_components("000300.XSHG", "2016-12-31")
+# equity_funds_list = rqdatac.index_components("000300.XSHG", "2016-12-31")
 
 # N*1 vector
 investors_views = np.matrix([[0.0001], [0.0002]])
@@ -129,8 +129,10 @@ investors_views_indicate_M = np.matrix([[0, -1, 0, 1, 0, 0, 0],
 # A list with K elements
 confidence_of_views_list = [0.5, 0.5]
 
-# res = pt.black_litterman_prep(equity_funds_list, "2017-06-01", investors_views, investors_views_indicate_M,
-#                            asset_type='fund')
+res = pt.black_litterman_prep(equity_funds_list, "2017-06-01", investors_views, investors_views_indicate_M,
+                           asset_type='fund', data_freq="M", windows=30)
+# print(type(res[0]), type(res[1]), type(res[2]), type(res[3]))
+print(res[0], res[1], res[2], res[3])
 # expected_return_list = res[0]
 # expected_return_covar_M = res[1]
 # risk_aversion_c = res[2]
@@ -140,17 +142,15 @@ constraints = {"国防军工": (0, 0.005)}
 bounds = {"600150.XSHG": (0, 0.001)}
 
 # to_do_list = list(np.random.choice(equity_funds_list, size=100, replace=False))
-to_do_list = ["601099.XSHG", "002594.XSHE", "000423.XSHE", "601390.XSHG", "002195.XSHE", "603000.XSHG", "603885.XSHG",
-              "600369.XSHG", "600547.XSHG"]
+# to_do_list = ["601099.XSHG", "002594.XSHE", "000423.XSHE", "601390.XSHG", "002195.XSHE", "603000.XSHG", "603885.XSHG",
+#               "600369.XSHG", "600547.XSHG"]
 
-optimal_weight = pt.optimizer(to_do_list, start_date="2017-6-1", asset_type='stock',
-                              method='min_TE', benchmark="000300.XSHG")
-print(optimal_weight[0])
-print(optimal_weight[2])
+# optimal_weight = pt.optimizer(to_do_list, start_date="2017-6-1", asset_type='stock', method='min_variance')
+# print(optimal_weight[0])
+# print(optimal_weight[2])
 
-# # # Test shrinkage efficacy
-# clean_price = pt.data_process(to_do_list, asset_type="stock", start_date="2016-6-7", windows=132)
+# Test shrinkage efficacy
+# clean_price = pt.data_process(to_do_list, asset_type="stock", start_date="2016-6-7", windows=132, data_freq="D")
 # result_m = pt.cov_shrinkage(clean_price[0])
-# print(clean_price[0].pct_change())
-# print(result_m[0])
+# print(result_m[0].columns.values)
 # print(result_m[1])
