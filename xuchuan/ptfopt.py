@@ -167,26 +167,21 @@ def cov_shrinkage(clean_period_prices):
     # Generate estimator gamma
     gamma_estimator = np.subtract(F_real, cov_m).pow(2).sum().sum()
 
-    # Generate estimator pho. Efficiency may get improved by changing the two loops structure to matrix operation.
-    # v_estimator = np.matrix([])
-    # for i in range(N):
-    #     temp = np.multiply(np.array(pct_after_subtract_m.iloc[:, i]), pct_after_subtract_m.T).T
-    #     temp1 = np.subtract(temp, np.array(cov_m.iloc[i, :]))
-    #     temp2 = np.subtract(pct_after_subtract_m.iloc[:, i].pow(2), cov_m.iloc[i, i])
-    #     temp3 = np.multiply(temp2, temp1.T).T
-    #     v_estimator_i = temp3.mean()
-    #     v_estimator = v_estimator.append(v_estimator, [v_estimator_i], axis=0)
+    # Generate estimator pho.
+    v_estimator = np.empty((0,N), float)
+    for i in range(N):
+        temp = np.multiply(np.array(pct_after_subtract_m.iloc[:, i]), pct_after_subtract_m.T).T
+        temp1 = np.subtract(temp, np.array(cov_m.iloc[i, :]))
+        temp2 = np.subtract(np.power(pct_after_subtract_m.iloc[:, i].values, 2), cov_m.iloc[i, i])
+        temp3 = np.multiply(temp2, temp1.T).T
+        v_estimator_i = np.array([temp3.mean()])
+        v_estimator = np.append(v_estimator, v_estimator_i, axis=0)
+
     temp = 0
     for i in range(N):
-        for j in range(N):
-            if j != i:
-                temp1 = np.subtract(pct_after_subtract_m.iloc[:, i].pow(2), cov_m.iloc[i, i])
-                temp2 = np.multiply(pct_after_subtract_m.iloc[:, i], pct_after_subtract_m.iloc[:, j])
-                v_ii_ij = np.multiply(temp1, np.subtract(temp2, cov_m.iloc[i, j])).mean()
-                temp3 = np.subtract(pct_after_subtract_m.iloc[:, j].pow(2), cov_m.iloc[j, j])
-                v_jj_ij = np.multiply(temp3, np.subtract(temp2, cov_m.iloc[i, j])).mean()
-                temp += (sqrt(cov_m.iloc[j, j] / cov_m.iloc[i, i]) * v_ii_ij +
-                         sqrt(cov_m.iloc[i, i] / cov_m.iloc[j, j]) * v_jj_ij)
+        temp1 = np.multiply(np.delete(diag_std_v, i), np.delete(v_estimator[i, :], i)) / diag_std_v[i]
+        temp2 = np.divide(np.delete(v_estimator[:, i], i), np.delete(diag_std_v, i)) * diag_std_v[i]
+        temp += sum(temp1+temp2)
     pho_estimator = sum(pi_ii_list) + corr_avg / 2 * temp
 
     # Generate estimator kai

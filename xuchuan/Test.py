@@ -145,12 +145,12 @@ bounds = {"600150.XSHG": (0, 0.001)}
 to_do_list = ["601099.XSHG", "002594.XSHE", "000423.XSHE", "601390.XSHG", "002195.XSHE", "603000.XSHG", "603885.XSHG",
               "600369.XSHG", "600547.XSHG"]
 
-optimal_weight = pt.optimizer(to_do_list, start_date="2017-6-1", asset_type='stock', method='all')
-print(optimal_weight[0])
-print(optimal_weight[2])
+# optimal_weight = pt.optimizer(to_do_list, start_date="2017-6-1", asset_type='stock', method='all')
+# print(optimal_weight[0])
+# print(optimal_weight[2])
 
 # Test shrinkage efficacy
-# clean_price = pt.data_process(to_do_list, asset_type="stock", start_date="2016-6-7", windows=132, data_freq="D")
-# result_m = pt.cov_shrinkage(clean_price[0])
-# print(result_m[0].columns.values)
-# print(result_m[1])
+clean_price = pt.data_process(to_do_list, asset_type="stock", start_date="2016-6-7", windows=132, data_freq="D")
+result_m = pt.cov_shrinkage(clean_price[0])
+print(result_m[0])
+print(result_m[1])
