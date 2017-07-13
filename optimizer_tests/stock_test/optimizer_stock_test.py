@@ -8,80 +8,103 @@ import matplotlib.pyplot as plt
 import numpy as np
 from math import *
 import pandas as pd
-from optimizer_tests.fund_test.ptfopt1 import *
+from optimizer_tests.stock_test.ptfopt1 import *
 
 
 
-def get_fund_test_suite(before_date, big = 0):
+def get_stock_test_suite(start_t='2013-01-01', end_t='2017-07-05'):
     """
-    Args:
-    :param before_date: str
-        generate test_suite before this date
-    :param big: int
-        an indicator to whether we want get big test suite
-    :return fund_test_suite: dic
-        a dictionary, e.x.  {'Bond_1 x 2=2': ['161216', '166003']
-                                   the key is in this format for the convenience of saving plots
-                                   "Bond_1 x 80=80" means Bond type, in total this combination involves 1 type,
-                                   we select 80 out of 1 type and in total the length is 80 (this is calculated for proofread)
+    get alive stock test suite between dates (for test use between 20140101 to 2017)
+    make sure it has IPO for at least one year and is never ST between dates
+    :param start_t:
+    :param end_t:
+    :return: dic
+        return a dic, key is 0-99.
+        0 is the biggest 100
+        1 is the second 101 ~ 200 stocks
+        2 is the smallest -200 ~ -101 stocks
+        3 is the smallest -100 ~ -1 stocks
+        4 is the biggest 50 + smallest 50
+        5 ~ 99 is the 28*3 combo (28: shenwan_industry category, 3: we split each cate by market cap)
     """
-    fund_pool = {}
-    combo = []
-    fund_test_suite = {}
+    # get all stocks
+    all_stocks0 = list(all_instruments(type='CS').order_book_id)
 
-    all_fund = fund.all_instruments(date=before_date)[['order_book_id', 'listed_date', 'symbol', 'fund_type']]
-    # fund_types = np.unique(all_fund.fund_type)
-    # currently we ruled out Other and Money type
-    fund_types = ['Bond', 'BondIndex', 'Hybrid', 'QDII', 'Related', 'Stock', 'StockIndex']
-    len_fund_types = len(fund_types)
+    # make sure stocks are alive during start_t ~ end_t
+    all_stocks1 = [i.order_book_id for i in instruments(all_stocks0) if i.listed_date <= start_t and
+                   (i.de_listed_date == '0000-00-00' or end_t < i.de_listed_date)]
 
-    # get a dictionary of all_fund according to fund_types
-    for i in fund_types:
-        fund_pool[i] = (all_fund[all_fund['fund_type'] == i]['order_book_id'].values[:])
+    # rule out ST stocks
+    temp0 = is_st_stock(all_stocks1, start_t, end_t).sum(axis=0)
+    all_stocks2 = [i for i in all_stocks1 if temp0.loc[i] == 0]
 
-    # get all possible combinations of fund_types
-    for j in range(1, len_fund_types + 1):
-        for subset in itertools.combinations(fund_types, j):
-            combo.append(subset)
+    # calculate all their market_cap
+    market_cap = rqdatac.get_fundamentals(query(fundamentals.eod_derivative_indicator.market_cap).filter(
+        fundamentals.eod_derivative_indicator.stockcode.in_(all_stocks2)), entry_date='20140101')
+    market_cap_ = market_cap.loc[market_cap.items[0]].transpose()
+    stock_df = pd.DataFrame(index=all_stocks2)
+    temp1 = pd.concat([stock_df, market_cap_], axis=1)
+    temp1.columns = ['market_cap']
+    temp2 = temp1.sort_values(by='market_cap', ascending=False)  # descending sort by market value
 
-    # We have tried all the following cases:
-    # each_fund_num = {1: [5, 6, 7, 8], 2: [3,4,5,6], 3: [2,3,4], 4:[1,2,3], 5:[1,2], 6:[1,2], 7:[1]}
-    # , 8:[1], 9:[1]}
-    # each_fund_num = {1: [ 6, 7, 8], 2: [3,4,5,6], 3: [2,3,4], 4:[2,3], 5:[2], 6:[1,2], 7:[1]}
-    # each_fund_num = {1: [7, 8], 2: [4, 5, 6], 3: [3, 4], 4: [2, 3], 5: [2], 6: [2], 7: [1]}
+    # tag them with shenwan category
+    temp2["industry"] = [shenwan_instrument_industry(s) for s in
+                         temp2.index]  # don't add date to shenwan_instrument_industry
+    shenwan_name = temp2.industry.unique()
 
-    # each_fund_num here is to specify how many we want out of one type
-    if big == 0:
-        each_fund_num = {1: [8], 2: [4, 6], 3: [3], 4: [2], 5: [2], 6: [2], 7: [1]}
-    else:
-        each_fund_num = {1: [80,100], 2: [50], 3: [],4: [], 5: [], 6: [], 7: []}
+    stock_test_suite = {}
 
-    for k in combo:
-        len_combo = len(k) # the length of combo indicates how many types we selected
-        for l in each_fund_num[len_combo]:
-            temp = [a for x in k for a in fund_pool[x][0:l]]
-            fund_test_suite['_'.join(k)+'_'+str(len_combo)+' x '+str(l)+'='+str(len(temp))] = temp
+    # notice that temp2 is sorted by market cap
+    stock_test_suite[0] = list(temp2.index[:100])
+    stock_test_suite[1] = list(temp2.index[100:200])
+    stock_test_suite[2] = list(temp2.index[-200:-100])
+    stock_test_suite[3] = list(temp2.index[-100:])
+    stock_test_suite[4] = list(temp2.index[:50]) + list(temp2.index[-50:])
 
-    return fund_test_suite
+    # temp3 is sorted by industry first and then within industry by market cap in descending order
+    temp3 = temp2.sort_values(by=['industry', 'market_cap'], ascending=False)
+
+    # within industry tag them with [1,2,3] to split them into 3 categories
+    for i in shenwan_name:
+        index0 = temp3['industry'] == i
+        len0 = sum(index0)
+        len0_int = int(len0 / 3)
+        len0_residual = len0 % 3
+        cate_temp = list(np.repeat([1, 2, 3], len0_int)) + [3] * len0_residual
+        temp3.loc[index0, 'category'] = cate_temp
+
+    # get the number of stocks within each industry
+    sum_info = temp3.groupby(by='industry').size()
+    safe_num = min(sum_info) / 3  # this number is for randint() use
+
+    for i in range(5, 100):
+        stock_test_suite[i] = [
+            temp3.loc[temp3.industry == a].loc[temp3.category == b].index[np.random.randint(safe_num)]
+            for a in shenwan_name for b in [1, 2, 3]]
+
+
+    return stock_test_suite
 
 
 
 
 ######### example:
-# fund_test_suite = get_fund_test_suite('2014-01-01')
-# len(fund_test_suite)
-# 379
-
-
-# we also tried the following total number test_suite
-# 246
-# 148
+# stock_test_suite = get_stock_test_suite()
+# len(stock_test_suite)
+# 100
 
 
 
-# fund_test_suite_large = get_fund_test_suite('2014-01-01', 1)
-# len(fund_test_suite_large)
-# 35
+# Save things as pickle file
+# import pickle
+# pickle.dump(stock_test_suite, open( "./optimizer_tests/stock_test/file/stock_test_suite.p", "wb" ))
+# To read it back to use again
+# temp = pickle.load(open( "./optimizer_tests/stock_test/file/stock_test_suite.p", "rb" ))
+
+
+
+
+
 
 
 
@@ -178,8 +201,8 @@ def get_optimizer(order_book_ids, start_date, asset_type, method, tr_frequency =
         if asset_type is 'fund':
             period_prices = fund.get_nav(assets_list, time_frame[i], time_frame[i+1], fields='adjusted_net_value')
         elif asset_type is 'stock':
-            period_data = rqdatac.get_price(assets_list, time_frame[i], time_frame[i+1], frequency='1d', fields=['close'])
-            period_prices = period_data['close']
+            period_prices = rqdatac.get_price(assets_list, time_frame[i], time_frame[i+1], frequency='1d', fields=['close'])
+            #period_prices = period_data['close']
 
 
         period_daily_return_pct_change = period_prices.pct_change()
@@ -231,7 +254,7 @@ def get_optimizer(order_book_ids, start_date, asset_type, method, tr_frequency =
         p1 = daily_cum_log_return.plot(legend=True, label=str1)
         plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.3))
 
-    plt.savefig('./figure/test_res'+str(bc)+'/%s' % (name))
+    plt.savefig('./optimizer_tests/stock_test/result/normal/figure/test_res'+str(bc)+'/%s' % (name))
     plt.close()
 
 
@@ -303,7 +326,7 @@ def get_optimizer_indicators(weight0, cov_matrix, asset_type, type_tag=1):
 
 
 
-def get_efficient_plots(fund_test_suite, bigboss):
+def get_efficient_plots(fund_test_suite, bigboss, name):
     """
     To generate the plot of all test results, x-axis is annualized_vol, y-axis is annualized return
     :param fund_test_suite:
@@ -325,17 +348,17 @@ def get_efficient_plots(fund_test_suite, bigboss):
     plt.xlabel('annualized_vol')
     plt.ylabel('annualized_return')
         #plt.show()
-    plt.savefig('./figure/a' )
+    plt.savefig('./optimizer_tests/stock_test/result/normal/figure/%s' %(name))
     plt.close()
 
     return p1
 
 
 
-# test_fund_opt is to wrap get_optimizer to run all suite
-def test_fund_opt(fund_test_suite, bc = 0):
+# test_stock_opt is to wrap get_optimizer to run all suite
+def test_stock_opt(stock_test_suite, bc = 0):
     """
-    :param fund_test_suite (dic)
+    :param stock_test_suite (dic)
     :param bc (int): an indicator about bounds and constraints. 0 means nothing;
                                                                1 means have bounds, no constraints;
                                                                2 means no bounds, have constraints;
@@ -343,9 +366,9 @@ def test_fund_opt(fund_test_suite, bc = 0):
     :return:
     """
     a = {}
-    for k in fund_test_suite.keys():
-        a[k] = get_optimizer(fund_test_suite[k],  start_date = '2014-01-01',end_date= '2017-05-31',
-                             asset_type='fund', method='all', fields ='all', name = k,bc = bc)
+    for k in stock_test_suite.keys():
+        a[k] = get_optimizer(stock_test_suite[k],  start_date = '2014-01-01',end_date= '2017-05-31',
+                             asset_type='stock', method='all', fields ='all', name = k, bc = bc)
 
     return a
 

@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from math import *
 import pandas as pd
-from optimizer_tests.fund_test.ptfopt1 import *
+from optimizer_tests.fund_test.ptfopt2 import *
 
 
 
@@ -87,7 +87,7 @@ def get_fund_test_suite(before_date, big = 0):
 
 def get_optimizer(order_book_ids, start_date, asset_type, method, tr_frequency = 66, current_weight=None, bnds=None,
                   cons=None, expected_return=None, expected_return_covar=None, risk_aversion_coefficient=1, fields = 'weights',
-                  end_date = '20170705', name = None, bc = 0):
+                  end_date = dt.date.today().strftime("%Y-%m-%d"), name = None, bc = 0):
     """
     Wrap ptfopt2.py to run optimizer and get indicators
     :param order_book_ids: list. A list of assets(stocks or funds);
@@ -156,7 +156,7 @@ def get_optimizer(order_book_ids, start_date, asset_type, method, tr_frequency =
             opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i], asset_type=asset_type, method=method, fun_tol=10**-8)
         elif bc == 1:
             opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i], asset_type=asset_type, method=method,
-                                   bnds = {'full_list': (0, 0.2)}, fun_tol=10**-12)
+                                   bnds = {'full_list': (0, 0.2)}, fun_tol=10**-8)
         elif bc == 2:
             # opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i], asset_type=asset_type, method=method,
             #                        cons = {name[:name.find('_')]: (0.6, 1)} )
@@ -231,7 +231,7 @@ def get_optimizer(order_book_ids, start_date, asset_type, method, tr_frequency =
         p1 = daily_cum_log_return.plot(legend=True, label=str1)
         plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.3))
 
-    plt.savefig('./figure/test_res'+str(bc)+'/%s' % (name))
+    plt.savefig('./figure//cm/test_res'+str(bc)+'/%s' % (name))
     plt.close()
 
 
@@ -325,10 +325,9 @@ def get_efficient_plots(fund_test_suite, bigboss):
     plt.xlabel('annualized_vol')
     plt.ylabel('annualized_return')
         #plt.show()
-    plt.savefig('./figure/a' )
+    plt.savefig('./figure/cm/a' )
     plt.close()
-
-    return p1
+    return 0
 
 
 

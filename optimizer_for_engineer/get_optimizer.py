@@ -2,7 +2,7 @@ def get_optimizer(order_book_ids, start_date, asset_type, method, tr_frequency =
                   cons=None, expected_return=None, expected_return_covar=None, risk_aversion_coefficient=1, fields = 'weights',
                   end_date = dt.date.today().strftime("%Y-%m-%d"), name = None, bc = 0):
     """
-    Wrap ptfopt.py to run optimizer and get indicators
+    Wrap ptfopt2.py to run optimizer and get indicators
     :param order_book_ids: list. A list of assets(stocks or funds);
     :param start_date: str. Date to initialize a portfolio or rebalance a portfolio;
     :param asset_type: str or str list. Types of portfolio candidates,  "stock" or "fund", portfolio with mixed assets
@@ -53,7 +53,7 @@ def get_optimizer(order_book_ids, start_date, asset_type, method, tr_frequency =
         methods = method
 
 
-    # call ptfopt.py and run 'optimizer'
+    # call ptfopt2.py and run 'optimizer'
     opt_res = {}
     weights = {}
     c_m = {}
