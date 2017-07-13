@@ -1,6 +1,4 @@
-# 06/07/2017 By Chuan Xu @ Ricequant V 3.0
-
-
+# 07/13/2017 By Chuan Xu @ Ricequant V 4.0
 import numpy as np
 import rqdatac
 import scipy.optimize as sc_opt
