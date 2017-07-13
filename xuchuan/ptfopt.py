@@ -54,6 +54,7 @@ def data_process(order_book_ids, asset_type, start_date, windows, data_freq, out
     elif asset_type is 'stock':
         period_data = rqdatac.get_price(order_book_ids, reset_start_date, end_date, frequency='1d',
                                         fields=['close', 'volume'])
+
         period_prices = period_data['close']
         period_volume = period_data['volume']
 
@@ -376,6 +377,7 @@ def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
 
         general_bnds = list()
         log_rp_bnds = list()
+        temp_ub = 0
         if method is "risk_parity":
             log_rp_bnds = [(10 ** -6, float('inf'))] * len(clean_order_book_ids)
         elif method is "all":
@@ -383,18 +385,29 @@ def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
             for i in clean_order_book_ids:
                 if "full_list" in list(bounds):
                     general_bnds = general_bnds + [(max(0, bounds["full_list"][0]), min(1, bounds["full_list"][1]))]
+                    temp_ub += bounds["full_list"][1]
                 elif i in list(bounds):
                     general_bnds = general_bnds + [(max(0, bounds[i][0]), min(1, bounds[i][1]))]
+                    temp_ub += bounds[i][1]
                 else:
                     general_bnds = general_bnds + [(0, 1)]
+                    temp_ub += 1
         else:
             for i in clean_order_book_ids:
                 if "full_list" in list(bounds):
                     general_bnds = general_bnds + [(max(0, bounds["full_list"][0]), min(1, bounds["full_list"][1]))]
+                    temp_ub += bounds["full_list"][1]
                 elif i in list(bounds):
                     general_bnds = general_bnds + [(max(0, bounds[i][0]), min(1, bounds[i][1]))]
+                    temp_ub += bounds[i][1]
                 else:
                     general_bnds = general_bnds + [(0, 1)]
+                    temp_ub += 1
+        if temp_ub < 1:
+            kickout_list = list(set(order_book_ids) - set(clean_order_book_ids))
+            message = "Bounds setting error after data processing! The following assets have been eliminated: %s" \
+                  % kickout_list
+            raise OptimizationError(message)
 
         if method is "all":
             return tuple(log_rp_bnds), tuple(general_bnds)
@@ -547,14 +560,18 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
 
         # Generate expected_return if not given
         if method is "mean_variance":
-            if expected_return is None:
-                expected_return = period_daily_return_pct_change.mean()
+            expected_return = period_daily_return_pct_change.mean()
     else:
         # Get preparation done when expected_return_covar is given
         c_m = expected_return_covar
+
         if current_weight is None:
             current_weight = [1 / c_m.shape[0]] * c_m.shape[0]
+
         order_book_ids = list(c_m.columns.values)
+
+    # Generate enhanced estimation for covariance matrix
+    period_daily_return_pct_change = clean_period_prices.pct_change()[1:]
 
     # Read benchmark data for min tracking error model
     if method is "min_TE":
