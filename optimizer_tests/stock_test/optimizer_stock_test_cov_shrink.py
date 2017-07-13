@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from math import *
 import pandas as pd
-from optimizer_tests.stock_test.ptfopt2 import *
+from optimizer_tests.stock_test.ptfopt_cov_shrink import *
 
 
 def get_stock_test_suite(start_t='2013-01-01', end_t='2017-07-05'):
@@ -196,8 +196,8 @@ def get_optimizer(order_book_ids, start_date, asset_type, method, tr_frequency =
         if asset_type is 'fund':
             period_prices = fund.get_nav(assets_list, time_frame[i], time_frame[i+1], fields='adjusted_net_value')
         elif asset_type is 'stock':
-            period_data = rqdatac.get_price(assets_list, time_frame[i], time_frame[i+1], frequency='1d', fields=['close'])
-            period_prices = period_data['close']
+            period_prices = rqdatac.get_price(assets_list, time_frame[i], time_frame[i+1], frequency='1d', fields=['close'])
+
 
 
         period_daily_return_pct_change = period_prices.pct_change()
@@ -249,7 +249,7 @@ def get_optimizer(order_book_ids, start_date, asset_type, method, tr_frequency =
         p1 = daily_cum_log_return.plot(legend=True, label=str1)
         plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.3))
 
-    plt.savefig('./figure//cm/test_res'+str(bc)+'/%s' % (name))
+    plt.savefig('./optimizer_tests/stock_test/result/cov_shrink/figure/test_res' + str(bc) + '/%s' % (name))
     plt.close()
 
 
@@ -343,7 +343,7 @@ def get_efficient_plots(fund_test_suite, bigboss):
     plt.xlabel('annualized_vol')
     plt.ylabel('annualized_return')
         #plt.show()
-    plt.savefig('./figure/cm/a' )
+    plt.savefig('./optimizer_tests/stock_test/result/cov_shrink/figure/%s' % (name))
     plt.close()
     return 0
 
