@@ -116,7 +116,7 @@ def data_process(order_book_ids, asset_type, start_date, windows, data_freq, out
     elif asset_type is "fund":
         for i in order_book_ids:
             period_prices_i = period_prices.loc[:, i]
-            if period_prices_i.first_valid_index() is not None:
+            if not ((period_prices_i.isnull() == 0).sum() == 0):
                 if period_prices_i.isnull().sum() >= out_threshold:
                     temp = pd.DataFrame({"Elimination Reason": "Missing values over threshold"}, index=[i])
                     kickout_assets = kickout_assets.append(temp)
