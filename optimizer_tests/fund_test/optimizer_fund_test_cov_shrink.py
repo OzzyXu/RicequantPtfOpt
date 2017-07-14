@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from math import *
 import pandas as pd
-from optimizer_tests.fund_test.ptfopt2 import *
+from optimizer_tests.fund_test.ptfopt_cov_shrink import *
 
 
 
@@ -231,9 +231,8 @@ def get_optimizer(order_book_ids, start_date, asset_type, method, tr_frequency =
         p1 = daily_cum_log_return.plot(legend=True, label=str1)
         plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.3))
 
-    plt.savefig('./figure//cm/test_res'+str(bc)+'/%s' % (name))
+    plt.savefig('./optimizer_tests/fund_test/result/normal/figure/test_res' + str(bc) + '/%s' % (name))
     plt.close()
-
 
     return_pack = {'weights': weights, 'annualized_return': annualized_return,
                    'annualized_vol': annualized_vol, 'indicators': indicators, 'mmd': mmd}
@@ -325,7 +324,7 @@ def get_efficient_plots(fund_test_suite, bigboss):
     plt.xlabel('annualized_vol')
     plt.ylabel('annualized_return')
         #plt.show()
-    plt.savefig('./figure/cm/a' )
+    plt.savefig('./optimizer_tests/fund_test/result/normal/figure/%s' % (name))
     plt.close()
     return 0
 

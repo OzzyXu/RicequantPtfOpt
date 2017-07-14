@@ -40,13 +40,20 @@ res3_cov_shrink = test_stock_opt(stock_test_suite, 3)
 
 
 
+# to get efficient plots, run get_efficient_plot.py
+get_efficient_plots(stock_test_suite, res0_cov_shrink, 0)
+get_efficient_plots(stock_test_suite, res1_cov_shrink, 1)
+get_efficient_plots(stock_test_suite, res2_cov_shrink, 2)
+get_efficient_plots(stock_test_suite, res3_cov_shrink, 3)
+
+
 ########################################
 # To save all the files for replicating next time
 
-pickle.dump(res0, open('./optimizer_tests/stock_test/result/cov_shrink/save_res/res0_cov_shrink.p', "wb" ))
-pickle.dump(res1, open('./optimizer_tests/stock_test/result/cov_shrink/save_res/res1_cov_shrink.p', "wb" ))
-pickle.dump(res2, open('./optimizer_tests/stock_test/result/cov_shrink/save_res/res2_cov_shrink.p', "wb" ))
-pickle.dump(res3, open('./optimizer_tests/stock_test/result/cov_shrink/save_res/res3_cov_shrink.p', "wb" ))
+pickle.dump(res0_cov_shrink, open('./optimizer_tests/stock_test/result/cov_shrink/save_res/res0_cov_shrink.p', "wb" ))
+pickle.dump(res1_cov_shrink, open('./optimizer_tests/stock_test/result/cov_shrink/save_res/res1_cov_shrink.p', "wb" ))
+pickle.dump(res2_cov_shrink, open('./optimizer_tests/stock_test/result/cov_shrink/save_res/res2_cov_shrink.p', "wb" ))
+pickle.dump(res3_cov_shrink, open('./optimizer_tests/stock_test/result/cov_shrink/save_res/res3_cov_shrink.p', "wb" ))
 
 
 # To read it back to use again

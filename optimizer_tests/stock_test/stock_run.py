@@ -33,9 +33,9 @@ stock_test_suite = pickle.load(open( "./optimizer_tests/stock_test/stock_test_su
 ## run
 
 res0 = test_stock_opt(stock_test_suite)
-res1 = test_fund_opt(stock_test_suite, 1)
-res2 = test_fund_opt(stock_test_suite, 2)
-res3 = test_fund_opt(stock_test_suite, 3)
+res1 = test_stock_opt(stock_test_suite, 1)
+res2 = test_stock_opt(stock_test_suite, 2)
+res3 = test_stock_opt(stock_test_suite, 3)
 
 
 

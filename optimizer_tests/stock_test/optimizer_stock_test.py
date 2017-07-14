@@ -179,7 +179,7 @@ def get_optimizer(order_book_ids, start_date, asset_type, method, tr_frequency =
             opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i], asset_type=asset_type, method=method, fun_tol=10**-8)
         elif bc == 1:
             opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i], asset_type=asset_type, method=method,
-                                   bnds = {'full_list': (0, 0.2)}, fun_tol=10**-12)
+                                   bnds = {'full_list': (0, 0.015)}, fun_tol=10**-12)
         elif bc == 2:
             # opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i], asset_type=asset_type, method=method,
             #                        cons = {name[:name.find('_')]: (0.6, 1)} )
@@ -187,7 +187,7 @@ def get_optimizer(order_book_ids, start_date, asset_type, method, tr_frequency =
                                    cons= 1, fun_tol=10**-8)
         elif bc == 3:
             opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i], asset_type=asset_type, method=method,
-                                   bnds={'full_list': (0, 0.2)}, cons = 1, fun_tol=10**-8)
+                                   bnds={'full_list': (0, 0.015)}, cons = 1, fun_tol=10**-8)
 
         # if all assets have been ruled out, print and return -1
         if len(opt_res[i]) == 1:
