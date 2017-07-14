@@ -129,10 +129,10 @@ investors_views_indicate_M = np.matrix([[0, -1, 0, 1, 0, 0, 0],
 # A list with K elements
 confidence_of_views_list = [0.5, 0.5]
 
-# res = pt.black_litterman_prep(equity_funds_list, "2017-06-01", investors_views, investors_views_indicate_M,
-#                            asset_type='fund', data_freq="M", windows=30)
-# print(type(res[0]), type(res[1]), type(res[2]), type(res[3]))
-# print(res[0], res[1], res[2], res[3])
+res = pt.black_litterman_prep(equity_funds_list, "2017-06-01", investors_views, investors_views_indicate_M,
+                           asset_type='fund', data_freq="M", windows=30)
+print(type(res[0]), type(res[1]), type(res[2]), type(res[3]))
+print(res[0], res[1], res[2], res[3])
 # expected_return_list = res[0]
 # expected_return_covar_M = res[1]
 # risk_aversion_c = res[2]
@@ -150,7 +150,7 @@ to_do_list = ["601099.XSHG", "002594.XSHE", "000423.XSHE", "601390.XSHG", "00219
 # print(optimal_weight[2])
 
 # Test shrinkage efficacy
-clean_price = pt.data_process(to_do_list, asset_type="stock", start_date="2016-6-7", windows=132, data_freq="D")
-result_m = pt.cov_shrinkage(clean_price[0])
-print(result_m[0])
-print(result_m[1])
+# clean_price = pt.data_process(to_do_list, asset_type="stock", start_date="2016-6-7", windows=132, data_freq="D")
+# result_m = pt.cov_shrinkage(clean_price[0])
+# print(result_m[0])
+# print(result_m[1])

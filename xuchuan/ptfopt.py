@@ -1,4 +1,4 @@
-# 07/13/2017 By Chuan Xu @ Ricequant V 4.0
+# 07/14/2017 By Chuan Xu @ Ricequant V 5.0
 import numpy as np
 import rqdatac
 import scipy.optimize as sc_opt
@@ -76,16 +76,18 @@ def data_process(order_book_ids, asset_type, start_date, windows, data_freq, out
     if asset_type is "stock":
         if data_freq is "D":
             for i in order_book_ids:
-                if not period_volume.loc[:, i].value_counts().empty:
-                    if period_prices.loc[:, i].isnull().sum() >= out_threshold:
+                period_volume_i = period_volume.loc[:, i]
+                period_volume_i_value_counts = period_volume_i.value_counts()
+                period_volume_i_value_counts_index = period_volume_i_value_counts.index.values
+                if not period_volume_i_value_counts.empty:
+                    if period_volume_i.isnull().sum() >= out_threshold:
                         temp = pd.DataFrame({"Elimination Reason": "Missing values over threshold"}, index=[i])
                         kickout_assets = kickout_assets.append(temp)
-                    elif period_volume.loc[:, i].last_valid_index() < end_date:
+                    elif period_volume_i.last_valid_index() < end_date:
                         temp = pd.DataFrame({"Elimination Reason": "Delisted"}, index=[i])
                         kickout_assets = kickout_assets.append(temp)
-                    elif 0 in period_volume.loc[:, i].value_counts().index.values:
-                        if period_volume.loc[:, i].value_counts()[
-                                    period_volume.loc[:, i].value_counts().index.values == 0][0] >= out_threshold:
+                    elif 0 in period_volume_i_value_counts_index:
+                        if period_volume_i_value_counts[period_volume_i_value_counts_index == 0][0] >= out_threshold:
                             temp = pd.DataFrame({"Elimination Reason": "Suspended days over threshold"}, index=[i])
                             kickout_assets = kickout_assets.append(temp)
                     elif period_prices.loc[:, i].first_valid_index() < reset_start_date:
@@ -95,12 +97,13 @@ def data_process(order_book_ids, asset_type, start_date, windows, data_freq, out
                     kickout_assets = kickout_assets.append(temp)
         else:
             for i in order_book_ids:
-                if not ((period_prices.loc[:, i].isnull() == 0).sum() == 0):
-                    if period_prices.loc[:, i].isnull().sum() >= out_threshold:
+                period_prices_i = period_prices.loc[:, i]
+                if not ((period_prices_i.isnull() == 0).sum() == 0):
+                    if period_prices_i.isnull().sum() >= out_threshold:
                         temp = pd.DataFrame({"Elimination Reason": "Missing values over threshold"}, index=[i])
                         kickout_assets = kickout_assets.append(temp)
-                    elif period_prices.loc[:, i].first_valid_index() < reset_start_date:
-                        reset_start_date = period_prices.loc[:, i].first_valid_index()
+                    elif period_prices_i.first_valid_index() < reset_start_date:
+                        reset_start_date = period_prices_i.first_valid_index()
                 else:
                     temp = pd.DataFrame({"Elimination Reason": "Empty data"}, index=[i])
                     kickout_assets = kickout_assets.append(temp)
@@ -112,12 +115,13 @@ def data_process(order_book_ids, asset_type, start_date, windows, data_freq, out
                                                             columns=["Elimination Reason"], index=[st_list]))
     elif asset_type is "fund":
         for i in order_book_ids:
-            if period_prices.loc[:, i].first_valid_index() is not None:
-                if period_prices.loc[:, i].isnull().sum() >= out_threshold:
+            period_prices_i = period_prices.loc[:, i]
+            if period_prices_i.first_valid_index() is not None:
+                if period_prices_i.isnull().sum() >= out_threshold:
                     temp = pd.DataFrame({"Elimination Reason": "Missing values over threshold"}, index=[i])
                     kickout_assets = kickout_assets.append(temp)
-                elif period_prices.loc[:, i].first_valid_index() < reset_start_date:
-                    reset_start_date = period_prices.loc[:, i].first_valid_index()
+                elif period_prices_i.first_valid_index() < reset_start_date:
+                    reset_start_date = period_prices_i.first_valid_index()
             else:
                 temp = pd.DataFrame({"Elimination Reason": "Empty data"}, index=[i])
                 kickout_assets = kickout_assets.append(temp)
@@ -141,44 +145,45 @@ def cov_shrinkage(clean_period_prices):
     """
 
     cov_m = clean_period_prices.pct_change().cov()
-    N = cov_m.shape[0]
+    cov_size = cov_m.shape[0]
 
     # Generate desired shrinkage target matrix F
-    diag_std_m = np.multiply(np.eye(N), np.power(np.diag(cov_m), -0.5))
+    diag_std_m = np.multiply(np.eye(cov_size), np.power(np.diag(cov_m), -0.5))
     corr_m = np.dot(diag_std_m, np.dot(cov_m, diag_std_m))
-    corr_avg = 2 * (np.triu(corr_m).sum() - N) / ((N - 1) * N)
+    corr_avg = 2 * (np.triu(corr_m).sum() - cov_size) / ((cov_size - 1) * cov_size)
     diag_std_v = np.power(np.diag(cov_m), 0.5)
     diag_std_v = diag_std_v[:, None]
     F = np.dot(diag_std_v, diag_std_v.T)
-    F_real = np.multiply(np.ones((N, N)) - np.eye(N), corr_avg * F) + np.multiply(np.diag(F), np.eye(N))
+    F_real = np.multiply(np.ones((cov_size, cov_size)) - np.eye(cov_size), corr_avg * F) + np.multiply(np.diag(F),
+                                                                                                       np.eye(cov_size))
+
+    # Generate estimator gamma
+    gamma_estimator = np.subtract(F_real, cov_m).pow(2).sum().sum()
 
     # Generate estimator pi
     sample_average_v = clean_period_prices.pct_change().mean()
     pct_after_subtract_m = clean_period_prices.pct_change().subtract(sample_average_v)
     pi_estimator = 0
     pi_ii_list = list()
-    for i in range(N):
-        temp = np.multiply(np.array(pct_after_subtract_m.iloc[:, i]), pct_after_subtract_m.T).T
-        temp1 = np.subtract(temp, np.array(cov_m.iloc[i, :])).pow(2).mean()
-        pi_ii_list.append(temp1[i])
-        temp2 = temp1.sum()
-        pi_estimator += temp2
-
-    # Generate estimator gamma
-    gamma_estimator = np.subtract(F_real, cov_m).pow(2).sum().sum()
-
-    # Generate estimator pho.
-    v_estimator = np.empty((0,N), float)
-    for i in range(N):
-        temp = np.multiply(np.array(pct_after_subtract_m.iloc[:, i]), pct_after_subtract_m.T).T
+    v_estimator = np.empty((0, cov_size), float)
+    for i in range(cov_size):
+        # Calculate estimator pi
+        pct_after_subtract_m_i = pct_after_subtract_m.iloc[:, i].values
+        temp = np.multiply(pct_after_subtract_m_i, pct_after_subtract_m.T).T
         temp1 = np.subtract(temp, np.array(cov_m.iloc[i, :]))
-        temp2 = np.subtract(np.power(pct_after_subtract_m.iloc[:, i].values, 2), cov_m.iloc[i, i])
-        temp3 = np.multiply(temp2, temp1.T).T
-        v_estimator_i = np.array([temp3.mean()])
+        temp2 = temp1.pow(2).mean()
+        pi_ii_list.append(temp2[i])
+        temp3 = temp2.sum()
+        pi_estimator += temp3
+        # Calculate estimator v for pho
+        temp4 = np.subtract(np.power(pct_after_subtract_m_i, 2), cov_m.iloc[i, i])
+        temp5 = np.multiply(temp4, temp1.T).T
+        v_estimator_i = np.array([temp5.mean()])
         v_estimator = np.append(v_estimator, v_estimator_i, axis=0)
 
+    # Generate estimator pho
     temp = 0
-    for i in range(N):
+    for i in range(cov_size):
         temp1 = np.multiply(np.delete(diag_std_v, i), np.delete(v_estimator[i, :], i)) / diag_std_v[i]
         temp2 = np.divide(np.delete(v_estimator[:, i], i), np.delete(diag_std_v, i)) * diag_std_v[i]
         temp += sum(temp1+temp2)
@@ -285,10 +290,10 @@ def black_litterman_prep(order_book_ids, start_date, investors_views, investors_
         risk_aversion_coefficient = ((market_portfolio_return[1:].mean() - risk_free_rate[data_freq].mean()) /
                                      market_portfolio_return[1:].var())
 
-    equilibrium_return = np.multiply(np.dot(clean_period_excess_return[1:].cov(), clean_market_weight),
+    clean_period_excess_return_cov = clean_period_excess_return[1:].cov()
+    equilibrium_return = np.multiply(np.dot(clean_period_excess_return_cov, clean_market_weight),
                                      risk_aversion_coefficient)
 
-    clean_period_excess_return_cov = clean_period_excess_return[1:].cov()
     # Generate the investors_views_uncertainty matrix if none is passed in
     if investors_views_uncertainty is None:
         if confidence_of_views is None:
@@ -308,8 +313,7 @@ def black_litterman_prep(order_book_ids, start_date, investors_views, investors_
                                                                investors_views_indicate_M[i, :].transpose())
                 part2 = 1 / (excess_return_cov_uncertainty * np.dot(investors_views_indicate_M[i, :],
                                                                     np.dot(clean_period_excess_return_cov,
-                                                                           investors_views_indicate_M[i,
-                                                                           :].transpose())))
+                                                                           investors_views_indicate_M[i, :].T)))
                 part3 = investors_views[i] - np.dot(investors_views_indicate_M[i, :], equilibrium_return)
                 return_with_full_confidence = equilibrium_return + np.multiply(part2 * part3, part1)
                 weights_with_full_confidence = np.dot(np.linalg.inv(np.multiply(risk_aversion_coefficient,
@@ -370,16 +374,17 @@ def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
 
         general_bnds = list()
         log_rp_bnds = list()
+        bounds_list = list(bounds)
         temp_ub = 0
         if method is "risk_parity":
             log_rp_bnds = [(10 ** -6, float('inf'))] * len(clean_order_book_ids)
         elif method is "all":
             log_rp_bnds = [(10 ** -6, float('inf'))] * len(clean_order_book_ids)
             for i in clean_order_book_ids:
-                if "full_list" in list(bounds):
+                if "full_list" in bounds_list:
                     general_bnds = general_bnds + [(max(0, bounds["full_list"][0]), min(1, bounds["full_list"][1]))]
                     temp_ub += bounds["full_list"][1]
-                elif i in list(bounds):
+                elif i in bounds_list:
                     general_bnds = general_bnds + [(max(0, bounds[i][0]), min(1, bounds[i][1]))]
                     temp_ub += bounds[i][1]
                 else:
@@ -387,10 +392,10 @@ def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
                     temp_ub += 1
         else:
             for i in clean_order_book_ids:
-                if "full_list" in list(bounds):
+                if "full_list" in bounds_list:
                     general_bnds = general_bnds + [(max(0, bounds["full_list"][0]), min(1, bounds["full_list"][1]))]
                     temp_ub += bounds["full_list"][1]
-                elif i in list(bounds):
+                elif i in bounds_list:
                     general_bnds = general_bnds + [(max(0, bounds[i][0]), min(1, bounds[i][1]))]
                     temp_ub += bounds[i][1]
                 else:
@@ -563,9 +568,6 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
 
         order_book_ids = list(c_m.columns.values)
 
-    # Generate enhanced estimation for covariance matrix
-    period_daily_return_pct_change = clean_period_prices.pct_change()[1:]
-
     # Read benchmark data for min tracking error model
     if method is "min_TE":
         if benchmark is None:
@@ -612,8 +614,8 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
     # Risk parity with constraints model
     def risk_parity_with_con_obj_fun(x):
         temp1 = np.multiply(x, np.dot(c_m, x))
-        c = temp1[:, None]
-        return np.sum(scsp.distance.pdist(c, "euclidean"))
+        temp2 = temp1[:, None]
+        return np.sum(scsp.distance.pdist(temp2, "euclidean"))
 
     def risk_parity_with_con_optimizer():
         optimization_res = sc_opt.minimize(risk_parity_with_con_obj_fun, current_weight, method='SLSQP',
