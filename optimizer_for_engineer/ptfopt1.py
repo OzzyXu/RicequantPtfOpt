@@ -1,7 +1,4 @@
-# 06/07/2017 By Chuan Xu @ Ricequant V 3.0
-
-
-
+# 07/13/2017 By Chuan Xu @ Ricequant V 4.0
 import numpy as np
 import rqdatac
 import scipy.optimize as sc_opt
@@ -170,26 +167,21 @@ def cov_shrinkage(clean_period_prices):
     # Generate estimator gamma
     gamma_estimator = np.subtract(F_real, cov_m).pow(2).sum().sum()
 
-    # Generate estimator pho. Efficiency may get improved by changing the two loops structure to matrix operation.
-    # v_estimator = np.matrix([])
-    # for i in range(N):
-    #     temp = np.multiply(np.array(pct_after_subtract_m.iloc[:, i]), pct_after_subtract_m.T).T
-    #     temp1 = np.subtract(temp, np.array(cov_m.iloc[i, :]))
-    #     temp2 = np.subtract(pct_after_subtract_m.iloc[:, i].pow(2), cov_m.iloc[i, i])
-    #     temp3 = np.multiply(temp2, temp1.T).T
-    #     v_estimator_i = temp3.mean()
-    #     v_estimator = v_estimator.append(v_estimator, [v_estimator_i], axis=0)
+    # Generate estimator pho.
+    v_estimator = np.empty((0,N), float)
+    for i in range(N):
+        temp = np.multiply(np.array(pct_after_subtract_m.iloc[:, i]), pct_after_subtract_m.T).T
+        temp1 = np.subtract(temp, np.array(cov_m.iloc[i, :]))
+        temp2 = np.subtract(np.power(pct_after_subtract_m.iloc[:, i].values, 2), cov_m.iloc[i, i])
+        temp3 = np.multiply(temp2, temp1.T).T
+        v_estimator_i = np.array([temp3.mean()])
+        v_estimator = np.append(v_estimator, v_estimator_i, axis=0)
+
     temp = 0
     for i in range(N):
-        for j in range(N):
-            if j != i:
-                temp1 = np.subtract(pct_after_subtract_m.iloc[:, i].pow(2), cov_m.iloc[i, i])
-                temp2 = np.multiply(pct_after_subtract_m.iloc[:, i], pct_after_subtract_m.iloc[:, j])
-                v_ii_ij = np.multiply(temp1, np.subtract(temp2, cov_m.iloc[i, j])).mean()
-                temp3 = np.subtract(pct_after_subtract_m.iloc[:, j].pow(2), cov_m.iloc[j, j])
-                v_jj_ij = np.multiply(temp3, np.subtract(temp2, cov_m.iloc[i, j])).mean()
-                temp += (sqrt(cov_m.iloc[j, j] / cov_m.iloc[i, i]) * v_ii_ij +
-                         sqrt(cov_m.iloc[i, i] / cov_m.iloc[j, j]) * v_jj_ij)
+        temp1 = np.multiply(np.delete(diag_std_v, i), np.delete(v_estimator[i, :], i)) / diag_std_v[i]
+        temp2 = np.divide(np.delete(v_estimator[:, i], i), np.delete(diag_std_v, i)) * diag_std_v[i]
+        temp += sum(temp1+temp2)
     pho_estimator = sum(pi_ii_list) + corr_avg / 2 * temp
 
     # Generate estimator kai
@@ -465,7 +457,7 @@ def constraints_gen(clean_order_book_ids, asset_type, constraints=None):
 def optimizer(order_book_ids, start_date, asset_type, method, current_weight=None, bnds=None, cons=None,
               expected_return=None, expected_return_covar=None, risk_aversion_coefficient=1, windows=None,
               out_threshold_coefficient=None, data_freq=None, fun_tol=10**-8, max_iteration=10**5, disp=False,
-              iprint=1, cov_enhancement=False, benchmark=None):
+              iprint=1, cov_enhancement=True, benchmark=None):
     """
     :param order_book_ids: str list. A list of assets(stocks or funds). Optional when expected_return_covar is given;
     :param start_date: str. Date to initialize a portfolio or re-balance a portfolio. Optional when
@@ -594,25 +586,6 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
     else:
         general_bnds = bounds_gen(order_book_ids, clean_order_book_ids, method, bnds)
 
-    #########################################################################
-    # add for test purpose to set all constraints by zs on 0705
-    if cons == 1:
-        # get type and determine cons
-        clean_order_book_ids = list(clean_period_prices.columns)
-        df1 = pd.DataFrame(index=clean_order_book_ids, columns=['type'])
-
-        if asset_type is 'fund':
-            for i in clean_order_book_ids:
-                df1.loc[i, 'type'] = fund.instruments(i).fund_type
-        elif asset_type is 'stock':
-            for i in clean_order_book_ids:
-                df1.loc[i, "type"] = rqdatac.instruments(i).shenwan_industry_name
-        all_types = df1['type'].unique()
-        cons_num = 1 / len(all_types)
-        cons = {}
-        for i in all_types:
-            cons[i] = (cons_num - 0.015, cons_num + 0.015)
-    #########################################################################
     # Generate constraints
     general_cons = constraints_gen(clean_order_book_ids, asset_type, cons)
 

@@ -184,7 +184,7 @@ def get_optimizer(order_book_ids, start_date, asset_type, method, tr_frequency =
             # opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i], asset_type=asset_type, method=method,
             #                        cons = {name[:name.find('_')]: (0.6, 1)} )
             opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i], asset_type=asset_type, method=method,
-                                   cons= 1, fun_tol=10**-8)
+                                   cons= 1, fun_tol=10**-8, iprint =2, disp = True)
         elif bc == 3:
             opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i], asset_type=asset_type, method=method,
                                    bnds={'full_list': (0, 0.015)}, cons = 1, fun_tol=10**-8)
