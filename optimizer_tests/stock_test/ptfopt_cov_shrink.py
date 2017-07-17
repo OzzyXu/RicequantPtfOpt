@@ -611,7 +611,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
         cons_num = 1 / len(all_types)
         cons = {}
         for i in all_types:
-            cons[i] = (0, cons_num)
+            cons[i] = (cons_num - 0.03, cons_num+0.03)
     #########################################################################
     # Generate constraints
     general_cons = constraints_gen(clean_order_book_ids, asset_type, cons)
