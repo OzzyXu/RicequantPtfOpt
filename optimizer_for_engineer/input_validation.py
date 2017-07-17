@@ -32,6 +32,8 @@ def input_validation(order_book_ids, start_date, end_date, asset_type, method, r
 
     elif (type(cov_shrinkage) != bool):
         return('cov_shrinkage 为布尔类型变量，请选择 True 或者 False。')
+    elif (method == 'min_TE' and benchmark == 'equal_weight'):
+        return('min_TE 方法需要传入指数型benchmark。')
 
     #elif (expected_return != None and len(expected_return) != len(order_book_ids)):
     #   return('预期收益预测（expected_return）数目和资产（order_book_ids）数目不同。')
