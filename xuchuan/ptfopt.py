@@ -379,11 +379,23 @@ def black_litterman_prep(order_book_ids, start_date, investors_views, investors_
 def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
 
     if bounds is not None:
+        # Bounds setup error check
+        temp_lb = 0
         for key in bounds:
-            if key is not "full_list" and key not in order_book_ids:
-                raise OptimizationError('Bounds contain equities not existing in pool! ')
+            if key not in order_book_ids:
+                raise OptimizationError('Bounds setting contains asset %s who doesnt exist in assets pool.' % key)
             elif bounds[key][0] > bounds[key][1]:
-                raise OptimizationError("Lower bound is larger than upper bound for some equities!")
+                raise OptimizationError("Lower bound is larger than upper bound for asset %s." % key)
+            elif bounds[key][0] > 1 or bounds[key][1] < 0:
+                raise OptimizationError("Bounds setting error for %s" % key)
+            if key is not "full_list":
+                if method is not "risk_parity":
+                    temp_lb += bounds[key][0]
+            else:
+                if method is not "risk_parity":
+                   temp_lb = bounds[key][0] * len(order_book_ids)
+        if temp_lb > 1:
+            raise OptimizationError("The summation of lower bounds is larger than 1.")
 
         general_bnds = list()
         log_rp_bnds = list()
@@ -418,8 +430,8 @@ def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
         if method is not "risk_parity":
             if temp_ub < 1:
                 kickout_list = list(set(order_book_ids) - set(clean_order_book_ids))
-                message = "Bounds setting error after data processing! The following assets have been eliminated: %s" \
-                      % kickout_list
+                message = ("The summation of upper bounds is less than one after data processing! The following assets "
+                           "have been eliminated: %s" % kickout_list)
                 raise OptimizationError(message)
 
         if method is "all":
@@ -445,9 +457,18 @@ def constraints_gen(clean_order_book_ids, asset_type, constraints=None):
     if constraints is not None:
         df = pd.DataFrame(index=clean_order_book_ids, columns=['type'])
 
+        # Constraints setup error check
+        temp_lb = 0
+        temp_ub = 0
         for key in constraints:
+            temp_lb += constraints[key][0]
+            temp_ub += constraints[key][1]
             if constraints[key][0] > constraints[key][1]:
-                raise OptimizationError("Constraints setup error!")
+                raise OptimizationError("Constraints setup error for %s." % key)
+            if constraints[key][0] > 1 or constraints[key][1] < 0:
+                raise OptimizationError("Constraints setup error for %s." % key)
+        if temp_ub < 1 or temp_lb > 1:
+            raise OptimizationError("Constraints summation error.")
 
         if asset_type is 'fund':
             for i in clean_order_book_ids:
