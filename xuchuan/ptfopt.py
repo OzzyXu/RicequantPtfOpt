@@ -66,53 +66,70 @@ def data_process(order_book_ids, asset_type, start_date, windows, data_freq, out
         out_threshold = ceil(windows * out_threshold_coefficient)
 
     kickout_assets = pd.DataFrame(columns=["Elimination Reason"])
-    # Locate the first valid value of each column, if available sequence length is less than threshhold, add
-    # the column name into out_list; if sequence length is longer than threshold but less than chosen period length,
-    # reset the start_date to the later date. The latest start_date whose sequence length is greater than threshold
-    # will be chose. For weekly and monthly data, only those assets which have too late beginning date will be
-    # eliminated.
-    # Check whether any stocks has long suspended trading periods or has been delisted and generate list
-    # for such stocks
+
+    # Check whether any stocks has long suspended trading periods, have been delisted or new-listed for less than 132
+    # trading days and generate list for such stocks. For weekly and monthly data, only those assets which have too late
+    # beginning date, were delisted or new-listed will be eliminated.
     if asset_type is "stock":
         if data_freq is "D":
             for i in order_book_ids:
                 period_volume_i = period_volume.loc[:, i]
                 period_volume_i_value_counts = period_volume_i.value_counts()
                 period_volume_i_value_counts_index = period_volume_i_value_counts.index.values
+                instrument_i_de_listed_date = rqdatac.instruments(i).de_listed_date
+                instrument_i_listed_date = pd.to_datetime(rqdatac.instruments(i).listed_date)
                 if not period_volume_i_value_counts.empty:
-                    if period_volume_i.isnull().sum() >= out_threshold:
-                        temp = pd.DataFrame({"Elimination Reason": "Missing values over threshold"}, index=[i])
+                    # New-listed stock test
+                    if (end_date - instrument_i_listed_date).days <= 132:
+                        temp = pd.DataFrame({"Elimination Reason": "New listed stocks whose data length is less than "
+                                                                   "132 days"}, index=[i])
                         kickout_assets = kickout_assets.append(temp)
-                    elif period_volume_i.last_valid_index() < end_date:
-                        temp = pd.DataFrame({"Elimination Reason": "Delisted"}, index=[i])
-                        kickout_assets = kickout_assets.append(temp)
+                    # Delisted test
+                    elif instrument_i_de_listed_date != "0000-00-00":
+                        if pd.to_datetime(instrument_i_de_listed_date) < end_date:
+                            temp = pd.DataFrame({"Elimination Reason": "Delisted"}, index=[i])
+                            kickout_assets = kickout_assets.append(temp)
+                    # Long suspended test
                     elif 0 in period_volume_i_value_counts_index:
                         if period_volume_i_value_counts[period_volume_i_value_counts_index == 0][0] >= out_threshold:
                             temp = pd.DataFrame({"Elimination Reason": "Suspended days over threshold"}, index=[i])
                             kickout_assets = kickout_assets.append(temp)
-                    elif period_prices.loc[:, i].first_valid_index() < reset_start_date:
-                        reset_start_date = period_prices.loc[:, i].first_valid_index()
+                    # Late beginning day test and just-in-case test for missing values
+                    elif period_volume_i.isnull().sum() >= out_threshold:
+                        temp = pd.DataFrame({"Elimination Reason": "Missing values over threshold"}, index=[i])
+                        kickout_assets = kickout_assets.append(temp)
                 else:
                     temp = pd.DataFrame({"Elimination Reason": "Empty data"}, index=[i])
                     kickout_assets = kickout_assets.append(temp)
         else:
             for i in order_book_ids:
                 period_prices_i = period_prices.loc[:, i]
+                instrument_i_de_listed_date = rqdatac.instruments(i).de_listed_date
+                instrument_i_listed_date = pd.to_datetime(rqdatac.instruments(i).listed_date)
                 if not ((period_prices_i.isnull() == 0).sum() == 0):
-                    if period_prices_i.isnull().sum() >= out_threshold:
+                    # New-listed test
+                    if (end_date - instrument_i_listed_date).days <= 132:
+                        temp = pd.DataFrame({"Elimination Reason": "New listed stocks whose data length is less than "
+                                                                   "132 days"}, index=[i])
+                        kickout_assets = kickout_assets.append(temp)
+                    # Delisted test
+                    elif instrument_i_de_listed_date != "0000-00-00":
+                        if pd.to_datetime(instrument_i_de_listed_date) < end_date:
+                            temp = pd.DataFrame({"Elimination Reason": "Delisted"}, index=[i])
+                            kickout_assets = kickout_assets.append(temp)
+                    # Late beginning day test and just-in-case test for missing values
+                    elif period_prices_i.isnull().sum() >= out_threshold:
                         temp = pd.DataFrame({"Elimination Reason": "Missing values over threshold"}, index=[i])
                         kickout_assets = kickout_assets.append(temp)
-                    elif period_prices_i.first_valid_index() < reset_start_date:
-                        reset_start_date = period_prices_i.first_valid_index()
                 else:
                     temp = pd.DataFrame({"Elimination Reason": "Empty data"}, index=[i])
                     kickout_assets = kickout_assets.append(temp)
 
-        # Check whether any ST stocks are included and generate a list for ST stocks
-        st_list = list(period_prices.columns.values[rqdatac.is_st_stock(order_book_ids,
-                                                                        reset_start_date, end_date).sum(axis=0) > 0])
-        kickout_assets = kickout_assets.append(pd.DataFrame(["ST stocks"] * len(st_list),
-                                                            columns=["Elimination Reason"], index=[st_list]))
+        # # Check whether any ST stocks are included and generate a list for ST stocks
+        # st_list = list(period_prices.columns.values[rqdatac.is_st_stock(order_book_ids,
+        #                                                                 reset_start_date, end_date).sum(axis=0) > 0])
+        # kickout_assets = kickout_assets.append(pd.DataFrame(["ST stocks"] * len(st_list),
+        #                                                     columns=["Elimination Reason"], index=[st_list]))
     elif asset_type is "fund":
         for i in order_book_ids:
             period_prices_i = period_prices.loc[:, i]
@@ -120,8 +137,6 @@ def data_process(order_book_ids, asset_type, start_date, windows, data_freq, out
                 if period_prices_i.isnull().sum() >= out_threshold:
                     temp = pd.DataFrame({"Elimination Reason": "Missing values over threshold"}, index=[i])
                     kickout_assets = kickout_assets.append(temp)
-                elif period_prices_i.first_valid_index() < reset_start_date:
-                    reset_start_date = period_prices_i.first_valid_index()
             else:
                 temp = pd.DataFrame({"Elimination Reason": "Empty data"}, index=[i])
                 kickout_assets = kickout_assets.append(temp)
@@ -189,15 +204,13 @@ def cov_shrinkage(clean_period_prices):
         temp += sum(temp1+temp2)
     pho_estimator = sum(pi_ii_list) + corr_avg / 2 * temp
 
-    # Generate estimator kai
+    # Generate estimator kai, optimal shrinkage intensity delta and shrinkage target matrix Sigma
     if gamma_estimator != 0:
         kai_estimator = (pi_estimator - pho_estimator) / gamma_estimator
+        delta = max(0, min(kai_estimator / clean_period_prices.shape[0], 1))
+        return delta * F_real + (1 - delta) * cov_m, delta
     else:
-        raise OptimizationError("Shrinkage target F matrix is exactly the same as sample covariance matrix!")
-
-    # Generate optimal shrinkage intensity delta
-    delta = max(0, min(kai_estimator / clean_period_prices.shape[0], 1))
-    return delta * F_real + (1 - delta) * cov_m, delta
+        return cov_m, 0
 
 
 def black_litterman_prep(order_book_ids, start_date, investors_views, investors_views_indicate_M,
@@ -461,7 +474,7 @@ def constraints_gen(clean_order_book_ids, asset_type, constraints=None):
 
 def optimizer(order_book_ids, start_date, asset_type, method, current_weight=None, bnds=None, cons=None,
               expected_return=None, expected_return_covar=None, risk_aversion_coefficient=1, windows=None,
-              out_threshold_coefficient=None, data_freq=None, fun_tol=10**-8, max_iteration=10**5, disp=False,
+              out_threshold_coefficient=None, data_freq=None, fun_tol=10**-8, max_iteration=10**3, disp=False,
               iprint=1, cov_enhancement=True, benchmark=None):
     """
     :param order_book_ids: str list. A list of assets(stocks or funds). Optional when expected_return_covar is given;
@@ -498,7 +511,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
     be eliminated. Default: 0.5(out_threshold = 0.5*windows).
     :param fun_tol: float, optional. Optimization accuracy requirement. The smaller, the more accurate, but cost more
     time. Default: 10E-12.
-    :param max_iteration: int, optional. Max iteration number allows during optimization. Default: 10E5.
+    :param max_iteration: int, optional. Max iteration number allows during optimization. Default: 1000.
     :param disp: bool, optional. Optimization summary display control. Override iprint interface. Default: False.
     :param cov_enhancement: bool, optional. Default: True. Use shrinkage method based on Ledoit and Wolf(2003) to
     improve the estimation for sample covariance matrix. It's recommended to set it to True when the stock pool is
@@ -512,7 +525,8 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
     :return:
     pandas DataFrame. A DataFrame contains assets' name and their corresponding optimal weights;
     pandas DataFrame. The covariance matrix for optimization;
-    pandas DataFrame. The order_book_ids filtered out and the reasons of elimination.
+    pandas DataFrame. The order_book_ids filtered out and the reasons of elimination;
+    str. Optimization message. Return this only when methods other than "all".
     """
 
     if not disp:
@@ -603,13 +617,18 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
     def log_barrier_risk_parity_optimizer():
         optimization_res = sc_opt.minimize(log_barrier_risk_parity_obj_fun, current_weight, method='L-BFGS-B',
                                            jac=log_barrier_risk_parity_gradient, bounds=log_rp_bnds)
+        optimization_info = optimization_res.message
         if not optimization_res.success:
-            temp = ' @ %s' % clean_period_prices.index[0]
-            error_message = 'Risk parity optimization failed, ' + str(optimization_res.message) + temp
-            raise OptimizationError(error_message)
+            if optimization_res.nit >= max_iteration:
+                optimal_weights = (optimization_res.x / sum(optimization_res.x))
+                return optimal_weights, optimization_info
+            else:
+                temp = ' @ %s' % clean_period_prices.index[0]
+                error_message = 'Risk parity optimization failed, ' + str(optimization_res.message) + temp
+                raise OptimizationError(error_message)
         else:
             optimal_weights = (optimization_res.x / sum(optimization_res.x))
-            return optimal_weights
+            return optimal_weights, optimization_info
 
     # Risk parity with constraints model
     def risk_parity_with_con_obj_fun(x):
@@ -620,13 +639,17 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
     def risk_parity_with_con_optimizer():
         optimization_res = sc_opt.minimize(risk_parity_with_con_obj_fun, current_weight, method='SLSQP',
                                            bounds=general_bnds, constraints=general_cons, options=opts)
+        optimization_info = optimization_res.message
         if not optimization_res.success:
-            temp = ' @ %s' % clean_period_prices.index[0]
-            error_message = 'Risk parity with constraints optimization failed, ' + str(optimization_res.message) \
-                            + temp
-            raise OptimizationError(error_message)
+            if optimization_res.nit >= max_iteration:
+                return optimization_res.x, optimization_info
+            else:
+                temp = ' @ %s' % clean_period_prices.index[0]
+                error_message = 'Risk parity with constraints optimization failed, ' + str(optimization_res.message) \
+                                + temp
+                raise OptimizationError(error_message)
         else:
-            return optimization_res.x
+            return optimization_res.x, optimization_info
 
     # Min variance model
     min_variance_obj_fun = lambda x: np.dot(np.dot(x, c_m), x)
@@ -638,12 +661,16 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
         optimization_res = sc_opt.minimize(min_variance_obj_fun, current_weight, method='SLSQP',
                                            jac=min_variance_gradient, bounds=general_bnds, constraints=general_cons,
                                            options=opts)
+        optimization_info = optimization_res.message
         if not optimization_res.success:
-            temp = ' @ %s' % clean_period_prices.index[0]
-            error_message = 'Min variance optimization failed, ' + str(optimization_res.message) + temp
-            raise OptimizationError(error_message)
+            if optimization_res.nit >= max_iteration:
+                return optimization_res.x, optimization_info
+            else:
+                temp = ' @ %s' % clean_period_prices.index[0]
+                error_message = 'Min variance optimization failed, ' + str(optimization_res.message) + temp
+                raise OptimizationError(error_message)
         else:
-            return optimization_res.x
+            return optimization_res.x, optimization_info
 
     # Mean variance model
     def mean_variance_obj_fun(x):
@@ -658,12 +685,16 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
         optimization_res = sc_opt.minimize(mean_variance_obj_fun, current_weight, method='SLSQP',
                                            jac=mean_variance_gradient, bounds=general_bnds,
                                            constraints=general_cons, options=opts)
+        optimization_info = optimization_res.message
         if not optimization_res.success:
-            temp = ' @ %s' % clean_period_prices.index[0]
-            error_message = 'Mean variance optimization failed, ' + str(optimization_res.message) + temp
-            raise OptimizationError(error_message)
+            if optimization_res.nit >= max_iteration:
+                return optimization_res.x, optimization_info
+            else:
+                temp = ' @ %s' % clean_period_prices.index[0]
+                error_message = 'Mean variance optimization failed, ' + str(optimization_res.message) + temp
+                raise OptimizationError(error_message)
         else:
-            return optimization_res.x
+            return optimization_res.x, optimization_info
 
     # Minimizing tracking error model
     def min_TE_obj_fun(x):
@@ -673,12 +704,16 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
     def min_TE_optimizer():
         optimization_res = sc_opt.minimize(min_TE_obj_fun, current_weight, method='SLSQP',
                                            bounds=general_bnds, constraints=general_cons, options=opts)
+        optimization_info = optimization_res.message
         if not optimization_res.success:
-            temp = ' @ %s' % clean_period_prices.index[0]
-            error_message = 'Min TE optimization failed, ' + str(optimization_res.message) + temp
-            raise OptimizationError(error_message)
+            if optimization_res.nit >= max_iteration:
+                return optimization_res.x, optimization_info
+            else:
+                temp = ' @ %s' % clean_period_prices.index[0]
+                error_message = 'Min TE optimization failed, ' + str(optimization_res.message) + temp
+                raise OptimizationError(error_message)
         else:
-            return optimization_res.x
+            return optimization_res.x, optimization_info
 
     opt_dict = {'risk_parity': log_barrier_risk_parity_optimizer,
                 'min_variance': min_variance_optimizer,
@@ -688,13 +723,13 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
                 'all': [log_barrier_risk_parity_optimizer, min_variance_optimizer, risk_parity_with_con_optimizer]}
 
     if method is not 'all':
-        return pd.DataFrame(opt_dict[method](), index=list(c_m.columns.values), columns=[method]), c_m, \
-               data_after_processing[1]
+        return pd.DataFrame(opt_dict[method]()[0], index=list(c_m.columns.values), columns=[method]), c_m, \
+               data_after_processing[1], opt_dict[method]()[1]
     else:
         temp1 = pd.DataFrame(index=list(c_m.columns.values), columns=['risk_parity', 'min_variance',
                                                                       "risk_parity_with_con"])
         n = 0
         for f in opt_dict[method]:
-            temp1.iloc[:, n] = f()
+            temp1.iloc[:, n] = f()[0]
             n = n + 1
         return temp1, c_m, data_after_processing[1]
