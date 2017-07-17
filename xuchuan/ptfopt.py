@@ -414,11 +414,13 @@ def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
                 else:
                     general_bnds = general_bnds + [(0, 1)]
                     temp_ub += 1
-        if temp_ub < 1:
-            kickout_list = list(set(order_book_ids) - set(clean_order_book_ids))
-            message = "Bounds setting error after data processing! The following assets have been eliminated: %s" \
-                  % kickout_list
-            raise OptimizationError(message)
+
+        if method is not "risk_parity":
+            if temp_ub < 1:
+                kickout_list = list(set(order_book_ids) - set(clean_order_book_ids))
+                message = "Bounds setting error after data processing! The following assets have been eliminated: %s" \
+                      % kickout_list
+                raise OptimizationError(message)
 
         if method is "all":
             return tuple(log_rp_bnds), tuple(general_bnds)

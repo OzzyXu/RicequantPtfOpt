@@ -258,7 +258,7 @@ order_book_ids = ['161826',
  '118001',
  '540006',
  '000309']
-optimal_weight = pt.optimizer(order_book_ids, start_date="2016-03-03", asset_type='fund', method='all')
+optimal_weight = pt.optimizer(error_list, start_date="2016-03-03", asset_type='stock', method='risk_parity', bnds=bounds)
 print(optimal_weight[0])
 print(optimal_weight[2])
 # print(optimal_weight[3])
