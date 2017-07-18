@@ -375,7 +375,7 @@ def black_litterman_prep(order_book_ids, start_date, investors_views, investors_
     return combined_return_mean, combined_return_covar, risk_aversion_coefficient, investors_views_uncertainty
 
 
-# Generate upper and lower bounds for equities in portfolio
+# Generate upper and lower bounds for assets in portfolio
 def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
 
     if bounds is not None:
@@ -451,7 +451,14 @@ def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
             return tuple(general_bnds)
 
 
-# Generate category constraints for portfolio
+# Market neutral constraints generation
+def market_neutral_constraints_gen(clean_order_book_ids, asset_type, market_neutral_constraints, benchmark):
+
+    pass
+
+
+
+# Generate category constraints generation
 def category_constraints_gen(clean_order_book_ids, asset_type, constraints=None):
 
     if constraints is not None:
@@ -516,8 +523,8 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
     Supported funds type: Bond, Stock, Hybrid, Money, ShortBond, StockIndex, BondIndex, Related, QDII, Other; supported
     stocks industry sector: Shenwan_industry_name;
     cons: {"types1": (lb1, up1), "types2": (lb2, up2), ...};
-    :param expected_return: column vector of floats, optional. Default: Means of the returns of order_book_ids
-    within windows. Must input this if expected_return_covar is given to run "mean_variance" method.
+    :param expected_return: pandas DataFrame. Default: Means of the returns for order_book_ids
+    within windows(empirical means). Must input this if expected_return_covar is given to run "mean_variance" method.
     :param expected_return_covar: pandas DataFrame, optional. Covariance matrix of expected return. Default: covariance
     of the means of the returns of order_book_ids within windows. If expected_return_covar is given, any models involve
     covariance matrix will use expected_return_covar instead of estimating from sample data. Moreover, if
@@ -595,7 +602,13 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
 
         # Generate expected_return if not given
         if method is "mean_variance":
-            expected_return = period_daily_return_pct_change.mean()
+            empirical_mean = period_daily_return_pct_change.mean()
+            if expected_return is None:
+                expected_return = empirical_mean
+            else:
+                for i in expected_return.index.values:
+                    empirical_mean.loc[i] = expected_return.loc[i]
+                expected_return = empirical_mean
     else:
         # Get preparation done when expected_return_covar is given
         c_m = expected_return_covar
