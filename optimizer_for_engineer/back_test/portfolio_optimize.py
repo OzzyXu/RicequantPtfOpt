@@ -28,18 +28,16 @@ def portfolio_optimize(order_book_ids, rebalancing_date, asset_type, method, win
     ----------
     order_book_ids: list
                     A selected list of assets (stocks or funds).
-    start_date: str
-                Begin date of portfolio optimization.
-    end_date: str
-               End date of portfolio optimization.
+
+    rebalancing_date: str
+                      date of portfolio optimization.
+
     asset_type: str
                 Type of assets. It can be set to be 'stock' or 'fund'.
 
-    method: str, optional, optional, default to 'all'
+    method: str, optional, optional
             Optimization algorithm, 'risk_parity', 'min_variance', 'risk_parity_with_cons' and 'all' are available.
 
-    rebalancing_frequency: int, optional, default to 66
-                           Number of trading days between every two portfolio rebalance.
 
     bnds: dict, optional
           Lower/upper bounds of individual asset's position in portfolio.
@@ -54,24 +52,23 @@ def portfolio_optimize(order_book_ids, rebalancing_date, asset_type, method, win
                    Set to 'True' to perform shrinkage estimation of covariane matrix.
 
 
-    expected_return: 1-dimensional numpy.ndarray, optional
+    expected_return: pandas.Series, optional
                      Expected returns of assets in portfolio. It is required for Mean-Variance and Black-Litterman models.
                      Note that its dimension should be the same as 'order_book_ids'.
-
-
-    expected_return_cov: numpy.matrix optional
-                         Covariance matrix of expected returns of portfolio.
-                         note that its dimension should be the same as 'order_book_ids'.
 
     risk_aversion_coefficient: float, optional, default to 1
                                a parameter controling the importance of risk-minimation in optimization.
                                It is required for Mean-Variance and Black-Litterman models.
 
-    res_options: str, optional, default to 'weights'
-                 Control which optimization results will be returned.
-                 (1) If it is set to be 'weights', only the optimized weights will be returned;
-                 (2) If it is set to be 'weights_indicators', both optimized weights and performance indicators will be returned;
-                 (3) If it is set to be 'all', the optimized weights, performance indicators and covariance matrix will be returned.
+
+    Results
+    ----------
+    total_weight: pandas.DataFrame
+                  return a dataframe with order_book_ids as index, and the assets' weights and status.
+                  
+    optimizer_status: str
+                      return a str indicating whether the optimization is successful.
+                  
 
     """
     input_check_status = input_validation(order_book_ids, rebalancing_date, asset_type, method, window, bnds,
