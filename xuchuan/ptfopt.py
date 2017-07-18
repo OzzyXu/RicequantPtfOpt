@@ -757,8 +757,12 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
                 'all': [log_barrier_risk_parity_optimizer, min_variance_optimizer, risk_parity_with_con_optimizer]}
 
     if method is not 'all':
-        return pd.DataFrame(opt_dict[method]()[0], index=list(c_m.columns.values), columns=[method]), c_m, \
-               data_after_processing[1], opt_dict[method]()[1]
+        if expected_return_covar is None:
+            return pd.DataFrame(opt_dict[method]()[0], index=list(c_m.columns.values), columns=[method]), c_m, \
+                   data_after_processing[1], opt_dict[method]()[1]
+        else:
+            pd.DataFrame(opt_dict[method]()[0], index=list(c_m.columns.values), columns=[method]), c_m, \
+            opt_dict[method]()[1]
     else:
         temp1 = pd.DataFrame(index=list(c_m.columns.values), columns=['risk_parity', 'min_variance',
                                                                       "risk_parity_with_con"])
@@ -766,4 +770,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
         for f in opt_dict[method]:
             temp1.iloc[:, n] = f()[0]
             n = n + 1
-        return temp1, c_m, data_after_processing[1]
+        if expected_return_covar is None:
+            return temp1, c_m, data_after_processing[1]
+        else:
+            return temp1, c_m
