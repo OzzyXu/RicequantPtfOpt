@@ -44,7 +44,7 @@ def data_process(order_book_ids, asset_type, start_date, windows, data_freq, out
     windows_dict = {"D": -(windows + 1),
                     "W": -(windows + 1) * 5,
                     "M": -(windows + 1) * 22}
-    start_date = rqdatac.get_trading_dates("1995-01-01", end_date)[windows_dict[data_freq]]
+    start_date = rqdatac.get_trading_dates("2005-01-01", end_date)[windows_dict[data_freq]]
     reset_start_date = pd.to_datetime(start_date)
 
     if asset_type is 'fund':
@@ -494,7 +494,6 @@ def general_constraints_gen(clean_order_book_ids, asset_type, constraints=None):
 
 # Market neutral constraints generation
 def market_neutral_constraints_gen(clean_order_book_ids, market_neutral_constraints, benchmark):
-
     pass
 
 
@@ -575,10 +574,9 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
         clean_period_prices = data_after_processing[0]
         reset_start_date = data_after_processing[2]
 
-        # If all assets are eliminated, raise error
-        if clean_period_prices.shape[1] == 0:
-            # print('All selected funds have been ruled out')
-            raise OptimizationError("错误：order_book_ids 中所有合约均已被剔除。")
+        # At least two assets are needed
+        if clean_period_prices.shape[1] <= 1:
+            raise OptimizationError("错误：数据剔除后order_book_ids数量不足。")
 
         # Generate enhanced estimation for covariance matrix
         period_daily_return_pct_change = clean_period_prices.pct_change()[1:]
