@@ -449,15 +449,8 @@ def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
             return tuple(general_bnds)
 
 
-# Market neutral constraints generation
-def market_neutral_constraints_gen(clean_order_book_ids, asset_type, market_neutral_constraints, benchmark):
-
-    pass
-
-
-
-# Generate category constraints generation
-def category_constraints_gen(clean_order_book_ids, asset_type, constraints=None):
+# Generate category and general constraints generation
+def general_constraints_gen(clean_order_book_ids, asset_type, constraints=None):
 
     if constraints is not None:
         df = pd.DataFrame(index=clean_order_book_ids, columns=['type'])
@@ -499,6 +492,11 @@ def category_constraints_gen(clean_order_book_ids, asset_type, constraints=None)
     else:
         return {'type': 'eq', 'fun': lambda x: sum(x) - 1}
 
+
+# Market neutral constraints generation
+def market_neutral_constraints_gen(clean_order_book_ids, market_neutral_constraints, benchmark):
+
+    pass
 
 def optimizer(order_book_ids, start_date, asset_type, method, current_weight=None, bnds=None, cons=None,
               expected_return=None, expected_return_covar=None, risk_aversion_coefficient=1, windows=None,
@@ -638,7 +636,8 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
         general_bnds = bounds_gen(order_book_ids, clean_order_book_ids, method, bnds)
 
     # Generate constraints
-    general_cons = category_constraints_gen(clean_order_book_ids, asset_type, cons)
+    if method is not "risk_parity":
+        general_cons = general_constraints_gen(clean_order_book_ids, asset_type, cons)
 
     # Log barrier risk parity model
     c = 15
