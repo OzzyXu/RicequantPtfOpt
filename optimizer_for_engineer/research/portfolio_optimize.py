@@ -232,7 +232,13 @@ def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method 
         #
         result_package = {'weights': weights, 'annualized_cum_return': annualized_cum_return, 'annualized_vol': annualized_vol, 'max_drawdown': max_drawdown,
                           'turnover_rate': turnover_rate, 'indiviudal_asset_risk_contributions':indiviudal_asset_risk_contributions,\
-                          'asset_class_risk_contributions': asset_class_risk_contributions, 'risk_concentration_index': risk_concentration_index, "covariance_matrix" : cov_mat }
+                          'asset_class_risk_contributions': asset_class_risk_contributions, 'risk_concentration_index': risk_concentration_index, "covariance_matrix" : cov_mat
+                          , 'rebalancing ppints': rebalancing_points}
+
+        if len(a) != 0:
+            result_package['optimizer_status'] = optimizer_status
+
+
 
         #result_package = {'weights': weights}
 

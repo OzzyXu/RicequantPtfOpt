@@ -9,7 +9,7 @@ order_book_ids = ['161826',
                   '000309']
 
 
-start_date= '2014-01-01'
+rebalancing_date= '2014-01-01'
 
 end_date = '2017-05-01'
 asset_type = 'fund'
@@ -33,8 +33,9 @@ benchmark = 'equal_weight'
 
 
 
-res = portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method = method,
-                         rebalancing_frequency = 66, window= 132, bnds={'full_list': (0,0.3)}, cons=None,
-                         cov_shrinkage = False, benchmark = 'equal_weight',
-                         industry_matching = False, expected_return= 'empirical_mean',
-                         risk_aversion_coef=1, res_options = 'weight')
+
+res = portfolio_optimize(order_book_ids, rebalancing_date, asset_type, method, window= 132,
+                       bnds=None, cons=None, cov_shrinkage = True,
+                       benchmark = 'equal_weight',
+                       expected_return= 'empirical_mean', risk_aversion_coef=1)
+

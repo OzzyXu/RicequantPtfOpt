@@ -18,7 +18,7 @@ rqdatac.init('ricequant', '8ricequant8')
 
 
 
-def portfolio_optimize(order_book_ids, day, asset_type, method, window= 132,
+def portfolio_optimize(order_book_ids, rebalancing_date, asset_type, method, window= 132,
                        bnds=None, cons=None, cov_shrinkage = True,
                        benchmark = 'equal_weight',
                        expected_return= 'empirical_mean', risk_aversion_coef=1):
@@ -74,8 +74,8 @@ def portfolio_optimize(order_book_ids, day, asset_type, method, window= 132,
                  (3) If it is set to be 'all', the optimized weights, performance indicators and covariance matrix will be returned.
 
     """
-    input_check_status = input_validation(order_book_ids, start_date, end_date, asset_type, method, rebalancing_frequency, window, bnds,
-                     cons, cov_shrinkage, expected_return, risk_aversion_coef, res_options)
+    input_check_status = input_validation(order_book_ids, rebalancing_date, asset_type, method, window, bnds,
+                     cons, cov_shrinkage, expected_return, risk_aversion_coef)
 
     if input_check_status != 0:
         print(input_check_status)
@@ -85,7 +85,7 @@ def portfolio_optimize(order_book_ids, day, asset_type, method, window= 132,
             method = 'risk_parity_with_con'
 
         try:
-            weights, cov_mat, kicked_out_list, optimizer_status = optimizer(order_book_ids, start_date, asset_type, method,
+            weights, cov_mat, kicked_out_list, optimizer_status = optimizer(order_book_ids, rebalancing_date, asset_type, method,
                                  current_weight=None, bnds=bnds, cons=cons,
                                  expected_return=expected_return,
                                  expected_return_covar=None,
