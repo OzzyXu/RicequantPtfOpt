@@ -382,18 +382,18 @@ def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
         # Bounds setup error check
         temp_lb = 0
         for key in bounds:
-            if key not in order_book_ids:
-                raise OptimizationError('Bounds setting contains asset %s who doesnt exist in assets pool.' % key)
-            elif bounds[key][0] > bounds[key][1]:
+            if bounds[key][0] > bounds[key][1]:
                 raise OptimizationError("Lower bound is larger than upper bound for asset %s." % key)
             elif bounds[key][0] > 1 or bounds[key][1] < 0:
                 raise OptimizationError("Bounds setting error for %s" % key)
             if key is not "full_list":
+                if key not in order_book_ids:
+                    raise OptimizationError('Bounds setting contains asset %s who doesnt exist in assets pool.' % key)
                 if method is not "risk_parity":
                     temp_lb += bounds[key][0]
             else:
                 if method is not "risk_parity":
-                   temp_lb = bounds[key][0] * len(order_book_ids)
+                    temp_lb = bounds[key][0] * len(order_book_ids)
         if temp_lb > 1:
             raise OptimizationError("The summation of lower bounds is larger than 1.")
 
@@ -452,7 +452,7 @@ def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
 
 
 # Generate category constraints for portfolio
-def constraints_gen(clean_order_book_ids, asset_type, constraints=None):
+def category_constraints_gen(clean_order_book_ids, asset_type, constraints=None):
 
     if constraints is not None:
         df = pd.DataFrame(index=clean_order_book_ids, columns=['type'])
@@ -626,7 +626,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
         general_bnds = bounds_gen(order_book_ids, clean_order_book_ids, method, bnds)
 
     # Generate constraints
-    general_cons = constraints_gen(clean_order_book_ids, asset_type, cons)
+    general_cons = category_constraints_gen(clean_order_book_ids, asset_type, cons)
 
     # Log barrier risk parity model
     c = 15
