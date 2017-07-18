@@ -605,7 +605,8 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
                 expected_return = empirical_mean
             else:
                 for i in expected_return.index.values:
-                    empirical_mean.loc[i] = expected_return.loc[i]
+                    if i in empirical_mean.index.values:
+                        empirical_mean.loc[i] = expected_return.loc[i]
                 expected_return = empirical_mean
     else:
         # Get preparation done when expected_return_covar is given
