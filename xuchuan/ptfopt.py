@@ -18,7 +18,7 @@ class OptimizationError(Exception):
 def data_process(order_book_ids, asset_type, start_date, windows, data_freq, out_threshold_coefficient=None):
     """
     Clean data for covariance matrix calculation
-    :param order_book_ids: str list. A group of assets.
+    :param order_book_ids: str list. A selected list of assets.
     :param asset_type: str. "fund" or "stock"
     :param start_date: str. The first day for backtest.
     :param windows: int. Interval length for sample.
@@ -381,19 +381,19 @@ def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
         temp_lb = 0
         for key in bounds:
             if bounds[key][0] > bounds[key][1]:
-                raise OptimizationError("Lower bound is larger than upper bound for asset %s." % key)
+                raise OptimizationError("错误：合约 %s 的 bounds 设置下限高于上限。" % key)
             elif bounds[key][0] > 1 or bounds[key][1] < 0:
-                raise OptimizationError("Bounds setting error for %s" % key)
+                raise OptimizationError("错误：合约 %s 的 bounds 设置下限高于上限。" % key)
             if key is not "full_list":
                 if key not in order_book_ids:
-                    raise OptimizationError('Bounds setting contains asset %s who doesnt exist in assets pool.' % key)
+                    raise OptimizationError('错误：Bounds 设置中包含 order_book_ids 没有的合约 %s。' % key)
                 if method is not "risk_parity":
                     temp_lb += bounds[key][0]
             else:
                 if method is not "risk_parity":
                     temp_lb = bounds[key][0] * len(order_book_ids)
         if temp_lb > 1:
-            raise OptimizationError("The summation of lower bounds is larger than 1.")
+            raise OptimizationError("错误：bounds 设置中下限之和大于1。")
 
         general_bnds = list()
         log_rp_bnds = list()
@@ -428,8 +428,7 @@ def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
         if method is not "risk_parity":
             if temp_ub < 1:
                 kickout_list = list(set(order_book_ids) - set(clean_order_book_ids))
-                message = ("The summation of upper bounds is less than one after data processing! The following assets "
-                           "have been eliminated: %s" % kickout_list)
+                message = ("错误：数据预处理后 bounds 设置上限之和小于1。被剔除的合约包括：%s。" % kickout_list)
                 raise OptimizationError(message)
 
         if method is "all":
@@ -469,11 +468,11 @@ def category_constraints_gen(clean_order_book_ids, asset_type, constraints=None)
             temp_lb += constraints[key][0]
             temp_ub += constraints[key][1]
             if constraints[key][0] > constraints[key][1]:
-                raise OptimizationError("Constraints setup error for %s." % key)
+                raise OptimizationError("错误：合约类别 %s 的 constraints 设置下限高于上限。" % key)
             if constraints[key][0] > 1 or constraints[key][1] < 0:
-                raise OptimizationError("Constraints setup error for %s." % key)
+                raise OptimizationError("错误：合约类别 %s 的 constraints 设置下限大于1，或上限小于0。" % key)
         if temp_ub < 1 or temp_lb > 1:
-            raise OptimizationError("Constraints summation error.")
+            raise OptimizationError("错误：constraints 上限之和小于1，或下限之和大于1。")
 
         if asset_type is 'fund':
             for i in clean_order_book_ids:
@@ -485,7 +484,7 @@ def category_constraints_gen(clean_order_book_ids, asset_type, constraints=None)
         cons = list()
         for key in constraints:
             if key not in df.type.unique():
-                raise OptimizationError("Non-existing category in constraints: %s" % key)
+                raise OptimizationError("错误：constraints 设置中包含 order_book_ids 没有的资产类型 %s。" % key)
             key_list = list(df[df['type'] == key].index)
             key_pos_list = list()
             for i in key_list:
@@ -580,7 +579,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
         # If all assets are eliminated, raise error
         if clean_period_prices.shape[1] == 0:
             # print('All selected funds have been ruled out')
-            raise OptimizationError("All assets have been eliminated")
+            raise OptimizationError("错误：order_book_ids 中所有合约均已被剔除。")
 
         # Generate enhanced estimation for covariance matrix
         period_daily_return_pct_change = clean_period_prices.pct_change()[1:]
@@ -620,7 +619,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
     # Read benchmark data for min tracking error model
     if method is "min_TE":
         if benchmark is None:
-            raise OptimizationError("Input no benchmark!")
+            raise OptimizationError("错误：没有选择基准。")
         benchmark_price = rqdatac.get_price(benchmark, start_date=reset_start_date,
                                             end_date=rqdatac.get_previous_trading_date(start_date), fields="close")
         if data_freq is not "D":
@@ -659,7 +658,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
                 return optimal_weights, optimization_info
             else:
                 temp = ' @ %s' % clean_period_prices.index[0]
-                error_message = 'Risk parity optimization failed, ' + str(optimization_res.message) + temp
+                error_message = '错误：risk_parity 算法优化失败，' + str(optimization_res.message) + temp
                 raise OptimizationError(error_message)
         else:
             optimal_weights = (optimization_res.x / sum(optimization_res.x))
@@ -680,7 +679,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
                 return optimization_res.x, optimization_info
             else:
                 temp = ' @ %s' % clean_period_prices.index[0]
-                error_message = 'Risk parity with constraints optimization failed, ' + str(optimization_res.message) \
+                error_message = '错误：risk_parity 算法优化失败，' + str(optimization_res.message) \
                                 + temp
                 raise OptimizationError(error_message)
         else:
@@ -702,7 +701,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
                 return optimization_res.x, optimization_info
             else:
                 temp = ' @ %s' % clean_period_prices.index[0]
-                error_message = 'Min variance optimization failed, ' + str(optimization_res.message) + temp
+                error_message = '错误：min_variance 算法优化失败，' + str(optimization_res.message) + temp
                 raise OptimizationError(error_message)
         else:
             return optimization_res.x, optimization_info
@@ -726,7 +725,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
                 return optimization_res.x, optimization_info
             else:
                 temp = ' @ %s' % clean_period_prices.index[0]
-                error_message = 'Mean variance optimization failed, ' + str(optimization_res.message) + temp
+                error_message = '错误：mean_variance 算法优化失败，' + str(optimization_res.message) + temp
                 raise OptimizationError(error_message)
         else:
             return optimization_res.x, optimization_info
@@ -745,7 +744,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
                 return optimization_res.x, optimization_info
             else:
                 temp = ' @ %s' % clean_period_prices.index[0]
-                error_message = 'Min TE optimization failed, ' + str(optimization_res.message) + temp
+                error_message = '错误：min_TE 算法优化失败，' + str(optimization_res.message) + temp
                 raise OptimizationError(error_message)
         else:
             return optimization_res.x, optimization_info
