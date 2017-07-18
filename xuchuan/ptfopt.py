@@ -382,18 +382,18 @@ def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
         temp_ub = 0
         for key in bounds:
             if bounds[key][0] > bounds[key][1]:
-                raise OptimizationError("错误：合约 %s 的 bounds 设置下限高于上限。" % key)
+                raise OptimizationError("错误：合约 %s 的 bounds 下限高于上限。" % key)
             elif bounds[key][0] > 1 or bounds[key][1] < 0:
-                raise OptimizationError("错误：合约 %s 的 bounds 设置下限高于上限。" % key)
+                raise OptimizationError("错误：合约 %s 的 bounds 下限大于1或上限小于0。" % key)
             elif key is not "full_list":
                 if key not in order_book_ids:
-                    raise OptimizationError('错误：Bounds 设置中包含 order_book_ids 没有的合约 %s。' % key)
+                    raise OptimizationError('错误：Bounds 中包含 order_book_ids 没有的合约 %s。' % key)
                 temp_lb += bounds[key][0]
             elif key is "full_list":
                 temp_lb = bounds[key][0] * len(order_book_ids)
                 temp_ub = 1 - bounds[key][1] * len(order_book_ids)
         if temp_lb > 1 or temp_ub > 0:
-            raise OptimizationError("错误：bounds 设置中下限之和大于1或上限之和小于1。")
+            raise OptimizationError("错误：bounds 下限之和大于1或上限之和小于1。")
 
         general_bnds = list()
         log_rp_bnds = list()
@@ -428,7 +428,7 @@ def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
         if method is not "risk_parity":
             if temp_ub < 1:
                 kickout_list = list(set(order_book_ids) - set(clean_order_book_ids))
-                message = ("错误：数据预处理后 bounds 设置上限之和小于1。被剔除的合约包括：%s。" % kickout_list)
+                message = ("错误：数据预处理后 bounds 上限之和小于1。被剔除的合约包括：%s。" % kickout_list)
                 raise OptimizationError(message)
 
         if method is "all":
@@ -461,9 +461,9 @@ def general_constraints_gen(clean_order_book_ids, asset_type, constraints=None):
             temp_lb += constraints[key][0]
             temp_ub += constraints[key][1]
             if constraints[key][0] > constraints[key][1]:
-                raise OptimizationError("错误：合约类别 %s 的 constraints 设置下限高于上限。" % key)
+                raise OptimizationError("错误：合约类别 %s 的 constraints 下限高于上限。" % key)
             if constraints[key][0] > 1 or constraints[key][1] < 0:
-                raise OptimizationError("错误：合约类别 %s 的 constraints 设置下限大于1，或上限小于0。" % key)
+                raise OptimizationError("错误：合约类别 %s 的 constraints 下限大于1，或上限小于0。" % key)
         if temp_ub < 1 or temp_lb > 1:
             raise OptimizationError("错误：constraints 上限之和小于1，或下限之和大于1。")
 
@@ -477,7 +477,7 @@ def general_constraints_gen(clean_order_book_ids, asset_type, constraints=None):
         cons = list()
         for key in constraints:
             if key not in df.type.unique():
-                raise OptimizationError("错误：constraints 设置中包含 order_book_ids 没有的资产类型 %s。" % key)
+                raise OptimizationError("错误：constraints 中包含 order_book_ids 没有的资产类型 %s。" % key)
             key_list = list(df[df['type'] == key].index)
             key_pos_list = list()
             for i in key_list:
