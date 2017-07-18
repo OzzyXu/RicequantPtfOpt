@@ -10,7 +10,10 @@ class OptimizationError(Exception):
 
 
 def input_validation(order_book_ids, rebalancing_date, asset_type, method, window, bnds,
-                     cons, cov_shrinkage, expected_return, risk_aversion_coefficient):
+                     cons, cov_shrinkage, benchmark, expected_return, risk_aversion_coefficient):
+
+
+
 
     if (rebalancing_date < "2005-07-01"):
         return('调仓日期（rebalancing_date）不能早于2005年7月1日。')

@@ -76,7 +76,9 @@ def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method 
 
     """
     input_check_status = input_validation(order_book_ids, start_date, end_date, asset_type, method, rebalancing_frequency, window, bnds,
-                     cons, cov_shrinkage, expected_return, risk_aversion_coef, res_options)
+                     cons, cov_shrinkage, benchmark, expected_return, risk_aversion_coef, res_options)
+
+
 
     if input_check_status != 0:
         print(input_check_status)
@@ -235,7 +237,7 @@ def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method 
                           'asset_class_risk_contributions': asset_class_risk_contributions, 'risk_concentration_index': risk_concentration_index, "covariance_matrix" : cov_mat
                           , 'rebalancing ppints': rebalancing_points}
 
-        if len(a) != 0:
+        if len(optimizer_status) != 0:
             result_package['optimizer_status'] = optimizer_status
 
 

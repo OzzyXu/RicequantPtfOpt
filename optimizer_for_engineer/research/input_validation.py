@@ -11,7 +11,7 @@ class OptimizationError(Exception):
 
 def input_validation(order_book_ids, start_date, end_date, asset_type, method, rebalancing_frequency, window, bnds,
                      cons, \
-                     cov_shrinkage, expected_return,  risk_aversion_coefficient, res_options):
+                     cov_shrinkage, benchmark, expected_return,  risk_aversion_coefficient, res_options):
 
     if (start_date < "2005-07-01"):
         # return('开始日期（start_date）不能早于2005年7月1日。')
