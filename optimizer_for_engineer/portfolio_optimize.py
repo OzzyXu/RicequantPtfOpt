@@ -9,11 +9,6 @@ import rqdatac
 from rqdatac import *
 rqdatac.init('ricequant', '8ricequant8')
 
-from optimizer_for_engineer.input_validation import *
-from optimizer_for_engineer.ptfopt import *
-
-
-
 
 
 class OptimizationError(Exception):
@@ -42,7 +37,7 @@ def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method 
                 Type of assets. It can be set to be 'stock' or 'fund'.
 
     method: str, optional, optional, default to 'all'
-            Optimization algorithm, 'risk_parity', 'min_variance', 'risk_parity_with_cons' and 'all' are available.
+            Optimization algorithm, 'risk_parity', 'min_variance', 'mean_variance', 'min_TE' and 'all' are available.
 
     rebalancing_frequency: int, optional, default to 66
                            Number of trading days between every two portfolio rebalance.
@@ -60,12 +55,12 @@ def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method 
                    Set to 'True' to perform shrinkage estimation of covariane matrix.
 
 
-    expected_return: 1-dimensional numpy.ndarray, optional
+    expected_return: pandas.series, optional
                      Expected returns of assets in portfolio. It is required for Mean-Variance and Black-Litterman models.
                      Note that its dimension should be the same as 'order_book_ids'.
 
 
-    expected_return_cov: numpy.matrix optional
+    expected_return_cov: pandas.dataframe optional
                          Covariance matrix of expected returns of portfolio.
                          note that its dimension should be the same as 'order_book_ids'.
 
@@ -107,6 +102,10 @@ def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method 
 
         if method == 'all':
             methods = ['risk_parity', 'min_variance', "risk_parity_with_cons"]
+        
+        elif (method == 'risk_parity' and bnds != None) or (method == 'risk_parity' and cons != None):
+            methods = "risk_parity_with_cons"
+            
         else:
             methods = method
 

@@ -9,6 +9,21 @@ import scipy.spatial as scsp
 rqdatac.init('ricequant', '8ricequant8')
 
 
+# test 
+
+order_book_ids = ['000172', '233009']
+
+asset_type = 'fund'
+
+start_date = '2011-08-09'
+
+data_freq = 'D'
+
+windows= 132
+
+
+clean_period_prices, kickout_assets, reset_start_date = data_process(order_book_ids, asset_type, start_date, windows, data_freq, out_threshold_coefficient=None)
+
 class OptimizationError(Exception):
 
     def __init__(self, warning_message):
