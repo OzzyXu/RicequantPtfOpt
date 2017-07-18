@@ -65,7 +65,7 @@ def data_process(order_book_ids, asset_type, start_date, windows, data_freq, out
     else:
         out_threshold = ceil(windows * out_threshold_coefficient)
 
-    kickout_assets = pd.DataFrame(columns=["Elimination Reason"])
+    kickout_assets = pd.DataFrame(columns=["剔除原因"])
 
     # Check whether any stocks has long suspended trading periods, have been delisted or new-listed for less than 132
     # trading days and generate list for such stocks. For weekly and monthly data, only those assets which have too late
@@ -81,25 +81,24 @@ def data_process(order_book_ids, asset_type, start_date, windows, data_freq, out
                 if not period_volume_i_value_counts.empty:
                     # New-listed stock test
                     if (end_date - instrument_i_listed_date).days <= 132:
-                        temp = pd.DataFrame({"Elimination Reason": "New listed stocks whose data length is less than "
-                                                                   "132 days"}, index=[i])
+                        temp = pd.DataFrame({"剔除原因": "上市时间少于132个交易日"}, index=[i])
                         kickout_assets = kickout_assets.append(temp)
                     # Delisted test
                     elif instrument_i_de_listed_date != "0000-00-00":
                         if pd.to_datetime(instrument_i_de_listed_date) < end_date:
-                            temp = pd.DataFrame({"Elimination Reason": "Delisted"}, index=[i])
+                            temp = pd.DataFrame({"剔除原因": "已退市"}, index=[i])
                             kickout_assets = kickout_assets.append(temp)
                     # Long suspended test
                     elif 0 in period_volume_i_value_counts_index:
                         if period_volume_i_value_counts[period_volume_i_value_counts_index == 0][0] >= out_threshold:
-                            temp = pd.DataFrame({"Elimination Reason": "Suspended days over threshold"}, index=[i])
+                            temp = pd.DataFrame({"剔除原因": "停牌交易日数量过多"}, index=[i])
                             kickout_assets = kickout_assets.append(temp)
                     # Late beginning day test and just-in-case test for missing values
                     elif period_volume_i.isnull().sum() >= out_threshold:
-                        temp = pd.DataFrame({"Elimination Reason": "Missing values over threshold"}, index=[i])
+                        temp = pd.DataFrame({"剔除原因": "缺失值过多"}, index=[i])
                         kickout_assets = kickout_assets.append(temp)
                 else:
-                    temp = pd.DataFrame({"Elimination Reason": "Empty data"}, index=[i])
+                    temp = pd.DataFrame({"剔除原因": "无相关股票数据"}, index=[i])
                     kickout_assets = kickout_assets.append(temp)
         else:
             for i in order_book_ids:
@@ -109,36 +108,35 @@ def data_process(order_book_ids, asset_type, start_date, windows, data_freq, out
                 if not ((period_prices_i.isnull() == 0).sum() == 0):
                     # New-listed test
                     if (end_date - instrument_i_listed_date).days <= 132:
-                        temp = pd.DataFrame({"Elimination Reason": "New listed stocks whose data length is less than "
-                                                                   "132 days"}, index=[i])
+                        temp = pd.DataFrame({"剔除原因": "发行时间少于132个交易日"}, index=[i])
                         kickout_assets = kickout_assets.append(temp)
                     # Delisted test
                     elif instrument_i_de_listed_date != "0000-00-00":
                         if pd.to_datetime(instrument_i_de_listed_date) < end_date:
-                            temp = pd.DataFrame({"Elimination Reason": "Delisted"}, index=[i])
+                            temp = pd.DataFrame({"剔除原因": "已退市"}, index=[i])
                             kickout_assets = kickout_assets.append(temp)
                     # Late beginning day test and just-in-case test for missing values
                     elif period_prices_i.isnull().sum() >= out_threshold:
-                        temp = pd.DataFrame({"Elimination Reason": "Missing values over threshold"}, index=[i])
+                        temp = pd.DataFrame({"剔除原因": "缺失值过多"}, index=[i])
                         kickout_assets = kickout_assets.append(temp)
                 else:
-                    temp = pd.DataFrame({"Elimination Reason": "Empty data"}, index=[i])
+                    temp = pd.DataFrame({"剔除原因": "无相关股票数据"}, index=[i])
                     kickout_assets = kickout_assets.append(temp)
 
         # # Check whether any ST stocks are included and generate a list for ST stocks
         # st_list = list(period_prices.columns.values[rqdatac.is_st_stock(order_book_ids,
         #                                                                 reset_start_date, end_date).sum(axis=0) > 0])
         # kickout_assets = kickout_assets.append(pd.DataFrame(["ST stocks"] * len(st_list),
-        #                                                     columns=["Elimination Reason"], index=[st_list]))
+        #                                                     columns=["剔除原因"], index=[st_list]))
     elif asset_type is "fund":
         for i in order_book_ids:
             period_prices_i = period_prices.loc[:, i]
             if not ((period_prices_i.isnull() == 0).sum() == 0):
                 if period_prices_i.isnull().sum() >= out_threshold:
-                    temp = pd.DataFrame({"Elimination Reason": "Missing values over threshold"}, index=[i])
+                    temp = pd.DataFrame({"剔除原因": "缺失值过多"}, index=[i])
                     kickout_assets = kickout_assets.append(temp)
             else:
-                temp = pd.DataFrame({"Elimination Reason": "Empty data"}, index=[i])
+                temp = pd.DataFrame({"剔除原因": "无相关基金数据"}, index=[i])
                 kickout_assets = kickout_assets.append(temp)
 
     period_prices = period_prices.fillna(method="pad")
@@ -375,7 +373,7 @@ def black_litterman_prep(order_book_ids, start_date, investors_views, investors_
     return combined_return_mean, combined_return_covar, risk_aversion_coefficient, investors_views_uncertainty
 
 
-# Generate upper and lower bounds for equities in portfolio
+# Generate upper and lower bounds for assets in portfolio
 def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
 
     if bounds is not None:
@@ -451,7 +449,14 @@ def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
             return tuple(general_bnds)
 
 
-# Generate category constraints for portfolio
+# Market neutral constraints generation
+def market_neutral_constraints_gen(clean_order_book_ids, asset_type, market_neutral_constraints, benchmark):
+
+    pass
+
+
+
+# Generate category constraints generation
 def category_constraints_gen(clean_order_book_ids, asset_type, constraints=None):
 
     if constraints is not None:
@@ -516,8 +521,8 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
     Supported funds type: Bond, Stock, Hybrid, Money, ShortBond, StockIndex, BondIndex, Related, QDII, Other; supported
     stocks industry sector: Shenwan_industry_name;
     cons: {"types1": (lb1, up1), "types2": (lb2, up2), ...};
-    :param expected_return: column vector of floats, optional. Default: Means of the returns of order_book_ids
-    within windows. Must input this if expected_return_covar is given to run "mean_variance" method.
+    :param expected_return: pandas DataFrame. Default: Means of the returns for order_book_ids
+    within windows(empirical means). Must input this if expected_return_covar is given to run "mean_variance" method.
     :param expected_return_covar: pandas DataFrame, optional. Covariance matrix of expected return. Default: covariance
     of the means of the returns of order_book_ids within windows. If expected_return_covar is given, any models involve
     covariance matrix will use expected_return_covar instead of estimating from sample data. Moreover, if
@@ -595,7 +600,14 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
 
         # Generate expected_return if not given
         if method is "mean_variance":
-            expected_return = period_daily_return_pct_change.mean()
+            empirical_mean = period_daily_return_pct_change.mean()
+            if expected_return is None:
+                expected_return = empirical_mean
+            else:
+                for i in expected_return.index.values:
+                    if i in empirical_mean.index.values:
+                        empirical_mean.loc[i] = expected_return.loc[i]
+                expected_return = empirical_mean
     else:
         # Get preparation done when expected_return_covar is given
         c_m = expected_return_covar
@@ -746,8 +758,12 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
                 'all': [log_barrier_risk_parity_optimizer, min_variance_optimizer, risk_parity_with_con_optimizer]}
 
     if method is not 'all':
-        return pd.DataFrame(opt_dict[method]()[0], index=list(c_m.columns.values), columns=[method]), c_m, \
-               data_after_processing[1], opt_dict[method]()[1]
+        if expected_return_covar is None:
+            return pd.DataFrame(opt_dict[method]()[0], index=list(c_m.columns.values), columns=[method]), c_m, \
+                   data_after_processing[1], opt_dict[method]()[1]
+        else:
+            pd.DataFrame(opt_dict[method]()[0], index=list(c_m.columns.values), columns=[method]), c_m, \
+            opt_dict[method]()[1]
     else:
         temp1 = pd.DataFrame(index=list(c_m.columns.values), columns=['risk_parity', 'min_variance',
                                                                       "risk_parity_with_con"])
@@ -755,4 +771,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
         for f in opt_dict[method]:
             temp1.iloc[:, n] = f()[0]
             n = n + 1
-        return temp1, c_m, data_after_processing[1]
+        if expected_return_covar is None:
+            return temp1, c_m, data_after_processing[1]
+        else:
+            return temp1, c_m
