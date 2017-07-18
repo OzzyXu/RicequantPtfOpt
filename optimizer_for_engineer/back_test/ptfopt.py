@@ -398,7 +398,7 @@ def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
         general_bnds = list()
         log_rp_bnds = list()
         bounds_list = list(bounds)
-        temp_ub = 0
+        temp_ub = 0res
         if method is "risk_parity":
             log_rp_bnds = [(10 ** -6, float('inf'))] * len(clean_order_book_ids)
         elif method is "all":

@@ -132,6 +132,10 @@ def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method 
 
             # {'full_list': (0.9,1.2)}
 
+            if (cons != None or bnds != None) and method == 'risk_parity':
+                method = 'risk_parity_with_con'
+
+
             try:
                 temp_res =  optimizer(order_book_ids, rebalancing_points[i], asset_type, method,
                                                           current_weight=None, bnds=bnds, cons=cons,

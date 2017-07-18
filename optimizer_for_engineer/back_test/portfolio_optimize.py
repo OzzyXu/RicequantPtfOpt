@@ -18,11 +18,10 @@ rqdatac.init('ricequant', '8ricequant8')
 
 
 
-def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method = 'all',
-                       rebalancing_frequency = 66, window= 132, bnds=None, cons=None,
-                       cov_shrinkage = True, benchmark = 'equal_weight',
-                       industry_matching = False, expected_return= 'empirical_mean',
-                       risk_aversion_coef=1, res_options = 'weight'):
+def portfolio_optimize(order_book_ids, day, asset_type, method, window= 132,
+                       bnds=None, cons=None, cov_shrinkage = True,
+                       benchmark = 'equal_weight',
+                       expected_return= 'empirical_mean', risk_aversion_coef=1):
 
     """
     Parameters
@@ -82,7 +81,7 @@ def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method 
         print(input_check_status)
         return 1
     else:
-        if cons != None and method == 'risk_parity':
+        if (cons != None or bnds != None) and method == 'risk_parity':
             method = 'risk_parity_with_con'
 
         try:
@@ -101,24 +100,12 @@ def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method 
             return 1
 
 
-        total_weight = pd.DataFrame(index = list(weights.index) + list(kicked_out_list.index), columns = list(weights.columns))
+        total_weight = pd.DataFrame(index = list(weights.index) + list(kicked_out_list.index), columns = list(weights.columns) + ['status'])
         total_weight.iloc[:,0] = weights
         total_weight.iloc[:,1] = kicked_out_list.iloc[:,0]
         total_weight = total_weight.fillna(0)
 
         return total_weight, optimizer_status
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
