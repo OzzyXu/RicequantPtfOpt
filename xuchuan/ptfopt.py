@@ -384,30 +384,16 @@ def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
             if bounds[key][0] > bounds[key][1]:
                 raise OptimizationError("错误：合约 %s 的 bounds 设置下限高于上限。" % key)
             elif bounds[key][0] > 1 or bounds[key][1] < 0:
-<<<<<<< HEAD
                 raise OptimizationError("错误：合约 %s 的 bounds 设置下限高于上限。" % key)
-            if key is not "full_list":
-                if key not in order_book_ids:
-                    raise OptimizationError('错误：Bounds 设置中包含 order_book_ids 没有的合约 %s。' % key)
-                if method is not "risk_parity":
-                    temp_lb += bounds[key][0]
-            else:
-                if method is not "risk_parity":
-                    temp_lb = bounds[key][0] * len(order_book_ids)
-        if temp_lb > 1:
-            raise OptimizationError("错误：bounds 设置中下限之和大于1。")
-=======
-                raise OptimizationError("Bounds setting error for %s" % key)
             elif key is not "full_list":
                 if key not in order_book_ids:
-                    raise OptimizationError('Bounds setting contains asset %s who doesnt exist in assets pool.' % key)
+                    raise OptimizationError('错误：Bounds 设置中包含 order_book_ids 没有的合约 %s。' % key)
                 temp_lb += bounds[key][0]
             elif key is "full_list":
                 temp_lb = bounds[key][0] * len(order_book_ids)
                 temp_ub = 1 - bounds[key][1] * len(order_book_ids)
         if temp_lb > 1 or temp_ub > 0:
-            raise OptimizationError("Incorrect summation for lower bounds or upper bounds.")
->>>>>>> a8b05a0e9cfb6caac5d301dd02dec3fef6f23ca3
+            raise OptimizationError("错误：bounds 设置中下限之和大于1或上限之和小于1。")
 
         general_bnds = list()
         log_rp_bnds = list()
@@ -510,6 +496,7 @@ def general_constraints_gen(clean_order_book_ids, asset_type, constraints=None):
 def market_neutral_constraints_gen(clean_order_book_ids, market_neutral_constraints, benchmark):
 
     pass
+
 
 def optimizer(order_book_ids, start_date, asset_type, method, current_weight=None, bnds=None, cons=None,
               expected_return=None, expected_return_covar=None, risk_aversion_coefficient=1, windows=None,
