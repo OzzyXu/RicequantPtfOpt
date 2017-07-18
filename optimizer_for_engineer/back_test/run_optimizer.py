@@ -15,7 +15,7 @@ end_date = '2017-05-01'
 asset_type = 'fund'
 method = 'risk_parity'
 
-method= ''
+method= 'risk_parity'
 #current_weight = None
 rebalancing_frequency=66
 window=132

@@ -24,6 +24,7 @@ def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method 
                        industry_matching = False, expected_return= 'empirical_mean',
                        risk_aversion_coef=1, res_options = 'weight'):
 
+
     """
     Parameters
     ----------
@@ -66,15 +67,23 @@ def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method 
                  Control which optimization results will be returned.
                  (1) If it is set to be 'weights', only the optimized weights will be returned;
                  (2) If it is set to be 'weights_indicators', both optimized weights and performance indicators will be returned;
-                 (3) If it is set to be 'all', the optimized weights, performance indicators and covariance matrix will be returned.
+                 (3) If it is set to be 'all', the optimized weights, performance indicators, risk indicators and covariance matrix will be returned.
 
     Results
     ----------
-    total_weight: pandas.DataFrame
-                  return a dataframe with order_book_ids as index, and the assets' weights and status.
-                  
-    optimizer_status: str
-                      return a str indicating whether the optimization is successful.
+            return a dic contains:
+        {'weights': weights,
+        'annualized_cum_return': annualized_cum_return,
+        'annualized_vol': annualized_vol,
+        'max_drawdown': max_drawdown,
+        'turnover_rate': turnover_rate,
+        'indiviudal_asset_risk_contributions':indiviudal_asset_risk_contributions,
+        'asset_class_risk_contributions': asset_class_risk_contributions,
+        'risk_concentration_index': risk_concentration_index,
+        "covariance_matrix" : cov_mat,
+        'rebalancing ppints': rebalancing_points}
+
+        and if we have "optimizer_status", we will also return it.
 
     """
     input_check_status = input_validation(order_book_ids, start_date, end_date, asset_type, method, rebalancing_frequency, window, bnds,
@@ -236,11 +245,9 @@ def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method 
         #
         result_package = {'weights': weights, 'annualized_cum_return': annualized_cum_return, 'annualized_vol': annualized_vol, 'max_drawdown': max_drawdown,
                           'turnover_rate': turnover_rate, 'indiviudal_asset_risk_contributions':indiviudal_asset_risk_contributions,\
-                          'asset_class_risk_contributions': asset_class_risk_contributions, 'risk_concentration_index': risk_concentration_index, "covariance_matrix" : cov_mat
-                          , 'rebalancing ppints': rebalancing_points}
+                          'asset_class_risk_contributions': asset_class_risk_contributions, 'risk_concentration_index': risk_concentration_index, "covariance_matrix" : cov_mat,
+                          'rebalancing ppints': rebalancing_points}
 
-        if len(optimizer_status) != 0:
-            result_package['optimizer_status'] = optimizer_status
 
 
 
@@ -257,7 +264,13 @@ def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method 
         elif (res_options == 'all'):
             res_options = ['weights', 'annualized_cum_return', 'annualized_vol', 'max_drawdown', 'turnover_rate',
                            'indiviudal_asset_risk_contributions', 'asset_class_risk_contributions',
-                           'risk_concentration_index', "covariance_matrix"]
+                           'risk_concentration_index', "covariance_matrix", 'rebalancing ppints']
+
+        if len(optimizer_status) != 0:
+            result_package['optimizer_status'] = optimizer_status
+
+            if res_options == 'all':
+                res_options.append['optimizer_status']
 
         return_dic = {x: result_package[x] for x in res_options}
         return return_dic
