@@ -379,21 +379,21 @@ def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
     if bounds is not None:
         # Bounds setup error check
         temp_lb = 0
+        temp_ub = 0
         for key in bounds:
             if bounds[key][0] > bounds[key][1]:
                 raise OptimizationError("Lower bound is larger than upper bound for asset %s." % key)
             elif bounds[key][0] > 1 or bounds[key][1] < 0:
                 raise OptimizationError("Bounds setting error for %s" % key)
-            if key is not "full_list":
+            elif key is not "full_list":
                 if key not in order_book_ids:
                     raise OptimizationError('Bounds setting contains asset %s who doesnt exist in assets pool.' % key)
-                if method is not "risk_parity":
-                    temp_lb += bounds[key][0]
-            else:
-                if method is not "risk_parity":
-                    temp_lb = bounds[key][0] * len(order_book_ids)
-        if temp_lb > 1:
-            raise OptimizationError("The summation of lower bounds is larger than 1.")
+                temp_lb += bounds[key][0]
+            elif key is "full_list":
+                temp_lb = bounds[key][0] * len(order_book_ids)
+                temp_ub = 1 - bounds[key][1] * len(order_book_ids)
+        if temp_lb > 1 or temp_ub > 0:
+            raise OptimizationError("Incorrect summation for lower bounds or upper bounds.")
 
         general_bnds = list()
         log_rp_bnds = list()
