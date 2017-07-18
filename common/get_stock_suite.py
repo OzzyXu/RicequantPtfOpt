@@ -73,7 +73,7 @@ stock_test_suite = get_stock_test_suite(shenwan_industry_names)
 
 
 
-## 将返回的dictionary存成txt file
+## 将返回的dictionary存成txt temp_file
 
 with open('./common/stock_test_suite.txt', 'w') as file:
     file.write(json.dumps(stock_test_suite, ensure_ascii=False))
