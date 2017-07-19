@@ -449,36 +449,42 @@ def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
 
 
 # Generate category and general constraints generation
-def general_constraints_gen(clean_order_book_ids, asset_type, constraints=None):
+def general_constraints_gen(order_book_ids, clean_order_book_ids, asset_type, constraints=None):
 
     if constraints is not None:
-        df = pd.DataFrame(index=clean_order_book_ids, columns=['type'])
+        df = pd.DataFrame(index=order_book_ids, columns=['type'])
 
         # Constraints setup error check
         temp_lb = 0
         temp_ub = 0
+
+        if asset_type is 'fund':
+            for i in order_book_ids:
+                df.loc[i, 'type'] = rqdatac.fund.instruments(i).fund_type
+        elif asset_type is 'stock':
+            for i in order_book_ids:
+                df.loc[i, "type"] = rqdatac.instruments(i).shenwan_industry_name
+
         for key in constraints:
             temp_lb += constraints[key][0]
             temp_ub += constraints[key][1]
             if constraints[key][0] > constraints[key][1]:
                 raise OptimizationError("错误：合约类别 %s 的 constraints 下限高于上限。" % key)
-            if constraints[key][0] > 1 or constraints[key][1] < 0:
+            elif constraints[key][0] > 1 or constraints[key][1] < 0:
                 raise OptimizationError("错误：合约类别 %s 的 constraints 下限大于1，或上限小于0。" % key)
+            elif key not in df.type.unique():
+                raise OptimizationError("错误：constraints 中包含 order_book_ids 没有的资产类型 %s。" % key)
         if temp_lb > 1:
             raise OptimizationError("错误：constraints 下限之和大于1。")
-
-        if asset_type is 'fund':
-            for i in clean_order_book_ids:
-                df.loc[i, 'type'] = rqdatac.fund.instruments(i).fund_type
-        elif asset_type is 'stock':
-            for i in clean_order_book_ids:
-                df.loc[i, "type"] = rqdatac.instruments(i).shenwan_industry_name
+        if temp_ub < 1 and len(constraints) == len(df.type.unique()):
+            raise OptimizationError("错误：constraints 上限之和小于1。")
 
         cons = list()
         temp_ub = 0
+        df = df.loc[clean_order_book_ids]
         for key in constraints:
             if key not in df.type.unique():
-                raise OptimizationError("错误：constraints 中包含 order_book_ids 没有的资产类型 %s。" % key)
+                raise OptimizationError("错误：数据剔除后constraints 中包含 order_book_ids 没有的资产类型 %s。" % key)
             key_list = list(df[df['type'] == key].index)
             key_pos_list = list()
             for i in key_list:
@@ -489,7 +495,7 @@ def general_constraints_gen(clean_order_book_ids, asset_type, constraints=None):
             cons.append({"type": "ineq", "fun": key_cons_fun_ub})
             temp_ub += constraints[key][1]
         if len(df.type.unique()) == len(constraints) and temp_ub < 1:
-            raise OptimizationError("错误：constraints 上限之和小于1。")
+            raise OptimizationError("错误：数据剔除后constraints 上限之和小于1。")
         cons.append({'type': 'eq', 'fun': lambda x: sum(x) - 1})
         return tuple(cons)
     else:
@@ -639,7 +645,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
 
     # Generate constraints
     if method is not "risk_parity":
-        general_cons = general_constraints_gen(clean_order_book_ids, asset_type, cons)
+        general_cons = general_constraints_gen(order_book_ids, clean_order_book_ids, asset_type, cons)
 
     # Log barrier risk parity model
     c = 15

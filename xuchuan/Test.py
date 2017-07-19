@@ -264,7 +264,7 @@ order_book_ids = ['000404',
  '160807']
 
 constraints = {"Hybrid": (0, 0.5)}
-optimal_weight = pt.optimizer(order_book_ids, start_date="2016-03-03", asset_type='fund', method='all')
+optimal_weight = pt.optimizer(order_book_ids, start_date="2015-03-03", asset_type='fund', method='all')
 
 
 print(optimal_weight[0])
