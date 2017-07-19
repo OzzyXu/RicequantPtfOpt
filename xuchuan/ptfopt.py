@@ -464,8 +464,8 @@ def general_constraints_gen(clean_order_book_ids, asset_type, constraints=None):
                 raise OptimizationError("错误：合约类别 %s 的 constraints 下限高于上限。" % key)
             if constraints[key][0] > 1 or constraints[key][1] < 0:
                 raise OptimizationError("错误：合约类别 %s 的 constraints 下限大于1，或上限小于0。" % key)
-        if temp_ub < 1 or temp_lb > 1:
-            raise OptimizationError("错误：constraints 上限之和小于1，或下限之和大于1。")
+        if temp_lb > 1:
+            raise OptimizationError("错误：constraints 下限之和大于1。")
 
         if asset_type is 'fund':
             for i in clean_order_book_ids:
@@ -475,6 +475,7 @@ def general_constraints_gen(clean_order_book_ids, asset_type, constraints=None):
                 df.loc[i, "type"] = rqdatac.instruments(i).shenwan_industry_name
 
         cons = list()
+        temp_ub = 0
         for key in constraints:
             if key not in df.type.unique():
                 raise OptimizationError("错误：constraints 中包含 order_book_ids 没有的资产类型 %s。" % key)
@@ -486,6 +487,9 @@ def general_constraints_gen(clean_order_book_ids, asset_type, constraints=None):
             key_cons_fun_ub = lambda x: constraints[key][1] - sum(x[t] for t in key_pos_list)
             cons.append({"type": "ineq", "fun": key_cons_fun_lb})
             cons.append({"type": "ineq", "fun": key_cons_fun_ub})
+            temp_ub += constraints[key][1]
+        if len(df.type.unique()) == len(constraints) and temp_ub < 1:
+            raise OptimizationError("错误：constraints 上限之和小于1。")
         cons.append({'type': 'eq', 'fun': lambda x: sum(x) - 1})
         return tuple(cons)
     else:

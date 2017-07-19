@@ -140,7 +140,7 @@ confidence_of_views_list = [0.5, 0.5]
 # risk_aversion_c = res[2]
 # expected_return_list = np.matrix([0.01]*7).transpose()
 
-constraints = {"国防军工": (0, 0.005)}
+
 bounds = {"600150.XSHG": (0, 0.001)}
 
 # to_do_list = list(np.random.choice(equity_funds_list, size=100, replace=False))
@@ -250,16 +250,23 @@ error_list =['600406.XSHG',
  '002813.XSHE']
 
 bounds = {"full_list": (0, 0.025)}
-order_book_ids = ['161826',
- '150134',
- '000404',
+order_book_ids = ['000404',
  '550009',
- '161116',
- '118001',
- '540006',
- '000309']
-optimal_weight = pt.optimizer(error_list, start_date="2015-03-03", asset_type='stock', method='min_TE', benchmark="000300.XSHG"
-                                                                                                                  "")
+ '550008',
+ '400018',
+ '519692',
+ '420001',
+ '166802',
+ '000368',
+ '160218',
+ '000042',
+ '519116',
+ '160807']
+
+constraints = {"Hybrid": (0, 0.5)}
+optimal_weight = pt.optimizer(order_book_ids, start_date="2016-03-03", asset_type='fund', method='all')
+
+
 print(optimal_weight[0])
 print(optimal_weight[2])
 # print(optimal_weight[3])
