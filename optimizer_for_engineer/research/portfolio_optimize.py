@@ -81,7 +81,7 @@ def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method 
         'asset_class_risk_contributions': asset_class_risk_contributions,
         'risk_concentration_index': risk_concentration_index,
         "covariance_matrix" : cov_mat,
-        'rebalancing ppints': rebalancing_points}
+        'rebalancing points': rebalancing_points}
 
         and if we have "optimizer_status", we will also return it.
 
@@ -246,7 +246,7 @@ def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method 
         result_package = {'weights': weights, 'annualized_cum_return': annualized_cum_return, 'annualized_vol': annualized_vol, 'max_drawdown': max_drawdown,
                           'turnover_rate': turnover_rate, 'indiviudal_asset_risk_contributions':indiviudal_asset_risk_contributions,\
                           'asset_class_risk_contributions': asset_class_risk_contributions, 'risk_concentration_index': risk_concentration_index, "covariance_matrix" : cov_mat,
-                          'rebalancing ppints': rebalancing_points}
+                          'rebalancing_points': rebalancing_points}
 
 
 
@@ -264,7 +264,7 @@ def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method 
         elif (res_options == 'all'):
             res_options = ['weights', 'annualized_cum_return', 'annualized_vol', 'max_drawdown', 'turnover_rate',
                            'indiviudal_asset_risk_contributions', 'asset_class_risk_contributions',
-                           'risk_concentration_index', "covariance_matrix", 'rebalancing ppints']
+                           'risk_concentration_index', "covariance_matrix", 'rebalancing_points']
 
         if len(optimizer_status) != 0:
             result_package['optimizer_status'] = optimizer_status

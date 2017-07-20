@@ -449,43 +449,58 @@ def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
 
 
 # Generate category and general constraints generation
-def general_constraints_gen(clean_order_book_ids, asset_type, constraints=None):
+def general_constraints_gen(order_book_ids, clean_order_book_ids, asset_type, constraints=None):
 
     if constraints is not None:
-        df = pd.DataFrame(index=clean_order_book_ids, columns=['type'])
+        df = pd.DataFrame(index=order_book_ids, columns=['type'])
 
         # Constraints setup error check
         temp_lb = 0
         temp_ub = 0
+
+        if asset_type is 'fund':
+            for i in order_book_ids:
+                df.loc[i, 'type'] = rqdatac.fund.instruments(i).fund_type
+        elif asset_type is 'stock':
+            for i in order_book_ids:
+                df.loc[i, "type"] = rqdatac.instruments(i).shenwan_industry_name
+
         for key in constraints:
             temp_lb += constraints[key][0]
             temp_ub += constraints[key][1]
             if constraints[key][0] > constraints[key][1]:
                 raise OptimizationError("错误：合约类别 %s 的 constraints 下限高于上限。" % key)
-            if constraints[key][0] > 1 or constraints[key][1] < 0:
+            elif constraints[key][0] > 1 or constraints[key][1] < 0:
                 raise OptimizationError("错误：合约类别 %s 的 constraints 下限大于1，或上限小于0。" % key)
-        if temp_ub < 1 or temp_lb > 1:
-            raise OptimizationError("错误：constraints 上限之和小于1，或下限之和大于1。")
-
-        if asset_type is 'fund':
-            for i in clean_order_book_ids:
-                df.loc[i, 'type'] = rqdatac.fund.instruments(i).fund_type
-        elif asset_type is 'stock':
-            for i in clean_order_book_ids:
-                df.loc[i, "type"] = rqdatac.instruments(i).shenwan_industry_name
+            elif key not in df.type.unique():
+                raise OptimizationError("错误：constraints 中包含 order_book_ids 没有的资产类型 %s。" % key)
+        if temp_lb > 1:
+            raise OptimizationError("错误：constraints 下限之和大于1。")
+        if temp_ub < 1 and len(constraints) == len(df.type.unique()):
+            raise OptimizationError("错误：constraints 上限之和小于1。")
 
         cons = list()
+        temp_ub = 0
+        df = df.loc[clean_order_book_ids]
+
+        def key_cons_fun_lb(pos_list, lb):
+            return {"type": "ineq", "fun": lambda x: sum(x[t] for t in pos_list) - lb}
+
+        def key_cons_fun_ub(pos_list, ub):
+            return {"type": "ineq", "fun": lambda x: ub - sum(x[t] for t in pos_list)}
+
         for key in constraints:
             if key not in df.type.unique():
-                raise OptimizationError("错误：constraints 中包含 order_book_ids 没有的资产类型 %s。" % key)
+                raise OptimizationError("错误：数据剔除后constraints 中包含 order_book_ids 没有的资产类型 %s。" % key)
             key_list = list(df[df['type'] == key].index)
             key_pos_list = list()
             for i in key_list:
                 key_pos_list.append(df.index.get_loc(i))
-            key_cons_fun_lb = lambda x: sum(x[t] for t in key_pos_list) - constraints[key][0]
-            key_cons_fun_ub = lambda x: constraints[key][1] - sum(x[t] for t in key_pos_list)
-            cons.append({"type": "ineq", "fun": key_cons_fun_lb})
-            cons.append({"type": "ineq", "fun": key_cons_fun_ub})
+            cons.append(key_cons_fun_lb(key_pos_list, constraints[key][0]))
+            cons.append(key_cons_fun_ub(key_pos_list, constraints[key][1]))
+            temp_ub += constraints[key][1]
+        if len(df.type.unique()) == len(constraints) and temp_ub < 1:
+            raise OptimizationError("错误：数据剔除后constraints 上限之和小于1。")
         cons.append({'type': 'eq', 'fun': lambda x: sum(x) - 1})
         return tuple(cons)
     else:
@@ -635,7 +650,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
 
     # Generate constraints
     if method is not "risk_parity":
-        general_cons = general_constraints_gen(clean_order_book_ids, asset_type, cons)
+        general_cons = general_constraints_gen(order_book_ids, clean_order_book_ids, asset_type, cons)
 
     # Log barrier risk parity model
     c = 15
@@ -684,7 +699,8 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
             return optimization_res.x, optimization_info
 
     # Min variance model
-    min_variance_obj_fun = lambda x: np.dot(np.dot(x, c_m), x)
+    def min_variance_obj_fun(x):
+        return np.dot(np.dot(x, c_m), x)
 
     def min_variance_gradient(x):
         return np.multiply(2, np.dot(c_m, x))
