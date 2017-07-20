@@ -1,7 +1,4 @@
-# 06/07/2017 By Chuan Xu @ Ricequant V 3.0
-
-
-
+# 07/14/2017 By Chuan Xu @ Ricequant V 5.0
 import numpy as np
 import rqdatac
 import scipy.optimize as sc_opt
@@ -21,7 +18,7 @@ class OptimizationError(Exception):
 def data_process(order_book_ids, asset_type, start_date, windows, data_freq, out_threshold_coefficient=None):
     """
     Clean data for covariance matrix calculation
-    :param order_book_ids: str list. A group of assets.
+    :param order_book_ids: str list. A selected list of assets.
     :param asset_type: str. "fund" or "stock"
     :param start_date: str. The first day for backtest.
     :param windows: int. Interval length for sample.
@@ -47,7 +44,7 @@ def data_process(order_book_ids, asset_type, start_date, windows, data_freq, out
     windows_dict = {"D": -(windows + 1),
                     "W": -(windows + 1) * 5,
                     "M": -(windows + 1) * 22}
-    start_date = rqdatac.get_trading_dates("1995-01-01", end_date)[windows_dict[data_freq]]
+    start_date = rqdatac.get_trading_dates("2005-01-01", end_date)[windows_dict[data_freq]]
     reset_start_date = pd.to_datetime(start_date)
 
     if asset_type is 'fund':
@@ -68,61 +65,78 @@ def data_process(order_book_ids, asset_type, start_date, windows, data_freq, out
     else:
         out_threshold = ceil(windows * out_threshold_coefficient)
 
-    kickout_assets = pd.DataFrame(columns=["Elimination Reason"])
-    # Locate the first valid value of each column, if available sequence length is less than threshhold, add
-    # the column name into out_list; if sequence length is longer than threshold but less than chosen period length,
-    # reset the start_date to the later date. The latest start_date whose sequence length is greater than threshold
-    # will be chose. For weekly and monthly data, only those assets which have too late beginning date will be
-    # eliminated.
-    # Check whether any stocks has long suspended trading periods or has been delisted and generate list
-    # for such stocks
+    kickout_assets = pd.DataFrame(columns=["剔除原因"])
+
+    # Check whether any stocks has long suspended trading periods, have been delisted or new-listed for less than 132
+    # trading days and generate list for such stocks. For weekly and monthly data, only those assets which have too late
+    # beginning date, were delisted or new-listed will be eliminated.
     if asset_type is "stock":
         if data_freq is "D":
             for i in order_book_ids:
-                if not period_volume.loc[:, i].value_counts().empty:
-                    if period_prices.loc[:, i].isnull().sum() >= out_threshold:
-                        temp = pd.DataFrame({"Elimination Reason": "Missing values over threshold"}, index=[i])
+                period_volume_i = period_volume.loc[:, i]
+                period_volume_i_value_counts = period_volume_i.value_counts()
+                period_volume_i_value_counts_index = period_volume_i_value_counts.index.values
+                instrument_i_de_listed_date = rqdatac.instruments(i).de_listed_date
+                instrument_i_listed_date = pd.to_datetime(rqdatac.instruments(i).listed_date)
+                if not period_volume_i_value_counts.empty:
+                    # New-listed stock test
+                    if (end_date - instrument_i_listed_date).days <= 132:
+                        temp = pd.DataFrame({"剔除原因": "上市时间少于132个交易日"}, index=[i])
                         kickout_assets = kickout_assets.append(temp)
-                    elif period_volume.loc[:, i].last_valid_index() < end_date:
-                        temp = pd.DataFrame({"Elimination Reason": "Delisted"}, index=[i])
-                        kickout_assets = kickout_assets.append(temp)
-                    elif 0 in period_volume.loc[:, i].value_counts().index.values:
-                        if period_volume.loc[:, i].value_counts()[
-                                    period_volume.loc[:, i].value_counts().index.values == 0][0] >= out_threshold:
-                            temp = pd.DataFrame({"Elimination Reason": "Suspended days over threshold"}, index=[i])
+                    # Delisted test
+                    elif instrument_i_de_listed_date != "0000-00-00":
+                        if pd.to_datetime(instrument_i_de_listed_date) < end_date:
+                            temp = pd.DataFrame({"剔除原因": "已退市"}, index=[i])
                             kickout_assets = kickout_assets.append(temp)
-                    elif period_prices.loc[:, i].first_valid_index() < reset_start_date:
-                        reset_start_date = period_prices.loc[:, i].first_valid_index()
+                    # Long suspended test
+                    elif 0 in period_volume_i_value_counts_index:
+                        if period_volume_i_value_counts[period_volume_i_value_counts_index == 0][0] >= out_threshold:
+                            temp = pd.DataFrame({"剔除原因": "停牌交易日数量过多"}, index=[i])
+                            kickout_assets = kickout_assets.append(temp)
+                    # Late beginning day test and just-in-case test for missing values
+                    elif period_volume_i.isnull().sum() >= out_threshold:
+                        temp = pd.DataFrame({"剔除原因": "缺失值过多"}, index=[i])
+                        kickout_assets = kickout_assets.append(temp)
                 else:
-                    temp = pd.DataFrame({"Elimination Reason": "Empty data"}, index=[i])
+                    temp = pd.DataFrame({"剔除原因": "无相关股票数据"}, index=[i])
                     kickout_assets = kickout_assets.append(temp)
         else:
             for i in order_book_ids:
-                if not ((period_prices.loc[:, i].isnull() == 0).sum() == 0):
-                    if period_prices.loc[:, i].isnull().sum() >= out_threshold:
-                        temp = pd.DataFrame({"Elimination Reason": "Missing values over threshold"}, index=[i])
+                period_prices_i = period_prices.loc[:, i]
+                instrument_i_de_listed_date = rqdatac.instruments(i).de_listed_date
+                instrument_i_listed_date = pd.to_datetime(rqdatac.instruments(i).listed_date)
+                if not ((period_prices_i.isnull() == 0).sum() == 0):
+                    # New-listed test
+                    if (end_date - instrument_i_listed_date).days <= 132:
+                        temp = pd.DataFrame({"剔除原因": "发行时间少于132个交易日"}, index=[i])
                         kickout_assets = kickout_assets.append(temp)
-                    elif period_prices.loc[:, i].first_valid_index() < reset_start_date:
-                        reset_start_date = period_prices.loc[:, i].first_valid_index()
+                    # Delisted test
+                    elif instrument_i_de_listed_date != "0000-00-00":
+                        if pd.to_datetime(instrument_i_de_listed_date) < end_date:
+                            temp = pd.DataFrame({"剔除原因": "已退市"}, index=[i])
+                            kickout_assets = kickout_assets.append(temp)
+                    # Late beginning day test and just-in-case test for missing values
+                    elif period_prices_i.isnull().sum() >= out_threshold:
+                        temp = pd.DataFrame({"剔除原因": "缺失值过多"}, index=[i])
+                        kickout_assets = kickout_assets.append(temp)
                 else:
-                    temp = pd.DataFrame({"Elimination Reason": "Empty data"}, index=[i])
+                    temp = pd.DataFrame({"剔除原因": "无相关股票数据"}, index=[i])
                     kickout_assets = kickout_assets.append(temp)
 
-        # Check whether any ST stocks are included and generate a list for ST stocks
-        st_list = list(period_prices.columns.values[rqdatac.is_st_stock(order_book_ids,
-                                                                        reset_start_date, end_date).sum(axis=0) > 0])
-        kickout_assets = kickout_assets.append(pd.DataFrame(["ST stocks"] * len(st_list),
-                                                            columns=["Elimination Reason"], index=[st_list]))
+        # # Check whether any ST stocks are included and generate a list for ST stocks
+        # st_list = list(period_prices.columns.values[rqdatac.is_st_stock(order_book_ids,
+        #                                                                 reset_start_date, end_date).sum(axis=0) > 0])
+        # kickout_assets = kickout_assets.append(pd.DataFrame(["ST stocks"] * len(st_list),
+        #                                                     columns=["剔除原因"], index=[st_list]))
     elif asset_type is "fund":
         for i in order_book_ids:
-            if period_prices.loc[:, i].first_valid_index() is not None:
-                if period_prices.loc[:, i].isnull().sum() >= out_threshold:
-                    temp = pd.DataFrame({"Elimination Reason": "Missing values over threshold"}, index=[i])
+            period_prices_i = period_prices.loc[:, i]
+            if not ((period_prices_i.isnull() == 0).sum() == 0):
+                if period_prices_i.isnull().sum() >= out_threshold:
+                    temp = pd.DataFrame({"剔除原因": "缺失值过多"}, index=[i])
                     kickout_assets = kickout_assets.append(temp)
-                elif period_prices.loc[:, i].first_valid_index() < reset_start_date:
-                    reset_start_date = period_prices.loc[:, i].first_valid_index()
             else:
-                temp = pd.DataFrame({"Elimination Reason": "Empty data"}, index=[i])
+                temp = pd.DataFrame({"剔除原因": "无相关基金数据"}, index=[i])
                 kickout_assets = kickout_assets.append(temp)
 
     period_prices = period_prices.fillna(method="pad")
@@ -144,63 +158,57 @@ def cov_shrinkage(clean_period_prices):
     """
 
     cov_m = clean_period_prices.pct_change().cov()
-    N = cov_m.shape[0]
+    cov_size = cov_m.shape[0]
 
     # Generate desired shrinkage target matrix F
-    diag_std_m = np.multiply(np.eye(N), np.power(np.diag(cov_m), -0.5))
+    diag_std_m = np.multiply(np.eye(cov_size), np.power(np.diag(cov_m), -0.5))
     corr_m = np.dot(diag_std_m, np.dot(cov_m, diag_std_m))
-    corr_avg = 2 * (np.triu(corr_m).sum() - N) / ((N - 1) * N)
+    corr_avg = 2 * (np.triu(corr_m).sum() - cov_size) / ((cov_size - 1) * cov_size)
     diag_std_v = np.power(np.diag(cov_m), 0.5)
     diag_std_v = diag_std_v[:, None]
     F = np.dot(diag_std_v, diag_std_v.T)
-    F_real = np.multiply(np.ones((N, N)) - np.eye(N), corr_avg * F) + np.multiply(np.diag(F), np.eye(N))
+    F_real = np.multiply(np.ones((cov_size, cov_size)) - np.eye(cov_size), corr_avg * F) + np.multiply(np.diag(F),
+                                                                                                       np.eye(cov_size))
+
+    # Generate estimator gamma
+    gamma_estimator = np.subtract(F_real, cov_m).pow(2).sum().sum()
 
     # Generate estimator pi
     sample_average_v = clean_period_prices.pct_change().mean()
     pct_after_subtract_m = clean_period_prices.pct_change().subtract(sample_average_v)
     pi_estimator = 0
     pi_ii_list = list()
-    for i in range(N):
-        temp = np.multiply(np.array(pct_after_subtract_m.iloc[:, i]), pct_after_subtract_m.T).T
-        temp1 = np.subtract(temp, np.array(cov_m.iloc[i, :])).pow(2).mean()
-        pi_ii_list.append(temp1[i])
-        temp2 = temp1.sum()
-        pi_estimator += temp2
+    v_estimator = np.empty((0, cov_size), float)
+    for i in range(cov_size):
+        # Calculate estimator pi
+        pct_after_subtract_m_i = pct_after_subtract_m.iloc[:, i].values
+        temp = np.multiply(pct_after_subtract_m_i, pct_after_subtract_m.T).T
+        temp1 = np.subtract(temp, np.array(cov_m.iloc[i, :]))
+        temp2 = temp1.pow(2).mean()
+        pi_ii_list.append(temp2[i])
+        temp3 = temp2.sum()
+        pi_estimator += temp3
+        # Calculate estimator v for pho
+        temp4 = np.subtract(np.power(pct_after_subtract_m_i, 2), cov_m.iloc[i, i])
+        temp5 = np.multiply(temp4, temp1.T).T
+        v_estimator_i = np.array([temp5.mean()])
+        v_estimator = np.append(v_estimator, v_estimator_i, axis=0)
 
-    # Generate estimator gamma
-    gamma_estimator = np.subtract(F_real, cov_m).pow(2).sum().sum()
-
-    # Generate estimator pho. Efficiency may get improved by changing the two loops structure to matrix operation.
-    # v_estimator = np.matrix([])
-    # for i in range(N):
-    #     temp = np.multiply(np.array(pct_after_subtract_m.iloc[:, i]), pct_after_subtract_m.T).T
-    #     temp1 = np.subtract(temp, np.array(cov_m.iloc[i, :]))
-    #     temp2 = np.subtract(pct_after_subtract_m.iloc[:, i].pow(2), cov_m.iloc[i, i])
-    #     temp3 = np.multiply(temp2, temp1.T).T
-    #     v_estimator_i = temp3.mean()
-    #     v_estimator = v_estimator.append(v_estimator, [v_estimator_i], axis=0)
+    # Generate estimator pho
     temp = 0
-    for i in range(N):
-        for j in range(N):
-            if j != i:
-                temp1 = np.subtract(pct_after_subtract_m.iloc[:, i].pow(2), cov_m.iloc[i, i])
-                temp2 = np.multiply(pct_after_subtract_m.iloc[:, i], pct_after_subtract_m.iloc[:, j])
-                v_ii_ij = np.multiply(temp1, np.subtract(temp2, cov_m.iloc[i, j])).mean()
-                temp3 = np.subtract(pct_after_subtract_m.iloc[:, j].pow(2), cov_m.iloc[j, j])
-                v_jj_ij = np.multiply(temp3, np.subtract(temp2, cov_m.iloc[i, j])).mean()
-                temp += (sqrt(cov_m.iloc[j, j] / cov_m.iloc[i, i]) * v_ii_ij +
-                         sqrt(cov_m.iloc[i, i] / cov_m.iloc[j, j]) * v_jj_ij)
+    for i in range(cov_size):
+        temp1 = np.multiply(np.delete(diag_std_v, i), np.delete(v_estimator[i, :], i)) / diag_std_v[i]
+        temp2 = np.divide(np.delete(v_estimator[:, i], i), np.delete(diag_std_v, i)) * diag_std_v[i]
+        temp += sum(temp1+temp2)
     pho_estimator = sum(pi_ii_list) + corr_avg / 2 * temp
 
-    # Generate estimator kai
+    # Generate estimator kai, optimal shrinkage intensity delta and shrinkage target matrix Sigma
     if gamma_estimator != 0:
         kai_estimator = (pi_estimator - pho_estimator) / gamma_estimator
+        delta = max(0, min(kai_estimator / clean_period_prices.shape[0], 1))
+        return delta * F_real + (1 - delta) * cov_m, delta
     else:
-        raise OptimizationError("Shrinkage target F matrix is exactly the same as sample covariance matrix!")
-
-    # Generate optimal shrinkage intensity delta
-    delta = max(0, min(kai_estimator / clean_period_prices.shape[0], 1))
-    return delta * F_real + (1 - delta) * cov_m, delta
+        return cov_m, 0
 
 
 def black_litterman_prep(order_book_ids, start_date, investors_views, investors_views_indicate_M,
@@ -293,10 +301,10 @@ def black_litterman_prep(order_book_ids, start_date, investors_views, investors_
         risk_aversion_coefficient = ((market_portfolio_return[1:].mean() - risk_free_rate[data_freq].mean()) /
                                      market_portfolio_return[1:].var())
 
-    equilibrium_return = np.multiply(np.dot(clean_period_excess_return[1:].cov(), clean_market_weight),
+    clean_period_excess_return_cov = clean_period_excess_return[1:].cov()
+    equilibrium_return = np.multiply(np.dot(clean_period_excess_return_cov, clean_market_weight),
                                      risk_aversion_coefficient)
 
-    clean_period_excess_return_cov = clean_period_excess_return[1:].cov()
     # Generate the investors_views_uncertainty matrix if none is passed in
     if investors_views_uncertainty is None:
         if confidence_of_views is None:
@@ -316,8 +324,7 @@ def black_litterman_prep(order_book_ids, start_date, investors_views, investors_
                                                                investors_views_indicate_M[i, :].transpose())
                 part2 = 1 / (excess_return_cov_uncertainty * np.dot(investors_views_indicate_M[i, :],
                                                                     np.dot(clean_period_excess_return_cov,
-                                                                           investors_views_indicate_M[i,
-                                                                           :].transpose())))
+                                                                           investors_views_indicate_M[i, :].T)))
                 part3 = investors_views[i] - np.dot(investors_views_indicate_M[i, :], equilibrium_return)
                 return_with_full_confidence = equilibrium_return + np.multiply(part2 * part3, part1)
                 weights_with_full_confidence = np.dot(np.linalg.inv(np.multiply(risk_aversion_coefficient,
@@ -366,28 +373,41 @@ def black_litterman_prep(order_book_ids, start_date, investors_views, investors_
     return combined_return_mean, combined_return_covar, risk_aversion_coefficient, investors_views_uncertainty
 
 
-# Generate upper and lower bounds for equities in portfolio
+# Generate upper and lower bounds for assets in portfolio
 def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
 
     if bounds is not None:
+        # Bounds setup error check
+        temp_lb = 0
+        temp_ub = 0
         for key in bounds:
-            if key is not "full_list" and key not in order_book_ids:
-                raise OptimizationError('Bounds contain equities not existing in pool! ')
-            elif bounds[key][0] > bounds[key][1]:
-                raise OptimizationError("Lower bound is larger than upper bound for some equities!")
+            if bounds[key][0] > bounds[key][1]:
+                raise OptimizationError("错误：合约 %s 的 bounds 下限高于上限。" % key)
+            elif bounds[key][0] > 1 or bounds[key][1] < 0:
+                raise OptimizationError("错误：合约 %s 的 bounds 下限大于1或上限小于0。" % key)
+            elif key is not "full_list":
+                if key not in order_book_ids:
+                    raise OptimizationError('错误：Bounds 中包含 order_book_ids 没有的合约 %s。' % key)
+                temp_lb += bounds[key][0]
+            elif key is "full_list":
+                temp_lb = bounds[key][0] * len(order_book_ids)
+                temp_ub = 1 - bounds[key][1] * len(order_book_ids)
+        if temp_lb > 1 or temp_ub > 0:
+            raise OptimizationError("错误：bounds 下限之和大于1或上限之和小于1。")
 
         general_bnds = list()
         log_rp_bnds = list()
+        bounds_list = list(bounds)
         temp_ub = 0
         if method is "risk_parity":
             log_rp_bnds = [(10 ** -6, float('inf'))] * len(clean_order_book_ids)
         elif method is "all":
             log_rp_bnds = [(10 ** -6, float('inf'))] * len(clean_order_book_ids)
             for i in clean_order_book_ids:
-                if "full_list" in list(bounds):
+                if "full_list" in bounds_list:
                     general_bnds = general_bnds + [(max(0, bounds["full_list"][0]), min(1, bounds["full_list"][1]))]
                     temp_ub += bounds["full_list"][1]
-                elif i in list(bounds):
+                elif i in bounds_list:
                     general_bnds = general_bnds + [(max(0, bounds[i][0]), min(1, bounds[i][1]))]
                     temp_ub += bounds[i][1]
                 else:
@@ -395,20 +415,21 @@ def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
                     temp_ub += 1
         else:
             for i in clean_order_book_ids:
-                if "full_list" in list(bounds):
+                if "full_list" in bounds_list:
                     general_bnds = general_bnds + [(max(0, bounds["full_list"][0]), min(1, bounds["full_list"][1]))]
                     temp_ub += bounds["full_list"][1]
-                elif i in list(bounds):
+                elif i in bounds_list:
                     general_bnds = general_bnds + [(max(0, bounds[i][0]), min(1, bounds[i][1]))]
                     temp_ub += bounds[i][1]
                 else:
                     general_bnds = general_bnds + [(0, 1)]
                     temp_ub += 1
-        if temp_ub < 1:
-            kickout_list = list(set(order_book_ids) - set(clean_order_book_ids))
-            message = "Bounds setting error after data processing! The following assets have been eliminated: %s" \
-                  % kickout_list
-            raise OptimizationError(message)
+
+        if method is not "risk_parity":
+            if temp_ub < 1:
+                kickout_list = list(set(order_book_ids) - set(clean_order_book_ids))
+                message = ("错误：数据预处理后 bounds 上限之和小于1。被剔除的合约包括：%s。" % kickout_list)
+                raise OptimizationError(message)
 
         if method is "all":
             return tuple(log_rp_bnds), tuple(general_bnds)
@@ -427,44 +448,73 @@ def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
             return tuple(general_bnds)
 
 
-# Generate category constraints for portfolio
-def constraints_gen(clean_order_book_ids, asset_type, constraints=None):
+# Generate category and general constraints generation
+def general_constraints_gen(order_book_ids, clean_order_book_ids, asset_type, constraints=None):
 
     if constraints is not None:
-        df = pd.DataFrame(index=clean_order_book_ids, columns=['type'])
+        df = pd.DataFrame(index=order_book_ids, columns=['type'])
 
-        for key in constraints:
-            if constraints[key][0] > constraints[key][1]:
-                raise OptimizationError("Constraints setup error!")
+        # Constraints setup error check
+        temp_lb = 0
+        temp_ub = 0
 
         if asset_type is 'fund':
-            for i in clean_order_book_ids:
+            for i in order_book_ids:
                 df.loc[i, 'type'] = rqdatac.fund.instruments(i).fund_type
         elif asset_type is 'stock':
-            for i in clean_order_book_ids:
+            for i in order_book_ids:
                 df.loc[i, "type"] = rqdatac.instruments(i).shenwan_industry_name
 
+        for key in constraints:
+            temp_lb += constraints[key][0]
+            temp_ub += constraints[key][1]
+            if constraints[key][0] > constraints[key][1]:
+                raise OptimizationError("错误：合约类别 %s 的 constraints 下限高于上限。" % key)
+            elif constraints[key][0] > 1 or constraints[key][1] < 0:
+                raise OptimizationError("错误：合约类别 %s 的 constraints 下限大于1，或上限小于0。" % key)
+            elif key not in df.type.unique():
+                raise OptimizationError("错误：constraints 中包含 order_book_ids 没有的资产类型 %s。" % key)
+        if temp_lb > 1:
+            raise OptimizationError("错误：constraints 下限之和大于1。")
+        if temp_ub < 1 and len(constraints) == len(df.type.unique()):
+            raise OptimizationError("错误：constraints 上限之和小于1。")
+
         cons = list()
+        temp_ub = 0
+        df = df.loc[clean_order_book_ids]
+
+        def key_cons_fun_lb(pos_list, lb):
+            return {"type": "ineq", "fun": lambda x: sum(x[t] for t in pos_list) - lb}
+
+        def key_cons_fun_ub(pos_list, ub):
+            return {"type": "ineq", "fun": lambda x: ub - sum(x[t] for t in pos_list)}
+
         for key in constraints:
             if key not in df.type.unique():
-                raise OptimizationError("Non-existing category in constraints: %s" % key)
+                raise OptimizationError("错误：数据剔除后constraints 中包含 order_book_ids 没有的资产类型 %s。" % key)
             key_list = list(df[df['type'] == key].index)
             key_pos_list = list()
             for i in key_list:
                 key_pos_list.append(df.index.get_loc(i))
-            key_cons_fun_lb = lambda x: sum(x[t] for t in key_pos_list) - constraints[key][0]
-            key_cons_fun_ub = lambda x: constraints[key][1] - sum(x[t] for t in key_pos_list)
-            cons.append({"type": "ineq", "fun": key_cons_fun_lb})
-            cons.append({"type": "ineq", "fun": key_cons_fun_ub})
+            cons.append(key_cons_fun_lb(key_pos_list, constraints[key][0]))
+            cons.append(key_cons_fun_ub(key_pos_list, constraints[key][1]))
+            temp_ub += constraints[key][1]
+        if len(df.type.unique()) == len(constraints) and temp_ub < 1:
+            raise OptimizationError("错误：数据剔除后constraints 上限之和小于1。")
         cons.append({'type': 'eq', 'fun': lambda x: sum(x) - 1})
         return tuple(cons)
     else:
         return {'type': 'eq', 'fun': lambda x: sum(x) - 1}
 
 
+# Market neutral constraints generation
+def market_neutral_constraints_gen(clean_order_book_ids, market_neutral_constraints, benchmark):
+    pass
+
+
 def optimizer(order_book_ids, start_date, asset_type, method, current_weight=None, bnds=None, cons=None,
               expected_return=None, expected_return_covar=None, risk_aversion_coefficient=1, windows=None,
-              out_threshold_coefficient=None, data_freq=None, fun_tol=10**-8, max_iteration=10**5, disp=False,
+              out_threshold_coefficient=None, data_freq=None, fun_tol=10**-8, max_iteration=10**3, disp=False,
               iprint=1, cov_enhancement=True, benchmark=None):
     """
     :param order_book_ids: str list. A list of assets(stocks or funds). Optional when expected_return_covar is given;
@@ -483,8 +533,8 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
     Supported funds type: Bond, Stock, Hybrid, Money, ShortBond, StockIndex, BondIndex, Related, QDII, Other; supported
     stocks industry sector: Shenwan_industry_name;
     cons: {"types1": (lb1, up1), "types2": (lb2, up2), ...};
-    :param expected_return: column vector of floats, optional. Default: Means of the returns of order_book_ids
-    within windows. Must input this if expected_return_covar is given to run "mean_variance" method.
+    :param expected_return: pandas DataFrame. Default: Means of the returns for order_book_ids
+    within windows(empirical means). Must input this if expected_return_covar is given to run "mean_variance" method.
     :param expected_return_covar: pandas DataFrame, optional. Covariance matrix of expected return. Default: covariance
     of the means of the returns of order_book_ids within windows. If expected_return_covar is given, any models involve
     covariance matrix will use expected_return_covar instead of estimating from sample data. Moreover, if
@@ -501,7 +551,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
     be eliminated. Default: 0.5(out_threshold = 0.5*windows).
     :param fun_tol: float, optional. Optimization accuracy requirement. The smaller, the more accurate, but cost more
     time. Default: 10E-12.
-    :param max_iteration: int, optional. Max iteration number allows during optimization. Default: 10E5.
+    :param max_iteration: int, optional. Max iteration number allows during optimization. Default: 1000.
     :param disp: bool, optional. Optimization summary display control. Override iprint interface. Default: False.
     :param cov_enhancement: bool, optional. Default: True. Use shrinkage method based on Ledoit and Wolf(2003) to
     improve the estimation for sample covariance matrix. It's recommended to set it to True when the stock pool is
@@ -515,7 +565,8 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
     :return:
     pandas DataFrame. A DataFrame contains assets' name and their corresponding optimal weights;
     pandas DataFrame. The covariance matrix for optimization;
-    pandas DataFrame. The order_book_ids filtered out and the reasons of elimination.
+    pandas DataFrame. The order_book_ids filtered out and the reasons of elimination;
+    str. Optimization message. Return this only when methods other than "all".
     """
 
     if not disp:
@@ -538,10 +589,9 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
         clean_period_prices = data_after_processing[0]
         reset_start_date = data_after_processing[2]
 
-        # If all assets are eliminated, raise error
-        if clean_period_prices.shape[1] == 0:
-            # print('All selected funds have been ruled out')
-            raise OptimizationError("All assets have been eliminated")
+        # At least two assets are needed
+        if clean_period_prices.shape[1] <= 1:
+            raise OptimizationError("错误：数据剔除后order_book_ids数量不足。")
 
         # Generate enhanced estimation for covariance matrix
         period_daily_return_pct_change = clean_period_prices.pct_change()[1:]
@@ -561,7 +611,14 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
 
         # Generate expected_return if not given
         if method is "mean_variance":
-            expected_return = period_daily_return_pct_change.mean()
+            empirical_mean = period_daily_return_pct_change.mean()
+            if expected_return is None:
+                expected_return = empirical_mean
+            else:
+                for i in expected_return.index.values:
+                    if i in empirical_mean.index.values:
+                        empirical_mean.loc[i] = expected_return.loc[i]
+                expected_return = empirical_mean
     else:
         # Get preparation done when expected_return_covar is given
         c_m = expected_return_covar
@@ -571,13 +628,10 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
 
         order_book_ids = list(c_m.columns.values)
 
-    # Generate enhanced estimation for covariance matrix
-    period_daily_return_pct_change = clean_period_prices.pct_change()[1:]
-
     # Read benchmark data for min tracking error model
     if method is "min_TE":
         if benchmark is None:
-            raise OptimizationError("Input no benchmark!")
+            raise OptimizationError("错误：没有选择基准。")
         benchmark_price = rqdatac.get_price(benchmark, start_date=reset_start_date,
                                             end_date=rqdatac.get_previous_trading_date(start_date), fields="close")
         if data_freq is not "D":
@@ -594,27 +648,30 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
     else:
         general_bnds = bounds_gen(order_book_ids, clean_order_book_ids, method, bnds)
 
-    #########################################################################
-    # add for test purpose to set all constraints by zs on 0705
-    if cons == 1:
-        # get type and determine cons
-        clean_order_book_ids = list(clean_period_prices.columns)
-        df1 = pd.DataFrame(index=clean_order_book_ids, columns=['type'])
-
-        if asset_type is 'fund':
-            for i in clean_order_book_ids:
-                df1.loc[i, 'type'] = fund.instruments(i).fund_type
-        elif asset_type is 'stock':
-            for i in clean_order_book_ids:
-                df1.loc[i, "type"] = rqdatac.instruments(i).shenwan_industry_name
-        all_types = df1['type'].unique()
-        cons_num = 1 / len(all_types)
-        cons = {}
-        for i in all_types:
-            cons[i] = (cons_num - 0.03, cons_num+0.03)
-    #########################################################################
     # Generate constraints
-    general_cons = constraints_gen(clean_order_book_ids, asset_type, cons)
+    if method is not "risk_parity":
+
+        #########################################################################
+        # add for test purpose to set all constraints by zs on 0705
+        if cons == 1:
+            # get type and determine cons
+            clean_order_book_ids = list(clean_period_prices.columns)
+            df1 = pd.DataFrame(index=clean_order_book_ids, columns=['type'])
+
+            if asset_type is 'fund':
+                for i in clean_order_book_ids:
+                    df1.loc[i, 'type'] = fund.instruments(i).fund_type
+            elif asset_type is 'stock':
+                for i in clean_order_book_ids:
+                    df1.loc[i, "type"] = rqdatac.instruments(i).shenwan_industry_name
+            all_types = df1['type'].unique()
+            cons_num = 1 / len(all_types)
+            cons = {}
+            for i in all_types:
+                cons[i] = (cons_num - 0.03, cons_num + 0.03)
+        #########################################################################
+
+        general_cons = general_constraints_gen(order_book_ids, clean_order_book_ids, asset_type, cons)
 
     # Log barrier risk parity model
     c = 15
@@ -628,33 +685,43 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
     def log_barrier_risk_parity_optimizer():
         optimization_res = sc_opt.minimize(log_barrier_risk_parity_obj_fun, current_weight, method='L-BFGS-B',
                                            jac=log_barrier_risk_parity_gradient, bounds=log_rp_bnds)
+        optimization_info = optimization_res.message
         if not optimization_res.success:
-            temp = ' @ %s' % clean_period_prices.index[0]
-            error_message = 'Risk parity optimization failed, ' + str(optimization_res.message) + temp
-            raise OptimizationError(error_message)
+            if optimization_res.nit >= max_iteration:
+                optimal_weights = (optimization_res.x / sum(optimization_res.x))
+                return optimal_weights, optimization_info
+            else:
+                temp = ' @ %s' % clean_period_prices.index[0]
+                error_message = '错误：risk_parity 算法优化失败，' + str(optimization_res.message) + temp
+                raise OptimizationError(error_message)
         else:
             optimal_weights = (optimization_res.x / sum(optimization_res.x))
-            return optimal_weights
+            return optimal_weights, optimization_info
 
     # Risk parity with constraints model
     def risk_parity_with_con_obj_fun(x):
         temp1 = np.multiply(x, np.dot(c_m, x))
-        c = temp1[:, None]
-        return np.sum(scsp.distance.pdist(c, "euclidean"))
+        temp2 = temp1[:, None]
+        return np.sum(scsp.distance.pdist(temp2, "euclidean"))
 
     def risk_parity_with_con_optimizer():
         optimization_res = sc_opt.minimize(risk_parity_with_con_obj_fun, current_weight, method='SLSQP',
                                            bounds=general_bnds, constraints=general_cons, options=opts)
+        optimization_info = optimization_res.message
         if not optimization_res.success:
-            temp = ' @ %s' % clean_period_prices.index[0]
-            error_message = 'Risk parity with constraints optimization failed, ' + str(optimization_res.message) \
-                            + temp
-            raise OptimizationError(error_message)
+            if optimization_res.nit >= max_iteration:
+                return optimization_res.x, optimization_info
+            else:
+                temp = ' @ %s' % clean_period_prices.index[0]
+                error_message = '错误：risk_parity 算法优化失败，' + str(optimization_res.message) \
+                                + temp
+                raise OptimizationError(error_message)
         else:
-            return optimization_res.x
+            return optimization_res.x, optimization_info
 
     # Min variance model
-    min_variance_obj_fun = lambda x: np.dot(np.dot(x, c_m), x)
+    def min_variance_obj_fun(x):
+        return np.dot(np.dot(x, c_m), x)
 
     def min_variance_gradient(x):
         return np.multiply(2, np.dot(c_m, x))
@@ -663,12 +730,16 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
         optimization_res = sc_opt.minimize(min_variance_obj_fun, current_weight, method='SLSQP',
                                            jac=min_variance_gradient, bounds=general_bnds, constraints=general_cons,
                                            options=opts)
+        optimization_info = optimization_res.message
         if not optimization_res.success:
-            temp = ' @ %s' % clean_period_prices.index[0]
-            error_message = 'Min variance optimization failed, ' + str(optimization_res.message) + temp
-            raise OptimizationError(error_message)
+            if optimization_res.nit >= max_iteration:
+                return optimization_res.x, optimization_info
+            else:
+                temp = ' @ %s' % clean_period_prices.index[0]
+                error_message = '错误：min_variance 算法优化失败，' + str(optimization_res.message) + temp
+                raise OptimizationError(error_message)
         else:
-            return optimization_res.x
+            return optimization_res.x, optimization_info
 
     # Mean variance model
     def mean_variance_obj_fun(x):
@@ -683,12 +754,16 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
         optimization_res = sc_opt.minimize(mean_variance_obj_fun, current_weight, method='SLSQP',
                                            jac=mean_variance_gradient, bounds=general_bnds,
                                            constraints=general_cons, options=opts)
+        optimization_info = optimization_res.message
         if not optimization_res.success:
-            temp = ' @ %s' % clean_period_prices.index[0]
-            error_message = 'Mean variance optimization failed, ' + str(optimization_res.message) + temp
-            raise OptimizationError(error_message)
+            if optimization_res.nit >= max_iteration:
+                return optimization_res.x, optimization_info
+            else:
+                temp = ' @ %s' % clean_period_prices.index[0]
+                error_message = '错误：mean_variance 算法优化失败，' + str(optimization_res.message) + temp
+                raise OptimizationError(error_message)
         else:
-            return optimization_res.x
+            return optimization_res.x, optimization_info
 
     # Minimizing tracking error model
     def min_TE_obj_fun(x):
@@ -698,12 +773,16 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
     def min_TE_optimizer():
         optimization_res = sc_opt.minimize(min_TE_obj_fun, current_weight, method='SLSQP',
                                            bounds=general_bnds, constraints=general_cons, options=opts)
+        optimization_info = optimization_res.message
         if not optimization_res.success:
-            temp = ' @ %s' % clean_period_prices.index[0]
-            error_message = 'Min TE optimization failed, ' + str(optimization_res.message) + temp
-            raise OptimizationError(error_message)
+            if optimization_res.nit >= max_iteration:
+                return optimization_res.x, optimization_info
+            else:
+                temp = ' @ %s' % clean_period_prices.index[0]
+                error_message = '错误：min_TE 算法优化失败，' + str(optimization_res.message) + temp
+                raise OptimizationError(error_message)
         else:
-            return optimization_res.x
+            return optimization_res.x, optimization_info
 
     opt_dict = {'risk_parity': log_barrier_risk_parity_optimizer,
                 'min_variance': min_variance_optimizer,
@@ -713,13 +792,20 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
                 'all': [log_barrier_risk_parity_optimizer, min_variance_optimizer, risk_parity_with_con_optimizer]}
 
     if method is not 'all':
-        return pd.DataFrame(opt_dict[method](), index=list(c_m.columns.values), columns=[method]), c_m, \
-               data_after_processing[1]
+        if expected_return_covar is None:
+            return pd.DataFrame(opt_dict[method]()[0], index=list(c_m.columns.values), columns=[method]), c_m, \
+                   data_after_processing[1], opt_dict[method]()[1]
+        else:
+            pd.DataFrame(opt_dict[method]()[0], index=list(c_m.columns.values), columns=[method]), c_m, \
+            opt_dict[method]()[1]
     else:
         temp1 = pd.DataFrame(index=list(c_m.columns.values), columns=['risk_parity', 'min_variance',
                                                                       "risk_parity_with_con"])
         n = 0
         for f in opt_dict[method]:
-            temp1.iloc[:, n] = f()
+            temp1.iloc[:, n] = f()[0]
             n = n + 1
-        return temp1, c_m, data_after_processing[1]
+        if expected_return_covar is None:
+            return temp1, c_m, data_after_processing[1]
+        else:
+            return temp1, c_m
