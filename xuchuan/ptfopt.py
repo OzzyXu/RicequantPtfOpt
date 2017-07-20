@@ -108,12 +108,12 @@ def data_process(order_book_ids, asset_type, start_date, windows, data_freq, out
                 if not ((period_prices_i.isnull() == 0).sum() == 0):
                     # New-listed test
                     if (end_date - instrument_i_listed_date).days <= 132:
-                        temp = pd.DataFrame({"剔除原因": "发行时间少于132个交易日"}, index=[i])
+                        temp = pd.DataFrame({"剔除原因": "股票上市时间少于132个交易日"}, index=[i])
                         kickout_assets = kickout_assets.append(temp)
                     # Delisted test
                     elif instrument_i_de_listed_date != "0000-00-00":
                         if pd.to_datetime(instrument_i_de_listed_date) < end_date:
-                            temp = pd.DataFrame({"剔除原因": "已退市"}, index=[i])
+                            temp = pd.DataFrame({"剔除原因": "股票已退市"}, index=[i])
                             kickout_assets = kickout_assets.append(temp)
                     # Late beginning day test and just-in-case test for missing values
                     elif period_prices_i.isnull().sum() >= out_threshold:
@@ -131,8 +131,19 @@ def data_process(order_book_ids, asset_type, start_date, windows, data_freq, out
     elif asset_type is "fund":
         for i in order_book_ids:
             period_prices_i = period_prices.loc[:, i]
+            instrument_i_de_listed_date = rqdatac.fund.instruments(i).de_listed_date
+            instrument_i_listed_date = pd.to_datetime(rqdatac.fund.instruments(i).listed_date)
             if not ((period_prices_i.isnull() == 0).sum() == 0):
-                if period_prices_i.isnull().sum() >= out_threshold:
+                # New-listed test
+                if (end_date - instrument_i_listed_date).days <= 132:
+                    temp = pd.DataFrame({"剔除原因": "基金发行时间少于132个交易日"}, index=[i])
+                    kickout_assets = kickout_assets.append(temp)
+                # Delisted test
+                elif instrument_i_de_listed_date != "0000-00-00":
+                    if pd.to_datetime(instrument_i_de_listed_date) < end_date:
+                        temp = pd.DataFrame({"剔除原因": "基金已清算"}, index=[i])
+                        kickout_assets = kickout_assets.append(temp)
+                elif period_prices_i.isnull().sum() >= out_threshold:
                     temp = pd.DataFrame({"剔除原因": "缺失值过多"}, index=[i])
                     kickout_assets = kickout_assets.append(temp)
             else:
@@ -400,9 +411,9 @@ def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
         bounds_list = list(bounds)
         temp_ub = 0
         if method is "risk_parity":
-            log_rp_bnds = [(10 ** -6, float('inf'))] * len(clean_order_book_ids)
+            log_rp_bnds = [(10 ** -6, None)] * len(clean_order_book_ids)
         elif method is "all":
-            log_rp_bnds = [(10 ** -6, float('inf'))] * len(clean_order_book_ids)
+            log_rp_bnds = [(10 ** -6, None)] * len(clean_order_book_ids)
             for i in clean_order_book_ids:
                 if "full_list" in bounds_list:
                     general_bnds = general_bnds + [(max(0, bounds["full_list"][0]), min(1, bounds["full_list"][1]))]
@@ -438,7 +449,7 @@ def bounds_gen(order_book_ids, clean_order_book_ids, method, bounds=None):
         else:
             return tuple(general_bnds)
     else:
-        log_rp_bnds = [(10 ** -6, float('inf'))] * len(clean_order_book_ids)
+        log_rp_bnds = [(10 ** -6, None)] * len(clean_order_book_ids)
         general_bnds = [(0, 1)] * len(clean_order_book_ids)
         if method is "all":
             return tuple(log_rp_bnds), tuple(general_bnds)
@@ -577,6 +588,9 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
             'iprint': iprint,
             'disp': disp}
 
+    log_barrier_risk_parity_iprint = {0: -1, 1: 0, 2: 1}
+    log_barrier_risk_parity_opts = {'disp': log_barrier_risk_parity_iprint[disp*iprint]}
+
     if data_freq is None:
         data_freq = "D"
     if windows is None:
@@ -663,11 +677,13 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
 
     def log_barrier_risk_parity_optimizer():
         optimization_res = sc_opt.minimize(log_barrier_risk_parity_obj_fun, current_weight, method='L-BFGS-B',
-                                           jac=log_barrier_risk_parity_gradient, bounds=log_rp_bnds)
-        optimization_info = optimization_res.message
+                                           jac=log_barrier_risk_parity_gradient, bounds=log_rp_bnds,
+                                           options=log_barrier_risk_parity_opts)
+
         if not optimization_res.success:
             if optimization_res.nit >= max_iteration:
                 optimal_weights = (optimization_res.x / sum(optimization_res.x))
+                optimization_info = "Iteration limit exceeded"
                 return optimal_weights, optimization_info
             else:
                 temp = ' @ %s' % clean_period_prices.index[0]
@@ -675,6 +691,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
                 raise OptimizationError(error_message)
         else:
             optimal_weights = (optimization_res.x / sum(optimization_res.x))
+            optimization_info = "Optimization terminated successfully."
             return optimal_weights, optimization_info
 
     # Risk parity with constraints model
@@ -692,7 +709,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
                 return optimization_res.x, optimization_info
             else:
                 temp = ' @ %s' % clean_period_prices.index[0]
-                error_message = '错误：risk_parity 算法优化失败，' + str(optimization_res.message) \
+                error_message = '错误：带限制条件的risk_parity 算法优化失败，' + str(optimization_res.message) \
                                 + temp
                 raise OptimizationError(error_message)
         else:
@@ -780,11 +797,14 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
     else:
         temp1 = pd.DataFrame(index=list(c_m.columns.values), columns=['risk_parity', 'min_variance',
                                                                       "risk_parity_with_con"])
+        temp2 = pd.DataFrame(index=["risk_parity", "min_variance", "risk_parity_with_con"],
+                             columns=["Opt Res Message"])
         n = 0
         for f in opt_dict[method]:
             temp1.iloc[:, n] = f()[0]
+            temp2.iloc[n, 0] = f()[1]
             n = n + 1
         if expected_return_covar is None:
-            return temp1, c_m, data_after_processing[1]
+            return temp1, c_m, data_after_processing[1], temp2
         else:
-            return temp1, c_m
+            return temp1, c_m, temp2
