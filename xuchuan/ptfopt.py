@@ -482,6 +482,13 @@ def general_constraints_gen(order_book_ids, clean_order_book_ids, asset_type, co
         cons = list()
         temp_ub = 0
         df = df.loc[clean_order_book_ids]
+
+        def key_cons_fun_lb(pos_list, lb):
+            return {"type": "ineq", "fun": lambda x: sum(x[t] for t in pos_list) - lb}
+
+        def key_cons_fun_ub(pos_list, ub):
+            return {"type": "ineq", "fun": lambda x: ub - sum(x[t] for t in pos_list)}
+
         for key in constraints:
             if key not in df.type.unique():
                 raise OptimizationError("错误：数据剔除后constraints 中包含 order_book_ids 没有的资产类型 %s。" % key)
@@ -489,10 +496,8 @@ def general_constraints_gen(order_book_ids, clean_order_book_ids, asset_type, co
             key_pos_list = list()
             for i in key_list:
                 key_pos_list.append(df.index.get_loc(i))
-            key_cons_fun_lb = lambda x: sum(x[t] for t in key_pos_list) - constraints[key][0]
-            key_cons_fun_ub = lambda x: constraints[key][1] - sum(x[t] for t in key_pos_list)
-            cons.append({"type": "ineq", "fun": key_cons_fun_lb})
-            cons.append({"type": "ineq", "fun": key_cons_fun_ub})
+            cons.append(key_cons_fun_lb(key_pos_list, constraints[key][0]))
+            cons.append(key_cons_fun_ub(key_pos_list, constraints[key][1]))
             temp_ub += constraints[key][1]
         if len(df.type.unique()) == len(constraints) and temp_ub < 1:
             raise OptimizationError("错误：数据剔除后constraints 上限之和小于1。")
@@ -694,7 +699,8 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
             return optimization_res.x, optimization_info
 
     # Min variance model
-    min_variance_obj_fun = lambda x: np.dot(np.dot(x, c_m), x)
+    def min_variance_obj_fun(x):
+        return np.dot(np.dot(x, c_m), x)
 
     def min_variance_gradient(x):
         return np.multiply(2, np.dot(c_m, x))
