@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from math import *
 import pandas as pd
-from optimizer_tests.stock_test.ptfopt0 import *
+from optimizer_tests.stock_test.ptfopt import *
 
 
 
