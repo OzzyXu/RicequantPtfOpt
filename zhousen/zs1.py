@@ -55,3 +55,16 @@ q.append({'type': 'ineq', 'fun': lambda x: x[1]})
 
 zs([1,2,3])
 
+
+
+
+
+start_date = '2014-01-01'
+
+end_date= '2017-05-31'
+method = 'risk_parity_with_con'
+asset_type = 'stock'
+order_book_ids =stock_test_suite[0]
+
+
+tr_frequency = 66

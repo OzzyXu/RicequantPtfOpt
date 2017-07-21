@@ -14,6 +14,7 @@ from optimizer_tests.stock_test.optimizer_stock_test import *
 
 
 
+
 ##  generate stock_test_suite
 # stock_test_suite = get_stock_test_suite()
 # len(stock_test_suite)

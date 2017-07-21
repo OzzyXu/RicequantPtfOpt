@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 
 
 
-# wrap ptfopt.py to perform as some general API
+# wrap ptfopt0.py to perform as some general API
 
 
 def get_optimizer(order_book_ids, start_date, asset_type, method, tr_frequency = 66, current_weight=None, bnds=None,
@@ -62,7 +62,7 @@ def get_optimizer(order_book_ids, start_date, asset_type, method, tr_frequency =
 
 
 
-    # call ptfopt.py and run 'optimizer'
+    # call ptfopt0.py and run 'optimizer'
     opt_res = {}
     weights = {}
     c_m = {}
