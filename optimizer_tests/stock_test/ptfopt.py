@@ -527,7 +527,7 @@ def market_neutral_constraints_gen(clean_order_book_ids, market_neutral_constrai
 def optimizer(order_book_ids, start_date, asset_type, method, current_weight=None, bnds=None, cons=None,
               expected_return=None, expected_return_covar=None, risk_aversion_coefficient=1, windows=None,
               out_threshold_coefficient=None, data_freq=None, fun_tol=10**-8, max_iteration=10**3, disp=False,
-              iprint=1, cov_enhancement=True, benchmark=None):
+              iprint=1, cov_enhancement=False, benchmark=None):
     """
     :param order_book_ids: str list. A list of assets(stocks or funds). Optional when expected_return_covar is given;
     :param start_date: str. Date to initialize a portfolio or re-balance a portfolio. Optional when
