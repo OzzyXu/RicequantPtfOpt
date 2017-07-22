@@ -485,7 +485,7 @@ def general_constraints_gen(order_book_ids, clean_order_book_ids, asset_type, co
             elif constraints[key][0] > 1 or constraints[key][1] < 0:
                 raise OptimizationError("错误：合约类别 %s 的 constraints 下限大于1，或上限小于0。" % key)
             elif key not in df.type.unique():
-                raise OptimizationError("错误：constraints 中包含 order_book_ids 没有的资产类型 %s。" % key)
+                raise OptimizationError("错误：constraints 中包含 order_book_ids 没有资产类型 %s。" % key)
         if temp_lb > 1:
             raise OptimizationError("错误：constraints 下限之和大于1。")
         if temp_ub < 1 and len(constraints) == len(df.type.unique()):
@@ -503,7 +503,7 @@ def general_constraints_gen(order_book_ids, clean_order_book_ids, asset_type, co
 
         for key in constraints:
             if key not in df.type.unique():
-                raise OptimizationError("错误：数据剔除后constraints 中包含 order_book_ids 没有的资产类型 %s。" % key)
+                raise OptimizationError("错误：数据剔除后constraints 中包含 order_book_ids 没有资产类型 %s。" % key)
             key_list = list(df[df['type'] == key].index)
             key_pos_list = list()
             for i in key_list:
@@ -804,16 +804,16 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
             try:
                 counter += 1
                 if fun_tol > 10**-5:
-                    temp_message = ("%s method has run %i times and fun_tol has been relaxed to less than %f, "
-                                    "optimization failed due to too low precision." % (method, counter-1, fun_tol/10))
+                    temp_message = ("%s 算法迭代 %i 步后未能收敛，调整收敛精度（Tolerence）为 %f，重新进行计算。 "
+                                    % (method, counter-1, fun_tol/10))
                     raise OptimizationError(temp_message)
                 temp = opt_dict[method]()[0]
             except OptResartIndicator:
                 fun_tol = 10 * fun_tol
                 opts = {'maxiter': max_iteration, 'ftol': fun_tol, 'iprint': iprint, 'disp': disp}
         if fun_tol < initial_fun_tol:
-            output_message = opt_dict[method]()[1] + ("%s method has run %i times and fun_tol has been relaxed to "
-                                                      "%f" % (method, counter-1, fun_tol))
+            output_message = opt_dict[method]()[1] + ("%s 算法迭代 %i 步后未能收敛，收敛精度（Tolerence）被调整为 %f。"
+                                                      % (method, counter-1, fun_tol))
         else:
             output_message = opt_dict[method]()[1]
         if expected_return_covar is None:
@@ -835,15 +835,15 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
                 try:
                     counter += 1
                     if fun_tol > 10**-5:
-                        temp_message = ("One method has run %i times and fun_tol has been relaxed to less than %f, "
-                                        "optimization failed due to too low precision." % (counter-1, fun_tol/10))
+                        temp_message = ("优化迭代 %i 步后未能收敛，调整收敛精度（Tolerence）为 %f，重新进行计算。"
+                                        % (counter-1, fun_tol/10))
                         raise OptimizationError(temp_message)
                     temp = f()[0]
                 except OptResartIndicator:
                     fun_tol = 10 * fun_tol
                     opts = {'maxiter': max_iteration, 'ftol': fun_tol, 'iprint': iprint, 'disp': disp}
             if fun_tol < initial_fun_tol:
-                output_message = f()[1] + ("One method has run %i times and fun_tol has been relaxed to %f"
+                output_message = f()[1] + ("优化迭代 %i 步后未能收敛，收敛精度（Tolerence）被调整为 %f。"
                                            % (counter-1, fun_tol))
             else:
                 output_message = f()[1]
