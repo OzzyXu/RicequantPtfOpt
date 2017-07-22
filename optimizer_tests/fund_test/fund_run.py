@@ -30,7 +30,7 @@ fund_test_suite = pickle.load(open( "./optimizer_tests/fund_test/fund_test_suite
 
 ## run
 
-res0 = test_fund_opt(fund_test_suite)
+res0 = test_fund_opt(fund_test_suite, 0)
 res1 = test_fund_opt(fund_test_suite, 1)
 res2 = test_fund_opt(fund_test_suite, 2)
 res3 = test_fund_opt(fund_test_suite, 3)
@@ -56,5 +56,5 @@ pickle.dump(res3, open('./optimizer_tests/fund_test/result/normal/save_res/res3.
 
 
 # To read it back to use again
-temp = pickle.load(open('./optimizer_tests/fund_test/result/normal/save_res/res0.p', "rb" ))
+temp = pickle.load(open('./optimizer_tests/fund_test/result/normal/save_res/res3_err10_6.p', "rb" ))
 

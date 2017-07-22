@@ -230,3 +230,6 @@ dict1 = {}
 dict1.append({1:2})
 
 df0 = pd.DataFrame(columns = 'type')
+
+
+

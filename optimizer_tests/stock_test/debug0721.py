@@ -889,11 +889,12 @@ time_frame[count + 1] = trading_dates[-1]
 
 
 
-i = 0
-
-opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i], asset_type=asset_type, method=method,
+for i in range(12):
+    try:
+        opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i], asset_type=asset_type, method=method,
                                    bnds={'full_list': (0, 0.025)}, cons = 1, fun_tol=10**-8, iprint = 2, disp = True)
-
+    except:
+        print(i)
 
 
 

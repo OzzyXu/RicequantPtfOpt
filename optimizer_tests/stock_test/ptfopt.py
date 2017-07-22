@@ -10,9 +10,11 @@ rqdatac.init('ricequant', '8ricequant8')
 
 
 class OptimizationError(Exception):
+    pass
 
-    def __init__(self, warning_message):
-        print(warning_message)
+
+class OptResartIndicator(Exception):
+    pass
 
 
 def data_process(order_book_ids, asset_type, start_date, windows, data_freq, out_threshold_coefficient=None):
@@ -52,7 +54,6 @@ def data_process(order_book_ids, asset_type, start_date, windows, data_freq, out
     elif asset_type is 'stock':
         period_data = rqdatac.get_price(order_book_ids, reset_start_date, end_date, frequency='1d',
                                         fields=['close', 'volume'])
-
         period_prices = period_data['close']
         period_volume = period_data['volume']
 
@@ -587,6 +588,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
             'ftol': fun_tol,
             'iprint': iprint,
             'disp': disp}
+    initial_fun_tol = fun_tol
 
     log_barrier_risk_parity_iprint = {0: -1, 1: 0, 2: 1}
     log_barrier_risk_parity_opts = {'disp': log_barrier_risk_parity_iprint[disp*iprint]}
@@ -665,6 +667,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
     # Generate constraints
     if method is not "risk_parity":
 
+
         #########################################################################
         # add for test purpose to set all constraints by zs on 0705
         if cons == 1:
@@ -684,6 +687,8 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
             for i in all_types:
                 cons[i] = (cons_num - 0.03, cons_num + 0.03)
         #########################################################################
+
+
         general_cons = general_constraints_gen(order_book_ids, clean_order_book_ids, asset_type, cons)
 
     # Log barrier risk parity model
@@ -704,7 +709,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
             if optimization_res.nit >= max_iteration:
                 optimal_weights = (optimization_res.x / sum(optimization_res.x))
                 optimization_info = "Iteration limit exceeded"
-                return optimal_weights, optimization_info
+                return optimal_weights, optimization_info, optimization_res.status
             else:
                 temp = ' @ %s' % clean_period_prices.index[0]
                 error_message = '错误：risk_parity 算法优化失败，' + str(optimization_res.message) + temp
@@ -727,6 +732,8 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
         if not optimization_res.success:
             if optimization_res.nit >= max_iteration:
                 return optimization_res.x, optimization_info
+            elif optimization_res.status == 8:
+                raise OptResartIndicator()
             else:
                 temp = ' @ %s' % clean_period_prices.index[0]
                 error_message = '错误：带限制条件的risk_parity 算法优化失败，' + str(optimization_res.message) \
@@ -750,6 +757,8 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
         if not optimization_res.success:
             if optimization_res.nit >= max_iteration:
                 return optimization_res.x, optimization_info
+            elif optimization_res.status == 8:
+                raise OptResartIndicator()
             else:
                 temp = ' @ %s' % clean_period_prices.index[0]
                 error_message = '错误：min_variance 算法优化失败，' + str(optimization_res.message) + temp
@@ -774,6 +783,8 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
         if not optimization_res.success:
             if optimization_res.nit >= max_iteration:
                 return optimization_res.x, optimization_info
+            elif optimization_res.status == 8:
+                raise OptResartIndicator()
             else:
                 temp = ' @ %s' % clean_period_prices.index[0]
                 error_message = '错误：mean_variance 算法优化失败，' + str(optimization_res.message) + temp
@@ -793,6 +804,8 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
         if not optimization_res.success:
             if optimization_res.nit >= max_iteration:
                 return optimization_res.x, optimization_info
+            elif optimization_res.status == 8:
+                raise OptResartIndicator()
             else:
                 temp = ' @ %s' % clean_period_prices.index[0]
                 error_message = '错误：min_TE 算法优化失败，' + str(optimization_res.message) + temp
@@ -808,12 +821,29 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
                 'all': [log_barrier_risk_parity_optimizer, min_variance_optimizer, risk_parity_with_con_optimizer]}
 
     if method is not 'all':
-        if expected_return_covar is None:
-            return pd.DataFrame(opt_dict[method]()[0], index=list(c_m.columns.values), columns=[method]), c_m, \
-                   data_after_processing[1], opt_dict[method]()[1]
+        temp = None
+        counter = 0
+        while temp is None:
+            try:
+                counter += 1
+                if fun_tol > 10**-5:
+                    temp_message = ("%s method has run %i times and fun_tol has been relaxed to less than %f, "
+                                    "optimization failed due to too low precision." % (method, counter-1, fun_tol/10))
+                    raise OptimizationError(temp_message)
+                temp = opt_dict[method]()[0]
+            except OptResartIndicator:
+                fun_tol = 10 * fun_tol
+                opts = {'maxiter': max_iteration, 'ftol': fun_tol, 'iprint': iprint, 'disp': disp}
+        if fun_tol < initial_fun_tol:
+            output_message = opt_dict[method]()[1] + ("%s method has run %i times and fun_tol has been relaxed to "
+                                                      "%f" % (method, counter-1, fun_tol))
         else:
-            pd.DataFrame(opt_dict[method]()[0], index=list(c_m.columns.values), columns=[method]), c_m, \
-            opt_dict[method]()[1]
+            output_message = opt_dict[method]()[1]
+        if expected_return_covar is None:
+            return pd.DataFrame(temp, index=list(c_m.columns.values), columns=[method]), c_m, \
+                   data_after_processing[1], output_message
+        else:
+            return pd.DataFrame(temp, index=list(c_m.columns.values), columns=[method]), c_m, output_message
     else:
         temp1 = pd.DataFrame(index=list(c_m.columns.values), columns=['risk_parity', 'min_variance',
                                                                       "risk_parity_with_con"])
@@ -821,8 +851,27 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
                              columns=["Opt Res Message"])
         n = 0
         for f in opt_dict[method]:
+            temp = None
+            counter = 0
+            fun_tol = initial_fun_tol
+            while temp is None:
+                try:
+                    counter += 1
+                    if fun_tol > 10**-5:
+                        temp_message = ("One method has run %i times and fun_tol has been relaxed to less than %f, "
+                                        "optimization failed due to too low precision." % (counter-1, fun_tol/10))
+                        raise OptimizationError(temp_message)
+                    temp = f()[0]
+                except OptResartIndicator:
+                    fun_tol = 10 * fun_tol
+                    opts = {'maxiter': max_iteration, 'ftol': fun_tol, 'iprint': iprint, 'disp': disp}
+            if fun_tol < initial_fun_tol:
+                output_message = f()[1] + ("One method has run %i times and fun_tol has been relaxed to %f"
+                                           % (counter-1, fun_tol))
+            else:
+                output_message = f()[1]
             temp1.iloc[:, n] = f()[0]
-            temp2.iloc[n, 0] = f()[1]
+            temp2.iloc[n, 0] = output_message
             n = n + 1
         if expected_return_covar is None:
             return temp1, c_m, data_after_processing[1], temp2
