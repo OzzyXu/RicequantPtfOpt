@@ -31,6 +31,7 @@ stock_test_suite = pickle.load(open( "./optimizer_tests/stock_test/stock_test_su
 
 
 
+
 ## run
 
 res0 = test_stock_opt(stock_test_suite, 0)
