@@ -676,7 +676,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
 
             if asset_type is 'fund':
                 for i in clean_order_book_ids:
-                    df1.loc[i, 'type'] = fund.instruments(i).fund_type
+                    df1.loc[i, 'type'] = rqdatac.fund.instruments(i).fund_type
             elif asset_type is 'stock':
                 for i in clean_order_book_ids:
                     df1.loc[i, "type"] = rqdatac.instruments(i).shenwan_industry_name
@@ -832,7 +832,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
             except OptResartIndicator:
                 fun_tol = 10 * fun_tol
                 opts = {'maxiter': max_iteration, 'ftol': fun_tol, 'iprint': iprint, 'disp': disp}
-        if fun_tol < initial_fun_tol:
+        if fun_tol > initial_fun_tol:
             output_message = opt_dict[method]()[1] + ("%s method has run %i times and fun_tol has been relaxed to "
                                                       "%f" % (method, counter-1, fun_tol))
         else:
@@ -863,7 +863,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
                 except OptResartIndicator:
                     fun_tol = 10 * fun_tol
                     opts = {'maxiter': max_iteration, 'ftol': fun_tol, 'iprint': iprint, 'disp': disp}
-            if fun_tol < initial_fun_tol:
+            if fun_tol > initial_fun_tol:
                 output_message = f()[1] + ("One method has run %i times and fun_tol has been relaxed to %f"
                                            % (counter-1, fun_tol))
             else:
