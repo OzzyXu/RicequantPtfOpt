@@ -69,7 +69,6 @@ def portfolio_optimize(order_book_ids, rebalancing_date, asset_type, method, win
     optimizer_status: str
                       return a str indicating whether the optimization is successful.
                   
-
     """
     input_check_status = input_validation(order_book_ids, rebalancing_date, asset_type, method, window, bnds,
                      cons, cov_shrinkage, benchmark, expected_return, risk_aversion_coef)

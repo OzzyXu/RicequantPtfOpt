@@ -19,12 +19,3 @@ def get_performance_indicator(arithmetic_return_of_optimizers):
 
     return annualized_cum_return, annualized_vol, max_drawdown
 
-
-
-
-
-
-
-
-
-

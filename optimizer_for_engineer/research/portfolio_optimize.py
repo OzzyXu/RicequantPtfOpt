@@ -165,10 +165,8 @@ def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method 
                 return 1
 
 
-            if len(temp_res) == 3:
-                weights[i], cov_mat[i], kicked_out_list[i] = temp_res
-            else:
-                weights[i], cov_mat[i], kicked_out_list[i], optimizer_status[i] = temp_res
+
+            weights[i], cov_mat[i], kicked_out_list[i], optimizer_status[i] = temp_res
 
 
 
@@ -243,7 +241,7 @@ def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method 
         #
         #     # mmd[j] = get_maxdrawdown(daily_methods_period_price[j])
         #
-        result_package = {'weights': weights, 'annualized_cum_return': annualized_cum_return, 'annualized_vol': annualized_vol, 'max_drawdown': max_drawdown,
+        result_package = {'weights': weights, 'optimizer_status': optimizer_status, 'annualized_cum_return': annualized_cum_return, 'annualized_vol': annualized_vol, 'max_drawdown': max_drawdown,
                           'turnover_rate': turnover_rate, 'indiviudal_asset_risk_contributions':indiviudal_asset_risk_contributions,\
                           'asset_class_risk_contributions': asset_class_risk_contributions, 'risk_concentration_index': risk_concentration_index, "covariance_matrix" : cov_mat,
                           'rebalancing_points': rebalancing_points}
@@ -254,23 +252,19 @@ def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method 
         #result_package = {'weights': weights}
 
         if (res_options == 'weights'):
-            res_options = ['weights']
+            res_options = ['weights', 'optimizer_status']
 
         elif (res_options == 'weights_indicators'):
-            res_options = ['weights', 'annualized_cum_return', 'annualized_vol', 'max_drawdown', 'turnover_rate',
+            res_options = ['weights', 'optimizer_status', 'annualized_cum_return', 'annualized_vol', 'max_drawdown', 'turnover_rate',
                            'indiviudal_asset_risk_contributions', 'asset_class_risk_contributions',
                            'risk_concentration_index']
 
         elif (res_options == 'all'):
-            res_options = ['weights', 'annualized_cum_return', 'annualized_vol', 'max_drawdown', 'turnover_rate',
+            res_options = ['weights', 'optimizer_status', 'annualized_cum_return', 'annualized_vol', 'max_drawdown', 'turnover_rate',
                            'indiviudal_asset_risk_contributions', 'asset_class_risk_contributions',
                            'risk_concentration_index', "covariance_matrix", 'rebalancing_points']
 
-        if len(optimizer_status) != 0:
-            result_package['optimizer_status'] = optimizer_status
 
-            if res_options == 'all':
-                res_options.append['optimizer_status']
 
         return_dic = {x: result_package[x] for x in res_options}
         return return_dic
