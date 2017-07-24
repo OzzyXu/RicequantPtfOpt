@@ -797,14 +797,6 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
                 if (bnds is None and cons is None) else
                 [risk_parity_with_con_optimizer, min_variance_optimizer, mean_variance_optimizer]}
 
-    temp1 = pd.DataFrame(index=list(c_m.columns.values), columns=(["risk_parity", "min_variance", "mean_variance"]
-                                                                  if (bnds is None and cons is None) else
-                                                                  ["risk_parity_with_con", "min_variance",
-                                                                   "mean_variance"]))
-    temp2 = pd.DataFrame(index=(["risk_parity", "min_variance", "mean_variance"] if (bnds is None and cons is None)
-                                else ["risk_parity_with_con", "min_variance", "mean_variance"]),
-                         columns=["Opt Res Message"])
-
     if method is not 'all':
         temp = None
         counter = 0
@@ -831,6 +823,8 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
             return pd.DataFrame(temp, index=list(c_m.columns.values), columns=[method]), c_m, output_message
     else:
         n = 0
+        temp1 = pd.DataFrame(index=list(c_m.columns.values), columns=["risk_parity", "min_variance", "mean_variance"])
+        temp2 = pd.DataFrame(index=["risk_parity", "min_variance", "mean_variance"], columns=["Opt Res Message"])
         for f in opt_dict[method]:
             temp = None
             counter = 0
