@@ -153,7 +153,8 @@ def get_optimizer(order_book_ids, start_date, asset_type, method, tr_frequency =
         # if all kicked out: kicked out list
         # if not all kicked out: weight, cov_mtrx, kicked out list
         if bc == 0:
-            opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i], asset_type=asset_type, method=method, fun_tol=10**-8)
+            opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i], asset_type=asset_type, method=method,
+                                   fun_tol=10**-8, iprint =2, disp = True)
         elif bc == 1:
             opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i], asset_type=asset_type, method=method,
                                    bnds = {'full_list': (0, 0.2)}, fun_tol=10**-8)
@@ -231,7 +232,7 @@ def get_optimizer(order_book_ids, start_date, asset_type, method, tr_frequency =
         p1 = daily_cum_log_return.plot(legend=True, label=str1)
         plt.legend(loc='lower center', bbox_to_anchor=(0.5, -0.3))
 
-    plt.savefig('./optimizer_tests/fund_test/result/normal/figure/test_res' + str(bc) + '/%s' % (name))
+    plt.savefig('./optimizer_tests/fund_test/result/cov_shrink/figure/test_res' + str(bc) + '/%s' % (name))
     plt.close()
 
     return_pack = {'weights': weights, 'annualized_return': annualized_return,

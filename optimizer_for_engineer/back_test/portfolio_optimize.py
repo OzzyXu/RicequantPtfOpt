@@ -1,16 +1,11 @@
-import numpy as np
-import pandas as pd
-import scipy.optimize as sc_opt
-from math import *
-import scipy.spatial as scsp
-import sys
+
 
 import rqdatac
 from rqdatac import *
 rqdatac.init('ricequant', '8ricequant8')
 
-#from optimizer_for_engineer.final.input_validation import *
-#from optimizer_for_engineer.final.ptfopt import *
+from optimizer_for_engineer.back_test.input_validation import *
+from optimizer_for_engineer.back_test.ptfopt import *
 
 
 

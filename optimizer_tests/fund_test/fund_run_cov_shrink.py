@@ -30,7 +30,7 @@ fund_test_suite = pickle.load(open( "./optimizer_tests/fund_test/fund_test_suite
 
 ## run
 
-res0_cov_shrink = test_fund_opt(fund_test_suite)
+res0_cov_shrink = test_fund_opt(fund_test_suite, 0)
 res1_cov_shrink = test_fund_opt(fund_test_suite, 1)
 res2_cov_shrink = test_fund_opt(fund_test_suite, 2)
 res3_cov_shrink = test_fund_opt(fund_test_suite, 3)

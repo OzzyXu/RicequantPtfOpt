@@ -1,6 +1,7 @@
 import rqdatac
 from rqdatac import *
 rqdatac.init('ricequant', '8ricequant8')
+import pandas as pd
 
 
 class OptimizationError(Exception):
@@ -37,19 +38,16 @@ def input_validation(order_book_ids, start_date, end_date, asset_type, method, r
     elif (method == 'min_TE' and benchmark == 'equal_weight'):
         return('min_TE 方法需要传入指数型 benchmark。')
 
-     elif method == 'mean_variance':
-         if (type(expected_return) != None):
+    elif method == 'mean_variance':
+        if (type(expected_return) != None):
              
-             import pandas as pd
+            if (type(expected_return) == pd.Series):
+                missing_asset = [asset for asset in expected_return.index if asset not in  order_book_ids]
              
-             if (type(expected_return) == pd.Series):
-                 
-                 missing_asset = [asset for asset in expected_return.index if asset not in  order_book_ids]
-             
-                 if (len(missing_asset) != 0):
-                     return('预期收益预测（expected_return）和所选合约（order_book_ids）不一致。')
-             else:
-                 return('预期收益预测（expected_return）的类型应为 pandas.Series。')
+                if (len(missing_asset) != 0):
+                    return('预期收益预测（expected_return）和所选合约（order_book_ids）不一致。')
+                else:
+                    return('预期收益预测（expected_return）的类型应为 pandas.Series。')
             
 
     #elif (expected_return_cov != None and len(expected_return_cov) != len(order_book_ids)):

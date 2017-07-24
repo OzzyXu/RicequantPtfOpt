@@ -1,3 +1,12 @@
+import numpy as np
+import pandas as pd
+import rqdatac
+from rqdatac import *
+rqdatac.init('ricequant', '8ricequant8')
+
+
+
+
 def get_risk_indicators(previous_weight, current_weight, cov_matrix, asset_type):
     """
     Calculate the risk indicators
