@@ -72,8 +72,8 @@ def portfolio_optimize(order_book_ids, rebalancing_date, asset_type, method, win
         print(input_check_status)
         return 1
     else:
-        if (cons != None or bnds != None) and method == 'risk_parity':
-            method = 'risk_parity_with_con'
+        # if (cons != None or bnds != None) and method == 'risk_parity':
+        #     method = 'risk_parity_with_con'
 
         try:
             weights, cov_mat, kicked_out_list, optimizer_status = optimizer(order_book_ids, rebalancing_date, asset_type, method,

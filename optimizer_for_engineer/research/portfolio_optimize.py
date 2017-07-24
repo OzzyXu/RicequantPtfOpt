@@ -110,21 +110,32 @@ def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method 
         rebalancing_points[count + 1] = trading_dates[-1]
 
         # determine the optimization algorithms.
-        if (cons != None or bnds != None):
-            if method == 'risk_parity':
-                method_keys = 'risk_parity_with_con'
-            elif method == 'all':
-                # method_keys = ['min_variance', 'mean_variance', "risk_parity_with_con"]
-                method_keys = ['min_variance', "risk_parity_with_con"]
-            else:
-                method_keys = method
+        # if (cons != None or bnds != None):
+        #     if method == 'risk_parity':
+        #         method_keys = 'risk_parity_with_con'
+        #     elif method == 'all':
+        #         # method_keys = ['min_variance', 'mean_variance', "risk_parity_with_con"]
+        #         method_keys = ['min_variance', "risk_parity_with_con"]
+        #     else:
+        #         method_keys = method
+        #
+        # else:
+        #     if method == 'all':
+        #         # method_keys = ['min_variance', 'mean_variance', "risk_parity"]
+        #         method_keys = ['min_variance',  "risk_parity"]
+        #     else:
+        #         method_keys = method
 
-        else:
-            if method == 'all':
-                # method_keys = ['min_variance', 'mean_variance', "risk_parity"]
-                method_keys = ['min_variance',  "risk_parity"]
+
+        if method == 'all':
+            if (cons != None or bnds != None):
+                method_keys = ['min_variance','risk_parity_with_con']
             else:
-                method_keys = method
+                method_keys = ['min_variance', "risk_parity"]
+        else:
+            method_keys = list(method)
+
+
 
         # using equal-weighted portfolio as benchmark
         if benchmark == 'equal_weight':
@@ -225,12 +236,9 @@ def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method 
         if benchmark == 'equal_weight':
             benchmark_arithmetic_return = arithmetic_return_of_optimizers['equal_weight']
         else:
-            benchmark_price = rqdatac.get_price(assets_list, rebalancing_points[i], rebalancing_points[i + 1],
-                                                frequency='1d', fields=['close'])
+            benchmark_price = rqdatac.get_price(benchmark, start_date, end_date, frequency='1d', fields=['close'])
+            benchmark_arithmetic_return = benchmark_price.pct_change()
 
-            asset_daily_return = asset_price.pct_change()
-            if i != 0:
-                asset_daily_return = asset_daily_return[1:]
 
         # calculate perfomance indicators
         for j in (method_keys):
@@ -241,20 +249,20 @@ def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method 
 
         # determine what to return
         result_package = {'weights': weights, 'optimizer_status': optimizer_status, 'annualized_cum_return': annualized_cum_return, 'annualized_vol': annualized_vol, 'max_drawdown': max_drawdown,
-                          'turnover_rate': turnover_rate, 'indiviudal_asset_risk_contributions':indiviudal_asset_risk_contributions,\
+                          'tracking_error': tracking_error, 'turnover_rate': turnover_rate, 'indiviudal_asset_risk_contributions':indiviudal_asset_risk_contributions,\
                           'asset_class_risk_contributions': asset_class_risk_contributions, 'risk_concentration_index': risk_concentration_index, "covariance_matrix" : cov_mat,
                           'rebalancing_points': rebalancing_points}
 
 
-        if (res_options == 'weights'):
+        if (res_options == 'weight'):
             res_options = ['weights', 'optimizer_status']
-        elif (res_options == 'weights_indicators'):
-            res_options = ['weights', 'optimizer_status', 'annualized_cum_return', 'annualized_vol', 'max_drawdown', 'turnover_rate',
-                           'indiviudal_asset_risk_contributions', 'asset_class_risk_contributions',
+        elif (res_options == 'weight_indicators'):
+            res_options = ['weights', 'optimizer_status', 'annualized_cum_return', 'annualized_vol', 'max_drawdown', 'tracking_error',
+                           'turnover_rate', 'indiviudal_asset_risk_contributions', 'asset_class_risk_contributions',
                            'risk_concentration_index']
         elif (res_options == 'all'):
-            res_options = ['weights', 'optimizer_status', 'annualized_cum_return', 'annualized_vol', 'max_drawdown', 'turnover_rate',
-                           'indiviudal_asset_risk_contributions', 'asset_class_risk_contributions',
+            res_options = ['weights', 'optimizer_status', 'annualized_cum_return', 'annualized_vol', 'max_drawdown', 'tracking_error',
+                           'turnover_rate', 'indiviudal_asset_risk_contributions', 'asset_class_risk_contributions',
                            'risk_concentration_index', "covariance_matrix", 'rebalancing_points']
 
         return_dic = {x: result_package[x] for x in res_options}
