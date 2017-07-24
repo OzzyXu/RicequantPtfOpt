@@ -281,9 +281,9 @@ order_book_ids = ['000404',
 #
 
 constraints = {"Hybrid": (0, 0.4), "StockIndex": (0, 0.6)}
-bounds = {"000404": (0.5, 0.6)}
+bounds = {"000404": (0.2, 0.4)}
 optimal_weight = pt.optimizer(order_book_ids, start_date="2015-8-13", asset_type='fund', method='all',
-                              iprint=2, disp=True, cons=constraints)
+                              iprint=2, disp=True, bnds=bounds, cons=constraints)
 
 
 print(optimal_weight[0])

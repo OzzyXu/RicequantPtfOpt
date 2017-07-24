@@ -626,7 +626,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
                 current_weight.append(new_current_weight[order_book_ids.index(i)])
 
         # Generate expected_return if not given
-        if method is "mean_variance":
+        if method is "mean_variance" or method is "all":
             empirical_mean = period_daily_return_pct_change.mean()
             if expected_return is None:
                 expected_return = empirical_mean
@@ -681,7 +681,6 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
         optimization_res = sc_opt.minimize(log_barrier_risk_parity_obj_fun, current_weight, method='L-BFGS-B',
                                            jac=log_barrier_risk_parity_gradient, bounds=log_rp_bnds,
                                            options=log_barrier_risk_parity_opts)
-
         if not optimization_res.success:
             if optimization_res.nit >= max_iteration:
                 optimal_weights = (optimization_res.x / sum(optimization_res.x))
@@ -745,8 +744,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
 
     # Mean variance model
     def mean_variance_obj_fun(x):
-        return (np.multiply(risk_aversion_coefficient / 2, np.dot(np.dot(x, c_m), x)) -
-                np.dot(x, expected_return))
+        return np.multiply(risk_aversion_coefficient / 2, np.dot(x, np.dot(c_m, x))) - np.dot(x, expected_return)
 
     def mean_variance_gradient(x):
         return np.asfarray(np.multiply(risk_aversion_coefficient, np.dot(x, c_m)).transpose()
@@ -795,7 +793,17 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
                 'mean_variance': mean_variance_optimizer,
                 'risk_parity_with_con': risk_parity_with_con_optimizer,
                 "min_TE": min_TE_optimizer,
-                'all': [log_barrier_risk_parity_optimizer, min_variance_optimizer, risk_parity_with_con_optimizer]}
+                'all': [log_barrier_risk_parity_optimizer, min_variance_optimizer, mean_variance_optimizer]
+                if (bnds is None and cons is None) else
+                [risk_parity_with_con_optimizer, min_variance_optimizer, mean_variance_optimizer]}
+
+    temp1 = pd.DataFrame(index=list(c_m.columns.values), columns=(["risk_parity", "min_variance", "mean_variance"]
+                                                                  if (bnds is None and cons is None) else
+                                                                  ["risk_parity_with_con", "min_variance",
+                                                                   "mean_variance"]))
+    temp2 = pd.DataFrame(index=(["risk_parity", "min_variance", "mean_variance"] if (bnds is None and cons is None)
+                                else ["risk_parity_with_con", "min_variance", "mean_variance"]),
+                         columns=["Opt Res Message"])
 
     if method is not 'all':
         temp = None
@@ -804,16 +812,16 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
             try:
                 counter += 1
                 if fun_tol > 10**-5:
-                    temp_message = ("%s 算法迭代 %i 步后未能收敛，调整收敛精度（Tolerence）为 %f，重新进行计算。 "
-                                    % (method, counter-1, fun_tol/10))
+                    temp_message = ("%s 优化器经过 %i 次运行后将优化精度（Tolerence）自动重设为 %f，最终由于精度过低导致优化失败，"
+                                    "请调整参数后重新运行优化器。" % (method, counter-1, fun_tol/10))
                     raise OptimizationError(temp_message)
                 temp = opt_dict[method]()[0]
             except OptResartIndicator:
                 fun_tol = 10 * fun_tol
                 opts = {'maxiter': max_iteration, 'ftol': fun_tol, 'iprint': iprint, 'disp': disp}
         if fun_tol > initial_fun_tol:
-            output_message = opt_dict[method]()[1] + ("%s 算法迭代 %i 步后未能收敛，收敛精度（Tolerence）被调整为 %f。"
-                                                      % (method, counter-1, fun_tol))
+            output_message = opt_dict[method]()[1] + ("， %s 优化器经过 %i 次运行后将收敛精度（Tolerence）自动重设为 %f 以保证。"
+                                                      % (method, counter-1, fun_tol/10))
         else:
             output_message = opt_dict[method]()[1]
         if expected_return_covar is None:
@@ -822,10 +830,6 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
         else:
             return pd.DataFrame(temp, index=list(c_m.columns.values), columns=[method]), c_m, output_message
     else:
-        temp1 = pd.DataFrame(index=list(c_m.columns.values), columns=['risk_parity', 'min_variance',
-                                                                      "risk_parity_with_con"])
-        temp2 = pd.DataFrame(index=["risk_parity", "min_variance", "risk_parity_with_con"],
-                             columns=["Opt Res Message"])
         n = 0
         for f in opt_dict[method]:
             temp = None
@@ -835,19 +839,19 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
                 try:
                     counter += 1
                     if fun_tol > 10**-5:
-                        temp_message = ("优化迭代 %i 步后未能收敛，调整收敛精度（Tolerence）为 %f，重新进行计算。"
-                                        % (counter-1, fun_tol/10))
+                        temp_message = ("优化器经过 %i 次运行后将优化精度（Tolerence）自动重设为 %f，最终由于精度过低导致优化失败，"
+                                        "请调整参数后重新运行优化器。" % (counter-1, fun_tol/10))
                         raise OptimizationError(temp_message)
                     temp = f()[0]
                 except OptResartIndicator:
                     fun_tol = 10 * fun_tol
                     opts = {'maxiter': max_iteration, 'ftol': fun_tol, 'iprint': iprint, 'disp': disp}
             if fun_tol > initial_fun_tol:
-                output_message = f()[1] + ("优化迭代 %i 步后未能收敛，收敛精度（Tolerence）被调整为 %f。"
-                                           % (counter-1, fun_tol))
+                output_message = f()[1] + ("，优化器经过 %i 次运行后将收敛精度（Tolerence）自动重设为 %f。"
+                                           % (counter-1, fun_tol/10))
             else:
                 output_message = f()[1]
-            temp1.iloc[:, n] = f()[0]
+            temp1.iloc[:, n] = temp
             temp2.iloc[n, 0] = output_message
             n = n + 1
         if expected_return_covar is None:
