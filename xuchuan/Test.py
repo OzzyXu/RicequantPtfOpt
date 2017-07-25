@@ -280,10 +280,19 @@ order_book_ids = ['000404',
 #  13: datetime.date(2017, 5, 26)}
 #
 
+order_book_ids = ['161826',
+                  '150134',
+                  '000404',
+                  '550009',
+                  '161116',
+                  '118001',
+                  '540006',
+                  '000309']
+
 constraints = {"Hybrid": (0, 0.4), "StockIndex": (0, 0.6)}
-bounds = {"000404": (0.5, 0.6)}
-optimal_weight = pt.optimizer(order_book_ids, start_date="2015-8-13", asset_type='fund', method='all',
-                              iprint=2, disp=True, cons=constraints)
+bounds = {"full_list": (0, 0.3)}
+optimal_weight = pt.optimizer(order_book_ids, start_date="2014-1-1", asset_type='fund', method='all',
+                              iprint=2, disp=True, bnds=bounds)
 
 
 print(optimal_weight[0])
