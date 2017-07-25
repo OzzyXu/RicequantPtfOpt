@@ -41,6 +41,10 @@ def input_validation(order_book_ids, rebalancing_date, asset_type, method, windo
                     return('预期收益预测（expected_return）和所选合约（order_book_ids）不一致。')
                 else:
                     return('预期收益预测（expected_return）的类型应为 pandas.Series。')
+            else:
+                return(0)
+        else:
+            return(0)
 
 
     #elif (expected_return_cov != None and len(expected_return_cov) != len(order_book_ids)):

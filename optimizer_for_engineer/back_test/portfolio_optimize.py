@@ -16,7 +16,7 @@ from optimizer_for_engineer.back_test.ptfopt import *
 def portfolio_optimize(order_book_ids, rebalancing_date, asset_type, method, window= 132,
                        bnds=None, cons=None, cov_shrinkage = True,
                        benchmark = 'equal_weight',
-                       expected_return= 'empirical_mean', risk_aversion_coef=1):
+                       expected_return= None, risk_aversion_coef=1):
 
     """
     Parameters
@@ -70,21 +70,29 @@ def portfolio_optimize(order_book_ids, rebalancing_date, asset_type, method, win
 
     if input_check_status != 0:
         print(input_check_status)
-        return 1
+        return 'input_error'
     else:
-        # if (cons != None or bnds != None) and method == 'risk_parity':
-        #     method = 'risk_parity_with_con'
+        if (cons != None or bnds != None) and method == 'risk_parity':
+            method = 'risk_parity_with_con'
 
         try:
             weights, cov_mat, kicked_out_list, optimizer_status = optimizer(order_book_ids, rebalancing_date, asset_type, method,
-                                 current_weight=None, bnds=bnds, cons=cons,
+                                 bnds=bnds, cons=cons,
                                  expected_return=expected_return,
-                                 expected_return_covar=None,
                                  risk_aversion_coefficient=risk_aversion_coef,
                                  windows=window,
-                                 out_threshold_coefficient=None, data_freq=None,
                                  fun_tol=10 ** -8, max_iteration=10 ** 3, disp=False,
                                  iprint=1, cov_enhancement=cov_shrinkage, benchmark=benchmark)
+
+            # order_book_ids, rebalancing_date, asset_type, method, window = 132,
+            # bnds = None, cons = None, cov_shrinkage = True,
+            # benchmark = 'equal_weight',
+            # expected_return = None, risk_aversion_coef = 1):
+            #
+            #
+            # optimizer(order_book_ids, start_date="2014-1-1", asset_type='fund', method=method,
+            #           iprint=1, disp=False, bnds=bnds)
+
 
         except OptimizationError:
             print(OptimizationError)
