@@ -11,6 +11,9 @@ order_book_ids = ['161826',
                   '540006',
                   '000309']
 
+
+order_book_ids = stock_test_suite[0]
+
 constraints = {"Hybrid": (0, 0.4), "StockIndex": (0, 0.6)}
 bounds = {"full_list": (0, 0.3)}
 

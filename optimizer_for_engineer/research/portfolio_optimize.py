@@ -1,12 +1,13 @@
-import numpy as np
-import pandas as pd
-import scipy.optimize as sc_opt
-from math import *
-import scipy.spatial as scsp
-import sys
+# import numpy as np
+# import pandas as pd
+# import scipy.optimize as sc_opt
+# from math import *
+# import scipy.spatial as scsp
+# import sys
 
 import rqdatac
 from rqdatac import *
+
 rqdatac.init('ricequant', '8ricequant8')
 
 from optimizer_for_engineer.research.input_validation import *
@@ -15,17 +16,15 @@ from optimizer_for_engineer.research.ptfopt import *
 from optimizer_for_engineer.research.get_performance_indicator import *
 from optimizer_for_engineer.research.get_risk_indicator import *
 
+from optimizer_for_engineer.research.get_industry_matching import *
 
 
 
-
-def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method = 'all',
-                       rebalancing_frequency = 66, window= 132, bnds=None, cons=None,
-                       cov_shrinkage = True, benchmark = 'equal_weight',
-                       industry_matching = False, expected_return= 'empirical_mean',
-                       risk_aversion_coef=1, res_options = 'weight'):
-
-
+def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method='all',
+                       rebalancing_frequency=66, window=132, bnds=None, cons=None,
+                       cov_shrinkage=True, benchmark='equal_weight',
+                       industry_matching=False, expected_return='empirical_mean',
+                       risk_aversion_coef=1, res_options='weight'):
     """
     Parameters
     ----------
@@ -86,13 +85,15 @@ def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method 
         'rebalancing points': rebalancing_points}
 
     """
-    input_check_status = input_validation(order_book_ids, start_date, end_date, asset_type, method, rebalancing_frequency, window, bnds,
-                     cons, cov_shrinkage, benchmark, expected_return, risk_aversion_coef, res_options)
 
-
+    input_check_status = input_validation(order_book_ids, start_date, end_date, asset_type, method,
+                                          rebalancing_frequency, window, bnds,
+                                          cons, cov_shrinkage, benchmark, expected_return, risk_aversion_coef,
+                                          res_options)
 
     if input_check_status != 0:
         print(input_check_status)
+        return 'input_error'
     else:
         # Obtain all the trading days in the whole time period.
         # Compute the number of rebalances in the whole time period.
@@ -110,32 +111,10 @@ def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method 
         rebalancing_points[count + 1] = trading_dates[-1]
 
         # determine the optimization algorithms.
-        # if (cons != None or bnds != None):
-        #     if method == 'risk_parity':
-        #         method_keys = 'risk_parity_with_con'
-        #     elif method == 'all':
-        #         # method_keys = ['min_variance', 'mean_variance', "risk_parity_with_con"]
-        #         method_keys = ['min_variance', "risk_parity_with_con"]
-        #     else:
-        #         method_keys = method
-        #
-        # else:
-        #     if method == 'all':
-        #         # method_keys = ['min_variance', 'mean_variance', "risk_parity"]
-        #         method_keys = ['min_variance',  "risk_parity"]
-        #     else:
-        #         method_keys = method
-
-
         if method == 'all':
-            if (cons != None or bnds != None):
-                method_keys = ['min_variance','risk_parity_with_con']
-            else:
-                method_keys = ['min_variance', "risk_parity"]
+            method_keys = ["risk_parity", 'min_variance', 'mean_variance']
         else:
             method_keys = list(method)
-
-
 
         # using equal-weighted portfolio as benchmark
         if benchmark == 'equal_weight':
@@ -143,7 +122,6 @@ def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method 
 
         # Create empty series to store the arithmetic returns of the optimizers.
         arithmetic_return_of_optimizers = {x: pd.Series() for x in method_keys}
-
 
         # create dic{0: df, 1: df} to store results according to rebalancing points
         weights = {}
@@ -154,39 +132,44 @@ def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method 
         risk_concentration_index = {}
         turnover_rate = {}
         optimizer_status = {}
+        industry_matching_weight = {}
 
         # loop over all time subintervals
         for i in range(0, count + 1):
-
-            # {'full_list': (0.9,1.2)}
 
             if (cons != None or bnds != None) and method == 'risk_parity':
                 method = 'risk_parity_with_con'
 
             try:
-                temp_res =  optimizer(order_book_ids, rebalancing_points[i], asset_type, method,
-                                                          current_weight=None, bnds=bnds, cons=cons,
-                                                          expected_return=expected_return,
-                                                          expected_return_covar=None,
-                                                          risk_aversion_coefficient=risk_aversion_coef,
-                                                          windows=window,
-                                                          out_threshold_coefficient=None, data_freq=None,
-                                                          fun_tol=10 ** -8, max_iteration=10 ** 3, disp=False,
-                                                          iprint=1, cov_enhancement=cov_shrinkage, benchmark=benchmark)
+                temp_res = optimizer(order_book_ids, rebalancing_points[i], asset_type, method,
+                                     current_weight=None, bnds=bnds, cons=cons,
+                                     expected_return=expected_return,
+                                     expected_return_covar=None,
+                                     risk_aversion_coefficient=risk_aversion_coef,
+                                     windows=window,
+                                     out_threshold_coefficient=None, data_freq=None,
+                                     fun_tol=10 ** -8, max_iteration=10 ** 3, disp=False,
+                                     iprint=1, cov_enhancement=cov_shrinkage, benchmark=benchmark)
 
             except OptimizationError:
                 print(OptimizationError)
                 return 1
 
-
             weights[i], cov_mat[i], kicked_out_list[i], optimizer_status[i] = temp_res
 
-
             assets_list = list(weights[i].index)
-            if (asset_type == 'fund'):
+
+            # get benchmark industry matching
+            if benchmark != 'equal_weight':
+                optimizer_total_weight, industry_matching_weight[i] = get_industry_matching(assets_list, rebalancing_points[i], matching_index=benchmark)
+
+                weights[i] = weights[i]*optimizer_total_weight
+
+            # get asset_price to calculate daily_return
+            if asset_type == 'fund':
                 asset_price = fund.get_nav(assets_list, rebalancing_points[i], rebalancing_points[i + 1],
                                            fields='adjusted_net_value')
-            elif (asset_type == 'stock'):
+            elif asset_type == 'stock':
                 asset_price = rqdatac.get_price(assets_list, rebalancing_points[i], rebalancing_points[i + 1],
                                                 frequency='1d', fields=['close'])
 
@@ -194,30 +177,34 @@ def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method 
             if i != 0:
                 asset_daily_return = asset_daily_return[1:]
 
-            # calculate portfolio arithmetic return by different methods
             if benchmark == 'equal_weight':
                 weights[i]['equal_weight'] = [1 / len(assets_list)] * len(assets_list)
 
             # create empty dataframe for store risk indicators
-            turnover_rate_df = pd.DataFrame(index = ['turnover_rate'], columns = method_keys)
-            indiviudal_asset_risk_contributions_df = pd.DataFrame(columns = method_keys)
-            asset_class_risk_contributions_df = pd.DataFrame(columns = method_keys)
-            risk_concentration_index_df = pd.DataFrame(index = ['Herfindahl'], columns = method_keys)
+            turnover_rate_df = pd.DataFrame(index=['turnover_rate'], columns=method_keys)
+            indiviudal_asset_risk_contributions_df = pd.DataFrame(columns=method_keys)
+            asset_class_risk_contributions_df = pd.DataFrame(columns=method_keys)
+            risk_concentration_index_df = pd.DataFrame(index=['Herfindahl'], columns=method_keys)
 
             for j in method_keys:
                 # arithmetic return of portfolio
                 arithmetic_return_of_portfolio = asset_daily_return.multiply(weights[i][j]).sum(axis=1)
-                arithmetic_return_of_optimizers[j] = arithmetic_return_of_optimizers[j].append(arithmetic_return_of_portfolio)
+                arithmetic_return_of_optimizers[j] = arithmetic_return_of_optimizers[j].append(
+                    arithmetic_return_of_portfolio)
 
                 # calculate risk indicators
                 if i == 0:  # i=0 turnover rate needs special treat
                     previous_weight = [0] * len(assets_list)
                     indiviudal_asset_risk_contributions_df[j], asset_class_risk_contributions_df[j], \
-                    risk_concentration_index_df[j], turnover_rate_df[j] = get_risk_indicators(previous_weight, weights[i][j], cov_mat[i], asset_type=asset_type)
+                    risk_concentration_index_df[j], turnover_rate_df[j] = get_risk_indicators(previous_weight,
+                                                                                              weights[i][j], cov_mat[i],
+                                                                                              asset_type=asset_type)
 
                 else:
                     indiviudal_asset_risk_contributions_df[j], asset_class_risk_contributions_df[j], \
-                    risk_concentration_index_df[j], turnover_rate_df[j] = get_risk_indicators(weights[i-1][j], weights[i][j], cov_mat[i], asset_type = asset_type)
+                    risk_concentration_index_df[j], turnover_rate_df[j] = get_risk_indicators(weights[i - 1][j],
+                                                                                              weights[i][j], cov_mat[i],
+                                                                                              asset_type=asset_type)
 
             # assign df to each rebalancing point as a dic
             indiviudal_asset_risk_contributions[i] = indiviudal_asset_risk_contributions_df
@@ -230,8 +217,6 @@ def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method 
         max_drawdown = {}
         tracking_error = {}
 
-
-
         # set the benchmark
         if benchmark == 'equal_weight':
             benchmark_arithmetic_return = arithmetic_return_of_optimizers['equal_weight']
@@ -239,34 +224,36 @@ def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method 
             benchmark_price = rqdatac.get_price(benchmark, start_date, end_date, frequency='1d', fields=['close'])
             benchmark_arithmetic_return = benchmark_price.pct_change()
 
-
         # calculate perfomance indicators
         for j in (method_keys):
-
             annualized_cum_return[j], annualized_vol[j], max_drawdown[j], tracking_error[j] = \
                 get_performance_indicator(arithmetic_return_of_optimizers[j], benchmark_arithmetic_return)
 
-
         # determine what to return
-        result_package = {'weights': weights, 'optimizer_status': optimizer_status, 'annualized_cum_return': annualized_cum_return, 'annualized_vol': annualized_vol, 'max_drawdown': max_drawdown,
-                          'tracking_error': tracking_error, 'turnover_rate': turnover_rate, 'indiviudal_asset_risk_contributions':indiviudal_asset_risk_contributions,\
-                          'asset_class_risk_contributions': asset_class_risk_contributions, 'risk_concentration_index': risk_concentration_index, "covariance_matrix" : cov_mat,
-                          'rebalancing_points': rebalancing_points}
+        result_package = {'weights': weights, 'optimizer_status': optimizer_status,
+                          'annualized_cum_return': annualized_cum_return, 'annualized_vol': annualized_vol,
+                          'max_drawdown': max_drawdown,
+                          'tracking_error': tracking_error, 'turnover_rate': turnover_rate,
+                          'indiviudal_asset_risk_contributions': indiviudal_asset_risk_contributions, \
+                          'asset_class_risk_contributions': asset_class_risk_contributions,
+                          'risk_concentration_index': risk_concentration_index, "covariance_matrix": cov_mat,
+                          'rebalancing_points': rebalancing_points, 'industry_matching_weight':industry_matching_weight}
 
-
-        if (res_options == 'weight'):
+        if res_options == 'weight':
             res_options = ['weights', 'optimizer_status']
-        elif (res_options == 'weight_indicators'):
-            res_options = ['weights', 'optimizer_status', 'annualized_cum_return', 'annualized_vol', 'max_drawdown', 'tracking_error',
+        elif res_options == 'weight_indicators':
+            res_options = ['weights', 'optimizer_status', 'annualized_cum_return', 'annualized_vol', 'max_drawdown',
+                           'tracking_error',
                            'turnover_rate', 'indiviudal_asset_risk_contributions', 'asset_class_risk_contributions',
                            'risk_concentration_index']
-        elif (res_options == 'all'):
-            res_options = ['weights', 'optimizer_status', 'annualized_cum_return', 'annualized_vol', 'max_drawdown', 'tracking_error',
+        elif res_options == 'all':
+            res_options = ['weights', 'optimizer_status', 'annualized_cum_return', 'annualized_vol', 'max_drawdown',
+                           'tracking_error',
                            'turnover_rate', 'indiviudal_asset_risk_contributions', 'asset_class_risk_contributions',
                            'risk_concentration_index', "covariance_matrix", 'rebalancing_points']
 
+        if industry_matching == True:
+            res_options = res_options + ['industry_matching_weight']
+
         return_dic = {x: result_package[x] for x in res_options}
         return return_dic
-
-
-
