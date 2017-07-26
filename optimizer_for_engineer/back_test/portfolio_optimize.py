@@ -6,7 +6,7 @@ rqdatac.init('ricequant', '8ricequant8')
 
 from optimizer_for_engineer.back_test.input_validation import *
 from optimizer_for_engineer.back_test.ptfopt import *
-
+from optimizer_for_engineer.back_test.get_industry_matching import *
 
 
 
@@ -16,6 +16,7 @@ from optimizer_for_engineer.back_test.ptfopt import *
 def portfolio_optimize(order_book_ids, rebalancing_date, asset_type, method, window= 132,
                        bnds=None, cons=None, cov_shrinkage = True,
                        benchmark = 'equal_weight',
+                       industry_matching=False,
                        expected_return= None, risk_aversion_coef=1):
 
     """
@@ -66,7 +67,7 @@ def portfolio_optimize(order_book_ids, rebalancing_date, asset_type, method, win
                   
     """
     input_check_status = input_validation(order_book_ids, rebalancing_date, asset_type, method, window, bnds,
-                     cons, cov_shrinkage, benchmark, expected_return, risk_aversion_coef)
+                     cons, cov_shrinkage, benchmark, expected_return, industry_matching, risk_aversion_coef)
 
     if input_check_status != 0:
         print(input_check_status)
@@ -84,27 +85,29 @@ def portfolio_optimize(order_book_ids, rebalancing_date, asset_type, method, win
                                  fun_tol=10 ** -8, max_iteration=10 ** 3, disp=False,
                                  iprint=1, cov_enhancement=cov_shrinkage, benchmark=benchmark)
 
-            # order_book_ids, rebalancing_date, asset_type, method, window = 132,
-            # bnds = None, cons = None, cov_shrinkage = True,
-            # benchmark = 'equal_weight',
-            # expected_return = None, risk_aversion_coef = 1):
-            #
-            #
-            # optimizer(order_book_ids, start_date="2014-1-1", asset_type='fund', method=method,
-            #           iprint=1, disp=False, bnds=bnds)
-
 
         except OptimizationError:
             print(OptimizationError)
             return 1
 
+        if benchmark != 'equal_weight' and industry_matching == True:
+            optimizer_total_weight, industry_matching_weight = get_industry_matching(order_book_ids,
+                                                                                        rebalancing_date,
+                                                                                        matching_index=benchmark)
+
+            weights = weights * optimizer_total_weight
 
         total_weight = pd.DataFrame(index = list(weights.index) + list(kicked_out_list.index), columns = list(weights.columns) + ['status'])
         total_weight.iloc[:,0] = weights
         total_weight.iloc[:,1] = kicked_out_list.iloc[:,0]
         total_weight = total_weight.fillna(0)
 
-        return total_weight, optimizer_status
+        res = {'total_weight': total_weight, 'optimizer_status': optimizer_status}
+
+        if benchmark != 'equal_weight' and industry_matching == True:
+            res['industry_matching_weight'] = industry_matching_weight
+
+        return res
 
 
 

@@ -138,8 +138,8 @@ end_date = '2015-05-01'
 asset_type = 'stock'
 method='all'
 
-benchmark = '000300.XSHG'
-#benchmark = 'equal_weight'
+ benchmark = '000300.XSHG'
+# benchmark = 'equal_weight'
 
 #res_options = 'weight'
 

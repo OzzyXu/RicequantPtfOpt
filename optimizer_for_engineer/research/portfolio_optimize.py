@@ -23,7 +23,7 @@ from optimizer_for_engineer.research.get_industry_matching import *
 def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method='all',
                        rebalancing_frequency=66, window=132, bnds=None, cons=None,
                        cov_shrinkage=True, benchmark='equal_weight',
-                       industry_matching=False, expected_return='empirical_mean',
+                       industry_matching=False, expected_return=None,
                        risk_aversion_coef=1, res_options='weight'):
     """
     Parameters
@@ -88,7 +88,7 @@ def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method=
 
     input_check_status = input_validation(order_book_ids, start_date, end_date, asset_type, method,
                                           rebalancing_frequency, window, bnds,
-                                          cons, cov_shrinkage, benchmark, expected_return, risk_aversion_coef,
+                                          cons, cov_shrinkage, benchmark, expected_return, industry_matching, risk_aversion_coef,
                                           res_options)
 
     if input_check_status != 0:
@@ -160,8 +160,8 @@ def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method=
             assets_list = list(weights[i].index)
 
             # get benchmark industry matching
-            if benchmark != 'equal_weight':
-                optimizer_total_weight, industry_matching_weight[i] = get_industry_matching(assets_list, rebalancing_points[i], matching_index=benchmark)
+            if benchmark != 'equal_weight' and industry_matching == True:
+                optimizer_total_weight, industry_matching_weight[i] = get_industry_matching(order_book_ids, rebalancing_points[i], matching_index=benchmark)
 
                 weights[i] = weights[i]*optimizer_total_weight
 
@@ -252,7 +252,7 @@ def portfolio_optimize(order_book_ids, start_date, end_date, asset_type, method=
                            'turnover_rate', 'indiviudal_asset_risk_contributions', 'asset_class_risk_contributions',
                            'risk_concentration_index', "covariance_matrix", 'rebalancing_points']
 
-        if industry_matching == True:
+        if benchmark != 'equal_weight' and industry_matching == True:
             res_options = res_options + ['industry_matching_weight']
 
         return_dic = {x: result_package[x] for x in res_options}

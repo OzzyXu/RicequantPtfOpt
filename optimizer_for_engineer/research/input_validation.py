@@ -12,7 +12,7 @@ class OptimizationError(Exception):
 
 def input_validation(order_book_ids, start_date, end_date, asset_type, method, rebalancing_frequency, window, bnds,
                      cons, \
-                     cov_shrinkage, benchmark, expected_return, risk_aversion_coefficient, res_options):
+                     cov_shrinkage, benchmark,  expected_return, industry_matching, risk_aversion_coefficient, res_options):
     if (start_date < "2005-07-01"):
         # return('开始日期（start_date）不能早于2005年7月1日。')
         return ('开始日期（start_date）不能早于2005年7月1日。')
@@ -36,6 +36,9 @@ def input_validation(order_book_ids, start_date, end_date, asset_type, method, r
         return ('cov_shrinkage 为布尔类型变量，请选择 True 或者 False。')
     if (method == 'min_TE' and benchmark == 'equal_weight'):
         return ('min_TE 方法需要传入指数型 benchmark。')
+
+    if benchmark == 'equal_weight' and industry_matching == True:
+        return '行业配齐需要传入指数型benchmark。'
 
     if method == 'mean_variance':
         if (type(expected_return) != None):

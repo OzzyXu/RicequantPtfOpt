@@ -10,7 +10,7 @@ class OptimizationError(Exception):
 
 
 def input_validation(order_book_ids, rebalancing_date, asset_type, method, window, bnds,
-                     cons, cov_shrinkage, benchmark, expected_return, risk_aversion_coefficient):
+                     cons, cov_shrinkage, benchmark, expected_return, industry_matching, risk_aversion_coefficient):
 
 
 
@@ -32,6 +32,9 @@ def input_validation(order_book_ids, rebalancing_date, asset_type, method, windo
         
     if (method == 'min_TE' and benchmark == 'equal_weight'):
         return('min_TE 方法需要传入指数型 benchmark。')
+
+    if benchmark == 'equal_weight' and industry_matching == True:
+        return '行业配齐需要传入指数型benchmark。'
 
     if method == 'mean_variance':
         if (type(expected_return) != None):

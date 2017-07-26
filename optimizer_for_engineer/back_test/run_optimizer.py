@@ -22,8 +22,8 @@ cons = None
 expected_return = None
 risk_aversion_coef=1
 window = 132
-benchmark = 'equal_weight'
-
+# benchmark = 'equal_weight'
+benchmark = '000300.XSHG'
 cov_shrinkage = True
 
 from optimizer_for_engineer.back_test.portfolio_optimize import *
@@ -32,7 +32,7 @@ from optimizer_for_engineer.back_test.portfolio_optimize import *
 
 res = portfolio_optimize(order_book_ids, rebalancing_date, asset_type, method, window= window,
                        bnds=bnds, cons=cons, cov_shrinkage = True,
-                       benchmark = benchmark,
+                       benchmark = benchmark, industry_matching= True,
                        expected_return= None, risk_aversion_coef=1)
 
 
@@ -41,5 +41,3 @@ res = portfolio_optimize(order_book_ids, rebalancing_date, asset_type, method, w
 #                        benchmark = benchmark,
 #                        expected_return= expected_return, risk_aversion_coef=risk_aversion_coef)
 
-print(res[0])
-print(res[1])
