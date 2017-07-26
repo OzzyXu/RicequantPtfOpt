@@ -280,24 +280,29 @@ order_book_ids = ['000404',
 #  13: datetime.date(2017, 5, 26)}
 #
 
-order_book_ids = ['161826',
-                  '150134',
-                  '000404',
-                  '550009',
-                  '161116',
-                  '118001',
-                  '540006',
-                  '000309']
+# order_book_ids = ['161826',
+#                   '150134',
+#                   '000404',
+#                   '550009',
+#                   '161116',
+#                   '118001',
+#                   '540006',
+#                   '000309']
 
 constraints = {"Hybrid": (0, 0.4), "StockIndex": (0, 0.6)}
 bounds = {"full_list": (0, 0.3)}
+res = pt.data_process(order_book_ids,  start_date="2014-1-1", asset_type='fund')
+print(res[0])
+print(res[2])
+print(type(res[2]))
+print(res[1])
 optimal_weight = pt.optimizer(order_book_ids, start_date="2014-1-1", asset_type='fund', method='all',
-                              iprint=2, disp=True, bnds=bounds)
+                              iprint=2, disp=True, clean_price_df=res[0], start_date_after_dp=res[2], cons=constraints)
 
 
 print(optimal_weight[0])
 print(optimal_weight[2])
-print(optimal_weight[3])
+# print(optimal_weight[3])
 # Test shrinkage efficacy
 # clean_price = pt.data_process(to_do_list, asset_type="stock", start_date="2016-6-7", windows=132, data_freq="D")
 # result_m = pt.cov_shrinkage(clean_price[0])

@@ -17,7 +17,7 @@ class OptResartIndicator(Exception):
     pass
 
 
-def data_process(order_book_ids, asset_type, start_date, windows, data_freq, out_threshold_coefficient=None):
+def data_process(order_book_ids, asset_type, start_date, windows=None, data_freq=None, out_threshold_coefficient=None):
     """
     Clean data for covariance matrix calculation
     :param order_book_ids: str list. A selected list of assets.
@@ -38,6 +38,11 @@ def data_process(order_book_ids, asset_type, start_date, windows, data_freq, out
     pandas DataFrame. The order_book_ids filtered out and the reasons of elimination;
     str. A new start date for covariance calculation which may differ from default windows setting.
     """
+
+    if data_freq is None:
+        data_freq = "D"
+    if windows is None:
+        windows = 132
 
     end_date = rqdatac.get_previous_trading_date(start_date)
     end_date = pd.to_datetime(end_date)
@@ -527,16 +532,19 @@ def market_neutral_constraints_gen(clean_order_book_ids, market_neutral_constrai
 def optimizer(order_book_ids, start_date, asset_type, method, current_weight=None, bnds=None, cons=None,
               expected_return=None, expected_return_covar=None, risk_aversion_coefficient=1, windows=None,
               out_threshold_coefficient=None, data_freq=None, fun_tol=10**-8, max_iteration=10**3, disp=False,
-              iprint=1, cov_enhancement=True, benchmark=None):
+              iprint=1, cov_enhancement=True, benchmark=None, clean_price_df=None, start_date_after_dp=None):
     """
-    :param order_book_ids: str list. A list of assets(stocks or funds). Optional when expected_return_covar is given;
+    :param order_book_ids: str list. A list of all assets(stocks or funds). Optional when expected_return_covar is
+    given;
     :param start_date: str. Date to initialize a portfolio or re-balance a portfolio. Optional when
     expected_return_covar is given;
     :param asset_type: str. "stock" or "fund". Types of portfolio candidates, portfolio with mixed assets is not
     supported;
     :param method: str. Portfolio optimization model: "risk_parity", "min_variance", "mean_variance",
     "risk_parity_with_con", "min_TE", "all"("all" method only contains "risk_parity", "min_variance",
-    "risk_parity_with_con"). When "min_TE" method is chosen, expected_return_covar must be None type.
+    "mean_variance"). When "all" method is given, optimizer will automatically judge whether "risk_parity" or
+    "risk_parity_with_con" should be called depending on whehter any bounds or constraints are given. When "min_TE"
+    method is chosen, expected_return_covar must be None type.
     :param current_weight: floats list, optional. Default: 1/N(N: no. of assets). Initial guess for optimization.
     :param bnds: floats list, optional. Lower bounds and upper bounds for each asset in portfolio.
     Support input format: {"asset_code1": (lb1, up1), "asset_code2": (lb2, up2), ...} or {'full_list': (lb, up)} (set up
@@ -569,6 +577,11 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
     improve the estimation for sample covariance matrix. It's recommended to set it to True when the stock pool is
     large.
     :param benchmark: str, optional. Target to track in minimum tracking error("min_TE") method.
+    :param clean_price_df: pandas DataFrame, optional. A pd.DataFrame contains the assets data after data clean. Rows
+     are the observations of assets data, columns represent each asset. When this is given with start_date_after_dp,
+     optimizer will not call data_process function.
+    :param start_date_after_dp: pandas Timestamp, optional. The starting date of training data. When this is given with
+    clean_price_df, optimizer will not call data_process function.
     :param iprint: int, optional.
     The verbosity of optimization:
         * iprint <= 0 : Silent operation;
@@ -577,8 +590,9 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
     :return:
     pandas DataFrame. A DataFrame contains assets' name and their corresponding optimal weights;
     pandas DataFrame. The covariance matrix for optimization;
-    pandas DataFrame. The order_book_ids filtered out and the reasons of elimination;
-    str. Optimization message. Return this only when methods other than "all".
+    pandas DataFrame, optional. The order_book_ids have been filtered out and their reasons for elimination. This is returned only
+    when expected_return_covar is not given and either clean_price_df or start_date_after_dp are not inputted.
+    str or pandas DataFrame. Optimization result information.
     """
 
     if not disp:
@@ -600,10 +614,14 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
 
     if expected_return_covar is None:
         # Get clean data and calculate covariance matrix if no expected_return_covar is given
-        data_after_processing = data_process(order_book_ids, asset_type, start_date, windows, data_freq,
-                                             out_threshold_coefficient)
-        clean_period_prices = data_after_processing[0]
-        reset_start_date = data_after_processing[2]
+        if clean_price_df is None or start_date_after_dp is None:
+            data_after_processing = data_process(order_book_ids, asset_type, start_date, windows, data_freq,
+                                                 out_threshold_coefficient)
+            clean_period_prices = data_after_processing[0]
+            reset_start_date = data_after_processing[2]
+        elif clean_price_df is not None and start_date_after_dp is not None:
+            clean_period_prices = clean_price_df
+            reset_start_date = start_date_after_dp
 
         # At least two assets are needed
         if clean_period_prices.shape[1] <= 1:
@@ -816,7 +834,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
                                                       % (method, counter-1, fun_tol/10))
         else:
             output_message = opt_dict[method]()[1]
-        if expected_return_covar is None:
+        if expected_return_covar is None and (clean_price_df is None or start_date_after_dp is None):
             return pd.DataFrame(temp, index=list(c_m.columns.values), columns=[method]), c_m, \
                    data_after_processing[1], output_message
         else:
@@ -848,7 +866,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
             temp1.iloc[:, n] = temp
             temp2.iloc[n, 0] = output_message
             n = n + 1
-        if expected_return_covar is None:
+        if expected_return_covar is None and (clean_price_df is None or start_date_after_dp is None):
             return temp1, c_m, data_after_processing[1], temp2
         else:
             return temp1, c_m, temp2
