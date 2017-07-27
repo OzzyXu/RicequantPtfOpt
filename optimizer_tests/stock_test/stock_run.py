@@ -60,4 +60,4 @@ pickle.dump(res3, open('./optimizer_tests/stock_test/result/normal/save_res/res3
 
 
 # To read it back to use again
-temp = pickle.load(open('./optimizer_tests/stock_test/result/normal/save_res/res0.p', "rb" ))
+res0 = pickle.load(open('./optimizer_tests/stock_test/result/normal/save_res/res0.p', "rb" ))

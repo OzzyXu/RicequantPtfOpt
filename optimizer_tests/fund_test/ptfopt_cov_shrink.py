@@ -675,7 +675,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
 
             if asset_type is 'fund':
                 for i in clean_order_book_ids:
-                    df1.loc[i, 'type'] = fund.instruments(i).fund_type
+                    df1.loc[i, 'type'] = rqdatac.fund.instruments(i).fund_type
             elif asset_type is 'stock':
                 for i in clean_order_book_ids:
                     df1.loc[i, "type"] = rqdatac.instruments(i).shenwan_industry_name
