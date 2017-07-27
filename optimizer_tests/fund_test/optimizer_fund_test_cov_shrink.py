@@ -310,11 +310,11 @@ def get_efficient_plots(fund_test_suite, bigboss):
     :param bigboss (dic): a dictionary stored all test results
     :return:
     """
-    annualized_vol = {'equal_weight': [], 'min_variance': [], 'risk_parity': [], "risk_parity_with_con": []}
-    annualized_return = {'equal_weight': [], 'min_variance': [], 'risk_parity': [], "risk_parity_with_con": []}
+    annualized_vol = {'equal_weight': [], 'min_variance': [], 'risk_parity': [], "mean_variance": []}
+    annualized_return = {'equal_weight': [], 'min_variance': [], 'risk_parity': [], "mean_variance": []}
 
 
-    for j in ['equal_weight', 'min_variance', 'risk_parity', "risk_parity_with_con"]:
+    for j in ['equal_weight', 'min_variance', 'risk_parity', "mean_variance"]:
         for i in fund_test_suite.keys():
             annualized_vol[j].append(bigboss[i][2][j])
             annualized_return[j].append(bigboss[i][1][j])
