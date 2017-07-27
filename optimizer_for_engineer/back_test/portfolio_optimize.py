@@ -97,7 +97,11 @@ def portfolio_optimize(order_book_ids, rebalancing_date, asset_type, method, win
 
             weights = weights * optimizer_total_weight
 
-        total_weight = pd.DataFrame(index = list(weights.index) + list(kicked_out_list.index), columns = list(weights.columns) + ['status'])
+        if weights.columns == 'risk_parity_with_con':
+            total_weight = pd.DataFrame(index=list(weights.index) + list(kicked_out_list.index),
+                                        columns= ['risk_parity', 'status'])
+        else:
+            total_weight = pd.DataFrame(index = list(weights.index) + list(kicked_out_list.index), columns = list(weights.columns) + ['status'])
         total_weight.iloc[:,0] = weights
         total_weight.iloc[:,1] = kicked_out_list.iloc[:,0]
         total_weight = total_weight.fillna(0)
