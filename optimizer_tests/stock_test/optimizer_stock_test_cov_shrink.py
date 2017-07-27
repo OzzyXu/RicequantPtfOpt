@@ -153,7 +153,7 @@ def get_optimizer(order_book_ids, start_date, asset_type, method, tr_frequency =
 
     # determine methods name for later use
     if method == 'all':
-        methods = ['risk_parity', 'min_variance', "risk_parity_with_con"]
+        methods = ['risk_parity', 'min_variance', 'mean_variance']
     else:
         methods = method
 
@@ -163,7 +163,7 @@ def get_optimizer(order_book_ids, start_date, asset_type, method, tr_frequency =
     weights = {}
     c_m = {}
     indicators = {}
-    key_a_r = methods+['equal_weight']
+    key_a_r = list(methods)+['equal_weight']
     daily_methods_period_price = {x: pd.Series() for x in key_a_r}
     daily_methods_a_r = {x: pd.Series() for x in key_a_r}
     for i in range(0, count + 1):

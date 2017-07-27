@@ -43,7 +43,7 @@ def data_process(order_book_ids, asset_type, start_date, windows, data_freq, out
     end_date = pd.to_datetime(end_date)
     # Choose the start date based on the windows inputted, can't work if backtest start date is earlier than
     # "1995-01-01". The windows for weekly and monthly data don't consider any public holidays which have no trading.
-    windows_dict = {"D": -(windows + 1),
+    windows_dict = {"D": -(windows + 1),               # zs do we need to add 1 here?
                     "W": -(windows + 1) * 5,
                     "M": -(windows + 1) * 22}
     start_date = rqdatac.get_trading_dates("2005-01-01", end_date)[windows_dict[data_freq]]
@@ -169,7 +169,7 @@ def cov_shrinkage(clean_period_prices):
              float. Optimal shrinkage intensity.
     """
 
-    cov_m = clean_period_prices.pct_change().cov()
+    cov_m = clean_period_prices.pct_change().cov()                             # zs this has been calculated twice
     cov_size = cov_m.shape[0]
 
     # Generate desired shrinkage target matrix F
@@ -620,8 +620,8 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
         if current_weight is None:
             current_weight = [1 / clean_period_prices.shape[1]] * clean_period_prices.shape[1]
         else:
-            new_current_weight = current_weight
-            current_weight = list()
+            new_current_weight = current_weight                            # zs we never used this option,
+            current_weight = list()                                       # what if less than 1 after data process
             for i in clean_period_prices.columns.values:
                 current_weight.append(new_current_weight[order_book_ids.index(i)])
 
@@ -631,8 +631,8 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
             if expected_return is None:
                 expected_return = empirical_mean
             else:
-                for i in expected_return.index.values:
-                    if i in empirical_mean.index.values:
+                for i in expected_return.index.values:                     # zs here we calculated empirical mean
+                    if i in empirical_mean.index.values:                   # and here we only need clean order book ids
                         empirical_mean.loc[i] = expected_return.loc[i]
                 expected_return = empirical_mean
     else:
@@ -666,29 +666,6 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
 
     # Generate constraints
     if method is not "risk_parity":
-        #########################################################################
-        # add for test purpose to set all constraints by zs on 0705
-        if cons == 1:
-            # get type and determine cons
-            clean_order_book_ids = list(clean_period_prices.columns)
-            df1 = pd.DataFrame(index=clean_order_book_ids, columns=['type'])
-
-            if asset_type is 'fund':
-                for i in clean_order_book_ids:
-                    df1.loc[i, 'type'] = fund.instruments(i).fund_type
-            elif asset_type is 'stock':
-                for i in clean_order_book_ids:
-                    df1.loc[i, "type"] = rqdatac.instruments(i).shenwan_industry_name
-            all_types = df1['type'].unique()
-            cons_num = 1 / len(all_types)
-            #print(cons_num)
-            cons = {}
-            for i in all_types:
-                cons[i] = (0, min(cons_num+0.01, 1 ))
-        #########################################################################
-
-
-
         general_cons = general_constraints_gen(order_book_ids, clean_order_book_ids, asset_type, cons)
 
     # Log barrier risk parity model

@@ -485,7 +485,7 @@ def general_constraints_gen(order_book_ids, clean_order_book_ids, asset_type, co
             elif constraints[key][0] > 1 or constraints[key][1] < 0:
                 raise OptimizationError("错误：合约类别 %s 的 constraints 下限大于1，或上限小于0。" % key)
             elif key not in df.type.unique():
-                raise OptimizationError("错误：constraints 中包含 order_book_ids 没有的资产类型 %s。" % key)
+                raise OptimizationError("错误：constraints 中包含 order_book_ids 没有资产类型 %s。" % key)
         if temp_lb > 1:
             raise OptimizationError("错误：constraints 下限之和大于1。")
         if temp_ub < 1 and len(constraints) == len(df.type.unique()):
@@ -503,7 +503,7 @@ def general_constraints_gen(order_book_ids, clean_order_book_ids, asset_type, co
 
         for key in constraints:
             if key not in df.type.unique():
-                raise OptimizationError("错误：数据剔除后constraints 中包含 order_book_ids 没有的资产类型 %s。" % key)
+                raise OptimizationError("错误：数据剔除后constraints 中包含 order_book_ids 没有资产类型 %s。" % key)
             key_list = list(df[df['type'] == key].index)
             key_pos_list = list()
             for i in key_list:
@@ -626,7 +626,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
                 current_weight.append(new_current_weight[order_book_ids.index(i)])
 
         # Generate expected_return if not given
-        if method is "mean_variance":
+        if method is "mean_variance" or method is "all":
             empirical_mean = period_daily_return_pct_change.mean()
             if expected_return is None:
                 expected_return = empirical_mean
@@ -703,7 +703,6 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
         optimization_res = sc_opt.minimize(log_barrier_risk_parity_obj_fun, current_weight, method='L-BFGS-B',
                                            jac=log_barrier_risk_parity_gradient, bounds=log_rp_bnds,
                                            options=log_barrier_risk_parity_opts)
-
         if not optimization_res.success:
             if optimization_res.nit >= max_iteration:
                 optimal_weights = (optimization_res.x / sum(optimization_res.x))
@@ -767,8 +766,7 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
 
     # Mean variance model
     def mean_variance_obj_fun(x):
-        return (np.multiply(risk_aversion_coefficient / 2, np.dot(np.dot(x, c_m), x)) -
-                np.dot(x, expected_return))
+        return np.multiply(risk_aversion_coefficient / 2, np.dot(x, np.dot(c_m, x))) - np.dot(x, expected_return)
 
     def mean_variance_gradient(x):
         return np.asfarray(np.multiply(risk_aversion_coefficient, np.dot(x, c_m)).transpose()
@@ -817,7 +815,9 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
                 'mean_variance': mean_variance_optimizer,
                 'risk_parity_with_con': risk_parity_with_con_optimizer,
                 "min_TE": min_TE_optimizer,
-                'all': [log_barrier_risk_parity_optimizer, min_variance_optimizer, risk_parity_with_con_optimizer]}
+                'all': [log_barrier_risk_parity_optimizer, min_variance_optimizer, mean_variance_optimizer]
+                if (bnds is None and cons is None) else
+                [risk_parity_with_con_optimizer, min_variance_optimizer, mean_variance_optimizer]}
 
     if method is not 'all':
         temp = None
@@ -826,16 +826,16 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
             try:
                 counter += 1
                 if fun_tol > 10**-5:
-                    temp_message = ("%s method has run %i times and fun_tol has been relaxed to less than %f, "
-                                    "optimization failed due to too low precision." % (method, counter-1, fun_tol/10))
+                    temp_message = ("%s 优化器经过 %i 次运行后将优化精度（Tolerence）自动重设为 %f，最终由于精度过低导致优化失败，"
+                                    "请调整参数后重新运行优化器。" % (method, counter-1, fun_tol/10))
                     raise OptimizationError(temp_message)
                 temp = opt_dict[method]()[0]
             except OptResartIndicator:
                 fun_tol = 10 * fun_tol
                 opts = {'maxiter': max_iteration, 'ftol': fun_tol, 'iprint': iprint, 'disp': disp}
         if fun_tol > initial_fun_tol:
-            output_message = opt_dict[method]()[1] + ("%s method has run %i times and fun_tol has been relaxed to "
-                                                      "%f" % (method, counter-1, fun_tol))
+            output_message = opt_dict[method]()[1] + ("， %s 优化器经过 %i 次运行后将收敛精度（Tolerence）自动重设为 %f 以保证。"
+                                                      % (method, counter-1, fun_tol/10))
         else:
             output_message = opt_dict[method]()[1]
         if expected_return_covar is None:
@@ -844,11 +844,9 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
         else:
             return pd.DataFrame(temp, index=list(c_m.columns.values), columns=[method]), c_m, output_message
     else:
-        temp1 = pd.DataFrame(index=list(c_m.columns.values), columns=['risk_parity', 'min_variance',
-                                                                      "risk_parity_with_con"])
-        temp2 = pd.DataFrame(index=["risk_parity", "min_variance", "risk_parity_with_con"],
-                             columns=["Opt Res Message"])
         n = 0
+        temp1 = pd.DataFrame(index=list(c_m.columns.values), columns=["risk_parity", "min_variance", "mean_variance"])
+        temp2 = pd.DataFrame(index=["risk_parity", "min_variance", "mean_variance"], columns=["Opt Res Message"])
         for f in opt_dict[method]:
             temp = None
             counter = 0
@@ -857,19 +855,19 @@ def optimizer(order_book_ids, start_date, asset_type, method, current_weight=Non
                 try:
                     counter += 1
                     if fun_tol > 10**-5:
-                        temp_message = ("One method has run %i times and fun_tol has been relaxed to less than %f, "
-                                        "optimization failed due to too low precision." % (counter-1, fun_tol/10))
+                        temp_message = ("优化器经过 %i 次运行后将优化精度（Tolerence）自动重设为 %f，最终由于精度过低导致优化失败，"
+                                        "请调整参数后重新运行优化器。" % (counter-1, fun_tol/10))
                         raise OptimizationError(temp_message)
                     temp = f()[0]
                 except OptResartIndicator:
                     fun_tol = 10 * fun_tol
                     opts = {'maxiter': max_iteration, 'ftol': fun_tol, 'iprint': iprint, 'disp': disp}
             if fun_tol > initial_fun_tol:
-                output_message = f()[1] + ("One method has run %i times and fun_tol has been relaxed to %f"
-                                           % (counter-1, fun_tol))
+                output_message = f()[1] + ("，优化器经过 %i 次运行后将收敛精度（Tolerence）自动重设为 %f。"
+                                           % (counter-1, fun_tol/10))
             else:
                 output_message = f()[1]
-            temp1.iloc[:, n] = f()[0]
+            temp1.iloc[:, n] = temp
             temp2.iloc[n, 0] = output_message
             n = n + 1
         if expected_return_covar is None:
