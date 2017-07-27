@@ -154,18 +154,18 @@ def get_optimizer(order_book_ids, start_date, asset_type, method, tr_frequency =
         # if not all kicked out: weight, cov_mtrx, kicked out list
         if bc == 0:
             opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i], asset_type=asset_type, method=method,
-                                   fun_tol=10**-8, iprint =0, disp = False)
+                                   fun_tol=10**-8, iprint =2, disp = True)
         elif bc == 1:
             opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i], asset_type=asset_type, method=method,
-                                   bnds = {'full_list': (0, 0.2)}, fun_tol=10**-8)
+                                   bnds = {'full_list': (0, 0.2)}, fun_tol=10**-8, iprint =2, disp = True)
         elif bc == 2:
             # opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i], asset_type=asset_type, method=method,
             #                        cons = {name[:name.find('_')]: (0.6, 1)} )
             opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i], asset_type=asset_type, method=method,
-                                   cons= 1, fun_tol=10**-8)
+                                   cons= 1, fun_tol=10**-8,iprint =2, disp = True)
         elif bc == 3:
             opt_res[i] = optimizer(order_book_ids, start_date=time_frame[i], asset_type=asset_type, method=method,
-                                   bnds={'full_list': (0, 0.2)}, cons = 1, fun_tol=10**-8)
+                                   bnds={'full_list': (0, 0.2)}, cons = 1, fun_tol=10**-8, iprint =2, disp = True)
 
         # if all assets have been ruled out, print and return -1
         if len(opt_res[i]) == 1:

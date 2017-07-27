@@ -14,6 +14,8 @@ from optimizer_tests.fund_test.ptfopt import *
 
 def get_fund_test_suite(before_date, big = 0):
     """
+    given a date, get all_fund before that date, get combo of mixed types
+    ex: fund_test_suite = {'Bond': 122344, 'Bond x Stock 2*3 = 6': 345555 }
     Args:
     :param before_date: str
         generate test_suite before this date
@@ -29,6 +31,7 @@ def get_fund_test_suite(before_date, big = 0):
     combo = []
     fund_test_suite = {}
 
+    # get all fund before some date
     all_fund = fund.all_instruments(date=before_date)[['order_book_id', 'listed_date', 'symbol', 'fund_type']]
     # fund_types = np.unique(all_fund.fund_type)
     # currently we ruled out Other and Money type
