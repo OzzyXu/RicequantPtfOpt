@@ -336,7 +336,7 @@ def get_efficient_plots(fund_test_suite, bigboss, name):
 
 
 # test_fund_opt is to wrap get_optimizer to run all suite
-def test_fund_opt(fund_test_suite, bc = 0):
+def test_fund_opt(fund_test_suite, fund_list, bc = 0):
     """
     :param fund_test_suite (dic)
     :param bc (int): an indicator about bounds and constraints. 0 means nothing;
@@ -346,7 +346,7 @@ def test_fund_opt(fund_test_suite, bc = 0):
     :return:
     """
     a = {}
-    for k in fund_test_suite.keys():
+    for k in fund_list:
         a[k] = get_optimizer(fund_test_suite[k],  start_date = '2014-01-01',end_date= '2017-05-31',
                              asset_type='fund', method='all', fields ='all', name = k,bc = bc)
 

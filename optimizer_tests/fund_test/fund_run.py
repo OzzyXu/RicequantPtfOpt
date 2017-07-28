@@ -24,16 +24,19 @@ import pickle
 ## To read it back to use again
 fund_test_suite = pickle.load(open( "./optimizer_tests/fund_test/fund_test_suite_file/fund_test_suite.p", "rb" ))
 
+fund_list = pickle.load(open( "./optimizer_tests/fund_test/fund_test_suite_file/fund_list.p", "rb" ))
+
+
 
 
 
 
 ## run
 
-res0 = test_fund_opt(fund_test_suite, 0)
-res1 = test_fund_opt(fund_test_suite, 1)
-res2 = test_fund_opt(fund_test_suite, 2)
-res3 = test_fund_opt(fund_test_suite, 3)
+res0 = test_fund_opt(fund_test_suite, fund_list, 0)
+res1 = test_fund_opt(fund_test_suite, fund_list, 1)
+res2 = test_fund_opt(fund_test_suite, fund_list, 2)
+res3 = test_fund_opt(fund_test_suite, fund_list, 3)
 
 
 
